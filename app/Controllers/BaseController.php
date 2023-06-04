@@ -48,11 +48,24 @@ abstract class BaseController extends Controller
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
-        // Do Not Edit This Line
         parent::initController($request, $response, $logger);
+    }
 
-        // Preload any models, libraries, etc, here.
+    public function render($name, $data = null, $renderNavbar = true): string
+    {
+        $renderedContent = view('components/header');
 
-        // E.g.: $this->session = \Config\Services::session();
+        if ($renderNavbar) {
+            $renderedContent .= view('components/navbar');
+        }
+
+        if (!is_null($data)) {
+            $renderedContent .= view($name, $data);
+        } else {
+            $renderedContent .= view($name);
+        }
+
+        $renderedContent .= view('components/footer');
+        return $renderedContent;
     }
 }
