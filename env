@@ -14,5 +14,7 @@ app.baseURL = ''
 # LDAP
 #--------------------------------------------------------------------
 
+ldap.host = ''
 ldap.baseDN = ''
-ldap.password = ''
+ldap.admin.username = ''
+ldap.admin.password = ''
