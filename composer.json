@@ -1,7 +1,7 @@
 {
-    "name": "waldorfconnect/hub",
+    "name": "waldorfconnect/portal",
     "type": "project",
-    "description": "Hub application serving as user-friendly LDAP front-end",
+    "description": "Portal application serving as user-friendly LDAP front-end",
     "homepage": "https://waldorfconnect.de",
     "license": "MIT",
     "require": {
