@@ -7,8 +7,8 @@ use Throwable;
 
 class AuthException extends Exception
 {
-    function __construct($message = '', $code = 0, Throwable $previous = null)
+    function __construct($message = '', Throwable $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, 0, $previous);
     }
 }

@@ -22,24 +22,28 @@ function createLDAPConnection(): Connection
             'password' => getenv('ldap.admin.password')
         ]);
     } catch (ConfigurationException $e) {
-        throw new LDAPException('Error while creating ldap connection', 0, $e);
+        throw new LDAPException('Error while creating ldap connection', $e);
     }
 }
 
 /**
  * @throws LDAPException
  */
-function openLDAPConnection(): void
+function openLDAPConnection(): Connection
 {
-    if (Container::hasConnection('default')) {
-        return;
+    // If container already holds connection
+    if (Container::hasConnection(Container::getDefaultConnectionName())) {
+        return Container::getDefaultConnection();
     }
 
+    // Create new connection
     $connection = createLDAPConnection();
     try {
         $connection->connect();
     } catch (BindException|LdapRecordException $e) {
-        throw new LDAPException('Error binding to ldap server', 0, $e);
+        throw new LDAPException('Error binding to ldap server', $e);
     }
-    Container::addConnection($connection, 'default');
+    Container::addConnection($connection, Container::getDefaultConnectionName());
+
+    return $connection;
 }
