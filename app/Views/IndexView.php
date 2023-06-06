@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <p>Hallo.</p>
+                <pre><?= print_r(\App\Helpers\getCurrentUser()->groups[0]->members) ?></pre>
             </div>
         </div>
     </div>
