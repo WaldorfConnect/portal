@@ -15,16 +15,12 @@
                         </div>
                     <?php endif; ?>
 
-                    <div class="mb-3">
-                        <label for="inputFirstName" class="sr-only">Vorname(n)</label>
-                        <input class="form-control" id="inputFirstName" name="firstName" autocomplete="given-name"
-                               placeholder="Vorname(n)" required autofocus>
-                    </div>
+                    <h3>Persönliche Angaben</h3>
 
                     <div class="mb-3">
-                        <label for="inputLastName" class="sr-only">Nachname</label>
-                        <input class="form-control" id="inputLastName" name="lastName" autocomplete="family-name"
-                               placeholder="Nachname" required>
+                        <label for="inputName" class="sr-only">Vorname(n)</label>
+                        <input class="form-control" id="inputName" name="name" autocomplete="name"
+                               placeholder="Vor- und Nachname" required>
                     </div>
 
                     <div class="mb-3">
@@ -44,6 +40,21 @@
                         <input type="password" class="form-control" id="inputConfirmedPassword" name="confirmedPassword"
                                autocomplete="new-password" placeholder="Passwort wiederholen" required>
                     </div>
+
+                    <h3 class="mt-5">Organisationsangaben</h3>
+
+                    <div class="mb-3">
+                        <label for="inputSchool" class="sr-only">Schule</label>
+                        <select class="form-control" id="inputSchool" name="school" required>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputGroups" class="sr-only">Organisationen/Gruppen</label>
+                        <select class="form-control" id="inputGroups" name="groups" multiple required>
+                        </select>
+                    </div>
+
                 </div>
                 <div class="card-footer footer-plain">
                     <button class="btn btn-primary btn-block" type="submit">Registrieren</button>

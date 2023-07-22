@@ -100,5 +100,5 @@ function createUserModel(User $ldapUser): UserModel
         $groups[] = new GroupModel($ldapGroup->cn[0], $ldapGroup->description[0], $ldapGroup->members()->get()->toArray());
     }
 
-    return new UserModel($ldapUser->uid[0], $ldapUser->cn[0], $groups);
+    return new UserModel($ldapUser->uid[0], $ldapUser->cn[0], $ldapUser->mail[0], $groups);
 }

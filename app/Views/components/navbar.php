@@ -22,9 +22,6 @@ use function App\Helpers\getCurrentUser;
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
-                            Einstellungen
-                        </a>
-                        <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
                             Profil bearbeiten
                         </a>
                         <div class="dropdown-divider"></div>

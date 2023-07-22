@@ -21,13 +21,13 @@
                                value="<?= session('username') ? session('username') : '' ?>" autocomplete="username"
                                placeholder="Benutzername" required autofocus>
                     </div>
+
                     <div class="mb-3">
                         <label for="inputPassword" class="sr-only">Passwort</label>
                         <input type="password" class="form-control" id="inputPassword" name="password"
                                aria-describedby="passwordHelp" autocomplete="current-password"
                                placeholder="Passwort" required>
                     </div>
-
                 </div>
                 <div class="card-footer footer-plain">
                     <button class="btn btn-primary btn-block" type="submit">Anmelden</button>

@@ -35,6 +35,9 @@ $routes->get('/login', 'AuthenticationController::login');
 
 $routes->get('/register', 'AuthenticationController::register');
 
+$routes->get('/user/profile', 'AuthenticationController::editProfile');
+$routes->get('/user/reset_password', 'AuthenticationController::resetPassword');
+
 $routes->get('/logout', 'AuthenticationController::logout');
 
 

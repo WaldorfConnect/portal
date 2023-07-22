@@ -25,16 +25,8 @@ class AuthenticationController extends BaseController
         return $this->render('auth/LoginView', [], false);
     }
 
-    public function register(): string|RedirectResponse
+    public function register(): string
     {
-        try {
-            if (isLoggedIn()) {
-                return redirect('/');
-            }
-        } catch (AuthException|LDAPException $e) {
-            return handleException($e);
-        }
-
         return $this->render('auth/RegisterView', [], false);
     }
 
@@ -52,6 +44,16 @@ class AuthenticationController extends BaseController
         }
 
         return redirect('/');
+    }
+
+    public function editProfile(): string
+    {
+        return $this->render('user/EditProfileView');
+    }
+
+    public function resetPassword(): string
+    {
+        return $this->render('user/PasswortResetView', [], false);
     }
 
     public function logout(): RedirectResponse
