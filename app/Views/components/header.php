@@ -2,15 +2,15 @@
 <html lang="<?= service('request')->getLocale(); ?>" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
-    <title><?= lang('app.name.full') ?></title>
+    <title>Portal – WaldorfConnect</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="<?= lang('app.description') ?>"/>
+    <meta name="description" content="Wir vernetzen Waldorfschüler*innen!"/>
     <meta name="referrer" content="no-referrer">
 
     <meta property="og:url" content="<?= base_url('/') ?>"/>
-    <meta property="og:title" content="<?= lang('app.name.full') ?>"/>
-    <meta property="og:description" content="<?= lang('app.description') ?>"/>
-    <meta property="og:image" content="<?= base_url('/') ?>/assets/img/logo.png"/>
+    <meta property="og:title" content="Portal – WaldorfConnect"/>
+    <meta property="og:description" content="Wir vernetzen Waldorfschüler*innen!"/>
+    <meta property="og:image" content="<?= base_url('/') ?>/assets/img/banner.png"/>
     <meta property="og:type" content="website"/>
     <meta property="og:locale" content="<?= service('request')->getLocale(); ?>"/>
 

@@ -11,8 +11,6 @@ use App\Models\GroupModel;
 use App\Models\UserModel;
 use LdapRecord\Auth\PasswordRequiredException;
 use LdapRecord\Auth\UsernameRequiredException;
-use LdapRecord\Models\Collection;
-use LdapRecord\Models\ModelNotFoundException;
 use LdapRecord\Models\OpenLDAP\User;
 use LdapRecord\Query\ObjectNotFoundException;
 
@@ -59,6 +57,11 @@ function login(string $username, string $password): void
     }
 
     session()->set('USERNAME', $user->username);
+}
+
+function logout(): void
+{
+    session()->remove('USERNAME');
 }
 
 /**

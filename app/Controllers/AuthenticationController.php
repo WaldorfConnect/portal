@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\RedirectResponse;
 use function App\Helpers\handleException;
 use function App\Helpers\isLoggedIn;
 use function App\Helpers\login;
+use function App\Helpers\logout;
 
 class AuthenticationController extends BaseController
 {
@@ -21,7 +22,20 @@ class AuthenticationController extends BaseController
             return handleException($e);
         }
 
-        return $this->render('LoginView');
+        return $this->render('auth/LoginView', [], false);
+    }
+
+    public function register(): string|RedirectResponse
+    {
+        try {
+            if (isLoggedIn()) {
+                return redirect('/');
+            }
+        } catch (AuthException|LDAPException $e) {
+            return handleException($e);
+        }
+
+        return $this->render('auth/RegisterView', [], false);
     }
 
     public function handleLogin(): RedirectResponse
@@ -32,11 +46,17 @@ class AuthenticationController extends BaseController
         try {
             login($username, $password);
         } catch (AuthException $e) {
-            return redirect('login')->with('error', 'login.error.invalidCredentials');
+            return redirect('login')->with('error', 'Ungültige Zugangsdaten!');
         } catch (LDAPException $e) {
             return handleException($e);
         }
 
         return redirect('/');
+    }
+
+    public function logout(): RedirectResponse
+    {
+        logout();
+        return redirect('login');
     }
 }

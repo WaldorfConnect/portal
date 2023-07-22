@@ -33,7 +33,9 @@ $routes->get('/', 'IndexController::index');
 $routes->post('/login', 'AuthenticationController::handleLogin');
 $routes->get('/login', 'AuthenticationController::login');
 
-$routes->get('/error', 'IndexController::error');
+$routes->get('/register', 'AuthenticationController::register');
+
+$routes->get('/logout', 'AuthenticationController::logout');
 
 
 /*
