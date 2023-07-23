@@ -44,14 +44,28 @@
                     <h3 class="mt-5">Organisationsangaben</h3>
 
                     <div class="mb-3">
-                        <label for="inputSchool" class="sr-only">Schule</label>
+                        <label for="inputSchool" class="form-label">Schule</label>
                         <select class="form-control" id="inputSchool" name="school" required>
+                            <?php foreach ($schools as $region): ?>
+                                <optgroup label="<?= $region->displayName ?>">
+                                    <?php foreach ($region->groups as $school): ?>
+                                        <option><?= $school->name ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="inputGroups" class="sr-only">Organisationen/Gruppen</label>
+                        <label for="inputGroups" class="form-label">Organisationen/Gruppen</label>
                         <select class="form-control" id="inputGroups" name="groups" multiple required>
+                            <?php foreach ($groups as $region): ?>
+                                <optgroup label="<?= $region->displayName ?>">
+                                    <?php foreach ($region->groups as $group): ?>
+                                        <option><?= $group->name ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 

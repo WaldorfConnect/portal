@@ -35,7 +35,7 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = ['auth', 'ldap', 'error'];
+    protected $helpers = ['auth', 'group', 'ldap', 'user'];
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -46,7 +46,7 @@ abstract class BaseController extends Controller
     /**
      * Constructor.
      */
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
     {
         parent::initController($request, $response, $logger);
     }

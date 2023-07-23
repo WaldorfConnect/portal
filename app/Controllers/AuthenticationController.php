@@ -5,8 +5,8 @@ namespace App\Controllers;
 use App\Exceptions\AuthException;
 use App\Exceptions\LDAPException;
 use CodeIgniter\HTTP\RedirectResponse;
-use function App\Helpers\handleException;
-use function App\Helpers\isLoggedIn;
+use function App\Helpers\getGroups;
+use function App\Helpers\getSchools;
 use function App\Helpers\login;
 use function App\Helpers\logout;
 
@@ -14,20 +14,12 @@ class AuthenticationController extends BaseController
 {
     public function login(): string|RedirectResponse
     {
-        try {
-            if (isLoggedIn()) {
-                return redirect('/');
-            }
-        } catch (AuthException|LDAPException $e) {
-            return handleException($e);
-        }
-
         return $this->render('auth/LoginView', [], false);
     }
 
     public function register(): string
     {
-        return $this->render('auth/RegisterView', [], false);
+        return $this->render('auth/RegisterView', ['schools' => getSchools(), 'groups' => getGroups()], false);
     }
 
     public function handleLogin(): RedirectResponse
@@ -40,7 +32,7 @@ class AuthenticationController extends BaseController
         } catch (AuthException $e) {
             return redirect('login')->with('error', 'Ungültige Zugangsdaten!');
         } catch (LDAPException $e) {
-            return handleException($e);
+            return redirect('login')->with('error', $e->getMessage());
         }
 
         return redirect('/');
@@ -48,7 +40,7 @@ class AuthenticationController extends BaseController
 
     public function editProfile(): string
     {
-        return $this->render('user/EditProfileView');
+        return $this->render('user/EditProfileView', ['schools' => getSchools(), 'groups' => getGroups()]);
     }
 
     public function resetPassword(): string

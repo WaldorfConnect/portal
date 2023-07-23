@@ -59,9 +59,19 @@ function login(string $username, string $password): void
     session()->set('USERNAME', $user->username);
 }
 
+function register(string $name, string $email, string $password, GroupModel $school, array $groups)
+{
+
+}
+
 function logout(): void
 {
     session()->remove('USERNAME');
+}
+
+function resetPassword(): void
+{
+
 }
 
 /**
@@ -90,15 +100,4 @@ function createUserModelByUsername(string $username): ?UserModel
     }
 
     return createUserModel($ldapUser);
-}
-
-function createUserModel(User $ldapUser): UserModel
-{
-    $groups = [];
-    $ldapGroups = $ldapUser->groups()->recursive()->get();
-    foreach ($ldapGroups as $ldapGroup) {
-        $groups[] = new GroupModel($ldapGroup->cn[0], $ldapGroup->description[0], $ldapGroup->members()->get()->toArray());
-    }
-
-    return new UserModel($ldapUser->uid[0], $ldapUser->cn[0], $ldapUser->mail[0], $groups);
 }

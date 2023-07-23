@@ -3,6 +3,9 @@
 namespace Config;
 
 // Create a new instance of our RouteCollection class.
+use App\Filters\LoggedInFilter;
+use App\Filters\LoggedOutFilter;
+
 $routes = Services::routes();
 
 /*
@@ -29,16 +32,14 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'IndexController::index');
-$routes->post('/login', 'AuthenticationController::handleLogin');
-$routes->get('/login', 'AuthenticationController::login');
+$routes->get('/', 'IndexController::index', ['filter' => LoggedInFilter::class]);
+$routes->post('/login', 'AuthenticationController::handleLogin', ['filter' => LoggedOutFilter::class]);
+$routes->get('/login', 'AuthenticationController::login', ['filter' => LoggedOutFilter::class]);
 
-$routes->get('/register', 'AuthenticationController::register');
-
-$routes->get('/user/profile', 'AuthenticationController::editProfile');
-$routes->get('/user/reset_password', 'AuthenticationController::resetPassword');
-
-$routes->get('/logout', 'AuthenticationController::logout');
+$routes->get('/register', 'AuthenticationController::register', ['filter' => LoggedOutFilter::class]);
+$routes->get('/user/profile', 'AuthenticationController::editProfile', ['filter' => LoggedInFilter::class]);
+$routes->get('/user/reset_password', 'AuthenticationController::resetPassword', ['filter' => LoggedOutFilter::class]);
+$routes->get('/logout', 'AuthenticationController::logout', ['filter' => LoggedInFilter::class]);
 
 
 /*
