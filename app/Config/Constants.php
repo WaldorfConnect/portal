@@ -92,3 +92,10 @@ define('EVENT_PRIORITY_NORMAL', 100);
  * @deprecated Use \CodeIgniter\Events\Events::PRIORITY_HIGH instead.
  */
 define('EVENT_PRIORITY_HIGH', 10);
+
+const PREFIX = "portal_";
+const GROUPS = PREFIX . "groups";
+const MEMBERSHIPS = PREFIX . "memberships";
+const REGIONS = PREFIX . "regions";
+const SCHOOLS = PREFIX . "schools";
+const USERS = PREFIX . "users";

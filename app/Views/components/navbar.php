@@ -18,7 +18,7 @@ use function App\Helpers\getCurrentUser;
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <?= getCurrentUser()->displayName ?>
+                        <?= getCurrentUser()->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">

@@ -4,17 +4,16 @@ namespace App\Models;
 
 use App\Entities\Group;
 use App\Entities\GroupMembership;
-use App\Entities\Region;
 use CodeIgniter\Model;
 
-class RegionModel extends Model
+class GroupMembershipModel extends Model
 {
-    protected $table = REGIONS;
+    protected $table = MEMBERSHIPS;
     protected $primaryKey = "id";
-    protected $returnType = Region::class;
+    protected $returnType = GroupMembership::class;
 
     protected $allowedFields = [
-        'name', 'iso_code', 'supervisor_group_id'
+        'user_id', 'group_id', 'status'
     ];
 }
 

@@ -1,3 +1,10 @@
+<?php
+
+use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getRegions;
+use function App\Helpers\getSchoolsByRegionId;
+
+?>
 <main>
     <div class="container login">
 
@@ -46,10 +53,10 @@
                     <div class="mb-3">
                         <label for="inputSchool" class="form-label">Schule</label>
                         <select class="form-control" id="inputSchool" name="school" required>
-                            <?php foreach ($schools as $region): ?>
-                                <optgroup label="<?= $region->displayName ?>">
-                                    <?php foreach ($region->groups as $school): ?>
-                                        <option><?= $school->name ?></option>
+                            <?php foreach (getRegions() as $region): ?>
+                                <optgroup label="<?= $region->getName() ?>">
+                                    <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
+                                        <option value="<?= $school->getId() ?>"><?= $school->name ?></option>
                                     <?php endforeach; ?>
                                 </optgroup>
                             <?php endforeach; ?>
@@ -58,11 +65,11 @@
 
                     <div class="mb-3">
                         <label for="inputGroups" class="form-label">Organisationen/Gruppen</label>
-                        <select class="form-control" id="inputGroups" name="groups" multiple required>
-                            <?php foreach ($groups as $region): ?>
-                                <optgroup label="<?= $region->displayName ?>">
-                                    <?php foreach ($region->groups as $group): ?>
-                                        <option><?= $group->name ?></option>
+                        <select class="form-control" id="inputGroups" name="groups[]" multiple required>
+                            <?php foreach (getRegions() as $region): ?>
+                                <optgroup label="<?= $region->getName() ?>">
+                                    <?php foreach (getGroupsByRegionId($region->getId()) as $group): ?>
+                                        <option value="<?= $group->getId() ?>"><?= $group->name ?></option>
                                     <?php endforeach; ?>
                                 </optgroup>
                             <?php endforeach; ?>

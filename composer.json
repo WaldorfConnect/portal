@@ -1,36 +1,37 @@
 {
-    "name": "waldorfconnect/portal",
-    "type": "project",
-    "description": "Portal application serving as user-friendly LDAP front-end",
-    "homepage": "https://waldorfconnect.de",
-    "license": "MIT",
-    "require": {
-        "php": "^8.1",
-        "codeigniter4/framework": "^4.0",
-        "ext-ldap": "*",
-        "directorytree/ldaprecord": "^3.0"
-    },
-    "require-dev": {
-        "fakerphp/faker": "^1.9",
-        "mikey179/vfsstream": "^1.6",
-        "phpunit/phpunit": "^9.1"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "autoload": {
-        "exclude-from-classmap": [
-            "**/Database/Migrations/**"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\Support\\": "tests/_support"
-        }
-    },
-    "scripts": {
-        "test": "phpunit"
+  "name": "waldorfconnect/portal",
+  "type": "project",
+  "description": "Portal application serving as user-friendly LDAP front-end",
+  "homepage": "https://waldorfconnect.de",
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "codeigniter4/framework": "^4.0",
+    "ext-ldap": "*",
+    "directorytree/ldaprecord": "^3.0",
+    "ext-iconv": "*"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.9",
+    "mikey179/vfsstream": "^1.6",
+    "phpunit/phpunit": "^9.1"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "autoload": {
+    "exclude-from-classmap": [
+      "**/Database/Migrations/**"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Support\\": "tests/_support"
     }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
 }

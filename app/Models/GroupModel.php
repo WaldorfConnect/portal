@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-class GroupModel
+use App\Entities\Group;
+use CodeIgniter\Model;
+
+class GroupModel extends Model
 {
-    public string $name;
+    protected $table = GROUPS;
+    protected $primaryKey = "id";
+    protected $returnType = Group::class;
 
-    /** @var UserModel[] */
-    public array $members;
-
-    function __construct(string $name, array $members)
-    {
-        $this->name = $name;
-        $this->members = $members;
-    }
+    protected $allowedFields = [
+        'region_id', 'name', 'description'
+    ];
 }
+
+

@@ -1,3 +1,10 @@
+<?php
+
+use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getRegions;
+use function App\Helpers\getSchoolsByRegionId;
+
+?>
 <h1 class="header">Profil bearbeiten</h1>
 
 <form method="post">
@@ -7,7 +14,7 @@
         <label for="inputUsername" class="col-form-label col-md-4 col-lg-3">Benutzername</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputUsername" name="username"
-                   value="<?= \App\Helpers\getCurrentUser()->username ?>" required disabled>
+                   value="<?= \App\Helpers\getCurrentUser()->getUsername() ?>" required disabled>
         </div>
     </div>
 
@@ -15,7 +22,7 @@
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Vor- und Nachname</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputName" name="name" autocomplete="name"
-                   placeholder="Vor- und Nachname" value="<?= \App\Helpers\getCurrentUser()->displayName ?>" required>
+                   placeholder="Vor- und Nachname" value="<?= \App\Helpers\getCurrentUser()->getName() ?>" required>
         </div>
     </div>
 
@@ -23,7 +30,7 @@
         <label for="inputEmail" class="col-form-label col-md-4 col-lg-3">E-Mail</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputEmail" name="email" autocomplete="email"
-                   placeholder="E-Mail" value="<?= \App\Helpers\getCurrentUser()->email ?>" required>
+                   placeholder="E-Mail" value="<?= \App\Helpers\getCurrentUser()->getEmail() ?>" required>
         </div>
     </div>
 
@@ -53,9 +60,9 @@
         <label for="inputSchool" class="col-form-label col-md-4 col-lg-3">Schule</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputSchool" name="school" required>
-                <?php foreach ($schools as $region): ?>
-                    <optgroup label="<?= $region->displayName ?>">
-                        <?php foreach ($region->groups as $school): ?>
+                <?php foreach (getRegions() as $region): ?>
+                    <optgroup label="<?= $region->getName() ?>">
+                        <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
                             <option><?= $school->name ?></option>
                         <?php endforeach; ?>
                     </optgroup>
@@ -67,10 +74,10 @@
     <div class="form-group row mb-3">
         <label for="inputGroups" class="col-form-label col-md-4 col-lg-3">Organisationen/Gruppen</label>
         <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputGroups" name="groups" multiple required>
-                <?php foreach ($groups as $region): ?>
-                    <optgroup label="<?= $region->displayName ?>">
-                        <?php foreach ($region->groups as $group): ?>
+            <select class="form-select" id="inputGroups" name="groups[]" multiple required>
+                <?php foreach (getRegions() as $region): ?>
+                    <optgroup label="<?= $region->getName() ?>">
+                        <?php foreach (getGroupsByRegionId($region->getId()) as $group): ?>
                             <option><?= $group->name ?></option>
                         <?php endforeach; ?>
                     </optgroup>

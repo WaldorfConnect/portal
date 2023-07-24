@@ -2,13 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Exceptions\AuthException;
-use App\Exceptions\LDAPException;
+use App\Entities\MembershipStatus;
+use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
-use function App\Helpers\getGroups;
-use function App\Helpers\getSchools;
+use Exception;
+use InvalidArgumentException;
+use function App\Helpers\checkSSHA;
+use function App\Helpers\createUser;
+use function App\Helpers\generateUsername;
+use function App\Helpers\getSchoolById;
+use function App\Helpers\getUserByUsername;
+use function App\Helpers\getUserByUsernameAndPassword;
+use function App\Helpers\hashSSHA;
 use function App\Helpers\login;
 use function App\Helpers\logout;
+use function App\Helpers\saveUser;
 
 class AuthenticationController extends BaseController
 {
@@ -19,38 +27,72 @@ class AuthenticationController extends BaseController
 
     public function register(): string
     {
-        return $this->render('auth/RegisterView', ['schools' => getSchools(), 'groups' => getGroups()], false);
+        return $this->render('auth/RegisterView', [], false);
     }
 
     public function handleLogin(): RedirectResponse
     {
         $username = trim($this->request->getPost('username'));
         $password = trim($this->request->getPost('password'));
+        $user = getUserByUsername($username);
 
-        try {
-            login($username, $password);
-        } catch (AuthException $e) {
-            return redirect('login')->with('error', 'Ungültige Zugangsdaten!');
-        } catch (LDAPException $e) {
-            return redirect('login')->with('error', $e->getMessage());
+        if (!$user) {
+            return redirect('login')->with('name', $username)->with('error', 'Benutzername ungültig!');
         }
+
+        if ($user->getStatus() == UserStatus::PENDING_EMAIL) {
+            return redirect('login')->with('name', $username)->with('error', 'Bitte bestätige zunächst deine E-Mail-Adresse!');
+        }
+
+        if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
+            return redirect('login')->with('name', $username)->with('error', 'Dein Account wurde noch nicht von einem Administrator bestätigt.');
+        }
+
+        if (!checkSSHA($password, $user->getPassword())) {
+            return redirect('login')->with('name', $username)->with('error', 'Passwort ungültig!');
+        }
+
+        session()->set('user_id', $user->getId());
 
         return redirect('/');
     }
 
-    public function editProfile(): string
+    public function handleRegister(): string|RedirectResponse
     {
-        return $this->render('user/EditProfileView', ['schools' => getSchools(), 'groups' => getGroups()]);
-    }
+        $name = trim($this->request->getPost('name'));
+        $email = trim($this->request->getPost('email'));
+        $password = trim($this->request->getPost('password'));
+        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
+        $schoolId = trim($this->request->getPost('school'));
+        $groupIds = $this->request->getPost('groups');
 
-    public function resetPassword(): string
-    {
-        return $this->render('user/PasswortResetView', [], false);
+        try {
+            $username = generateUsername($name);
+        } catch (InvalidArgumentException) {
+            return redirect('register')->with('error', 'Vor- und Nachname ungültig!');
+        }
+
+        if ($password != $confirmedPassword) {
+            return redirect('register')->with('error', 'Die Passwörter stimmen nicht überein!');
+        }
+
+        $hashedPassword = hashSSHA($password);
+        $user = createUser($username, $name, $email, $hashedPassword, $schoolId);
+
+        try {
+            saveUser($user);
+        } catch (Exception $e) {
+            return redirect('register')->with('error', $e->getMessage());
+        }
+
+        // TODO create group requests
+
+        return redirect('register')->with('success', 1);
     }
 
     public function logout(): RedirectResponse
     {
-        logout();
+        session()->remove('user_id');
         return redirect('login');
     }
 }

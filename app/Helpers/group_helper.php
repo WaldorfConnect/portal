@@ -2,55 +2,33 @@
 
 namespace App\Helpers;
 
-use App\Exceptions\LDAPException;
+use App\Entities\Group;
+use App\Entities\School;
 use App\Models\GroupModel;
-use App\Models\RegionModel;
-use LdapRecord\Models\OpenLDAP\Group;
-use LdapRecord\Models\OpenLDAP\OrganizationalUnit;
-
-function createGroupModel(Group $ldapGroup): GroupModel
-{
-    return new GroupModel($ldapGroup->cn[0], $ldapGroup->members()->get()->toArray());
-}
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 /**
- * @return RegionModel[]
- * @throws LDAPException
+ * @return Group[]
+ * @throws DatabaseException
  */
 function getGroups(): array
 {
-    return getRegionsAndGroupsIn(getenv('ldap.groupsDN'));
+    return getGroupModel()->findAll();
 }
 
 /**
- * @return RegionModel[]
- * @throws LDAPException
+ * @return Group[]
+ * @throws DatabaseException
  */
-function getSchools(): array
+function getGroupsByRegionId(int $regionId): array
 {
-    return getRegionsAndGroupsIn(getenv('ldap.schoolsDN'));
+    return getGroupModel()->where('region_id', $regionId)->findAll();
 }
 
 /**
- * @return RegionModel[]
- * @throws LDAPException
+ * @return GroupModel
  */
-function getRegionsAndGroupsIn(string $dn): array
+function getGroupModel(): GroupModel
 {
-    openLDAPConnection();
-    $regions = [];
-    $ldapRegions = OrganizationalUnit::query()->in($dn)->get();
-    $ldapRegions->shift();
-
-    foreach ($ldapRegions as $ldapRegion) {
-        $groups = [];
-        $ldapGroups = Group::query()->in($ldapRegion->getDN())->get();
-        foreach ($ldapGroups as $ldapGroup) {
-            $groups[] = createGroupModel($ldapGroup);
-        }
-
-        $regions[] = new RegionModel($ldapRegion->ou[0], $ldapRegion->ou[1], $groups);
-    }
-
-    return $regions;
+    return new GroupModel();
 }
