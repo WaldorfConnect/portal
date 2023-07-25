@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Entities\MembershipStatus;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
@@ -10,7 +9,6 @@ use InvalidArgumentException;
 use function App\Helpers\checkSSHA;
 use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
-use function App\Helpers\getSchoolById;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\hashSSHA;

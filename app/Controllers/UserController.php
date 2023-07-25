@@ -3,8 +3,6 @@
 namespace App\Controllers;
 
 use CodeIgniter\HTTP\RedirectResponse;
-use function App\Helpers\getGroups;
-use function App\Helpers\getSchools;
 use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\login;
 use function App\Helpers\logout;
