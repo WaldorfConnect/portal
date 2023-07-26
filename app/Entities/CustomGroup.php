@@ -1,10 +1,10 @@
 <?php
 
-namespace LdapRecord\Models\OpenLDAP;
+namespace App\Entities;
 
-use LdapRecord\Models\Relations\HasManyIn;
+use LdapRecord\Models\Model;
 
-class CustomGroup extends Entry
+class CustomGroup extends Model
 {
     /**
      * The object classes of the LDAP model.
@@ -14,12 +14,4 @@ class CustomGroup extends Entry
         'groupofuniquenames',
         'uidobject'
     ];
-
-    /**
-     * The members relationship.
-     */
-    public function members(): HasManyIn
-    {
-        return $this->hasManyIn([static::class, User::class], 'uniquemember')->using($this, 'uniquemember');
-    }
 }

@@ -73,7 +73,7 @@ class User extends Entity
     {
         $fullName = $this->getName();
         $position = strripos($fullName, ' ');
-        return substr($fullName, $position);
+        return substr($fullName, $position + 1);
     }
 
     public function setName(string $name): void
