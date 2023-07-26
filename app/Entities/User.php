@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getSchoolById;
 
 class User extends Entity
 {
@@ -55,6 +56,26 @@ class User extends Entity
         return $this->attributes['name'];
     }
 
+    /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        $fullName = $this->getName();
+        $position = strripos($fullName, ' ');
+        return substr($fullName, 0, $position);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        $fullName = $this->getName();
+        $position = strripos($fullName, ' ');
+        return substr($fullName, $position);
+    }
+
     public function setName(string $name): void
     {
         $this->attributes['name'] = $name;
@@ -92,6 +113,14 @@ class User extends Entity
     public function getSchoolId(): int
     {
         return $this->attributes['school_id'];
+    }
+
+    /**
+     * @return School
+     */
+    public function getSchool(): School
+    {
+        return getSchoolById($this->getSchoolId());
     }
 
     public function setSchoolId(int $schoolId): void

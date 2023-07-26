@@ -31,6 +31,15 @@ function getCurrentUser(): ?User
 }
 
 /**
+ * @return User[]
+ * @throws DatabaseException
+ */
+function getUsers(): array
+{
+    return getUserModel()->findAll();
+}
+
+/**
  * @param int $id
  * @return ?User
  * @throws DatabaseException
