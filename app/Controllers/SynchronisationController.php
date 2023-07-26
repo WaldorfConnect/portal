@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Entities\Group;
+use App\Entities\School;
 use CodeIgniter\CLI\CLI;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\OpenLDAP\CustomGroup;
@@ -76,7 +78,7 @@ class SynchronisationController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPGroup(\App\Entities\Group $group)
+    private function updateOrCreateLDAPGroup(Group $group)
     {
         $ldapGroup = CustomGroup::query()->findBy('uid', $group->getId());
         if (!$ldapGroup) {
@@ -104,7 +106,7 @@ class SynchronisationController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPSchool(\App\Entities\School $school)
+    private function updateOrCreateLDAPSchool(School $school)
     {
         $ldapGroup = CustomGroup::query()->findBy('uid', $school->getId());
         if (!$ldapGroup) {
