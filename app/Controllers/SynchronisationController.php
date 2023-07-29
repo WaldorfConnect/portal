@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Entities\CustomGroup;
+use App\Entities\Group;
 use App\Entities\School;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
@@ -38,13 +39,14 @@ class SynchronisationController extends BaseController
         }
     }
 
-    private function syncUsersLDAP()
+    private function syncUsersLDAP(): void
     {
         foreach (getUsers() as $user) {
             try {
                 $this->updateOrCreateLDAPUser($user);
+                CLI::write('Successfully synced user ' . $user->getUsername());
             } catch (LdapRecordException $e) {
-                CLI::error('Error synchronizing user ' . $user->getFirstName() . ': ' . $e->getMessage());
+                CLI::error('Error synchronizing user ' . $user->getUsername() . ': ' . $e->getMessage());
             }
         }
     }
@@ -52,14 +54,17 @@ class SynchronisationController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPUser(\App\Entities\User $user)
+    private function updateOrCreateLDAPUser(\App\Entities\User $user): void
     {
         $ldapUser = User::query()->findBy('uid', $user->getUsername());
         if (!$ldapUser) {
-            $ldapUser = User::create()->inside(getenv('ldap.usersDN'));
+            $ldapUser = new User([
+                'uid' => $user->getUsername()
+            ]);
+            $ldapUser->inside(getenv('ldap.usersDN'));
+            $ldapUser->setDn('uid=' . $user->getUsername() . ',' . getenv('ldap.usersDN'));
         }
 
-        $ldapUser->uid = $user->getUsername();
         $ldapUser->userPassword = $user->getPassword();
         $ldapUser->cn = $user->getName();
         $ldapUser->sn = $user->getLastName();
@@ -70,12 +75,12 @@ class SynchronisationController extends BaseController
         $ldapUser->save();
     }
 
-
-    private function syncGroupsLDAP()
+    private function syncGroupsLDAP(): void
     {
         foreach (getGroups() as $group) {
             try {
                 $this->updateOrCreateLDAPGroup($group);
+                CLI::write('Successfully synced group ' . $group->getName());
             } catch (LdapRecordException $e) {
                 CLI::error('Error synchronizing group ' . $group->getName() . ': ' . $e->getMessage());
             }
@@ -85,26 +90,31 @@ class SynchronisationController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPGroup(\App\Entities\Group $group)
+    private function updateOrCreateLDAPGroup(Group $group): void
     {
-        $ldapGroup = (new CustomGroup)->in(getenv('ldap.groupsDN'))->findBy('uid', $group->getId())->get();
+        $ldapGroup = CustomGroup::query()->in(getenv('ldap.groupsDN'))->findBy('uid', $group->getId());
         if (!$ldapGroup) {
-            $ldapGroup = (new CustomGroup)->inside(getenv('ldap.groupsDN'))->get();
+            $ldapGroup = new CustomGroup([
+                'uid' => $group->getId(),
+                'uniquemember' => 'uid=lgroschke,ou=users,dc=waldorfconnect,dc=de'
+            ]);
+            $ldapGroup->inside(getenv('ldap.groupsDN'));
+            $ldapGroup->setDn('uid=' . $group->getId() . ',' . getenv('ldap.groupsDN'));
         }
 
         $ldapGroup->cn = $group->getName();
-        $ldapGroup->members()->attach(User::query()->findBy('uid', 'lgroschke'));
 
         // TODO add new members
         // TODO remove old members
         $ldapGroup->save();
     }
 
-    private function syncSchoolsLDAP()
+    private function syncSchoolsLDAP(): void
     {
         foreach (getSchools() as $school) {
             try {
                 $this->updateOrCreateLDAPSchool($school);
+                CLI::write('Successfully synced school ' . $school->getName());
             } catch (LdapRecordException $e) {
                 CLI::error('Error synchronizing school ' . $school->getName() . ': ' . $e->getMessage());
             }
@@ -114,15 +124,19 @@ class SynchronisationController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPSchool(School $school)
+    private function updateOrCreateLDAPSchool(School $school): void
     {
-        $ldapGroup = (new CustomGroup)->in(getenv('ldap.schoolsDN'))->findBy('uid', $group->getId())->get();
+        $ldapGroup = CustomGroup::query()->in(getenv('ldap.schoolsDN'))->findBy('uid', $school->getId());
         if (!$ldapGroup) {
-            $ldapGroup = (new CustomGroup)->inside(getenv('ldap.schoolsDN'))->get();
+            $ldapGroup = new CustomGroup([
+                'uid' => $school->getId(),
+                'uniquemember' => 'uid=lgroschke,ou=users,dc=waldorfconnect,dc=de'
+            ]);
+            $ldapGroup->inside(getenv('ldap.schoolsDN'));
+            $ldapGroup->setDn('uid=' . $school->getId() . ',' . getenv('ldap.schoolsDN'));
         }
 
         $ldapGroup->cn = $school->getName();
-        $ldapGroup->members()->attach(User::query()->findBy('uid', 'lgroschke'));
 
         // TODO add new members
         // TODO remove old members

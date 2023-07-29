@@ -3,9 +3,12 @@
 namespace App\Helpers;
 
 use App\Entities\Group;
-use App\Entities\School;
+use App\Entities\GroupMembership;
+use App\Entities\MembershipStatus;
+use App\Models\GroupMembershipModel;
 use App\Models\GroupModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
+use ReflectionException;
 
 /**
  * @return Group[]
@@ -17,6 +20,8 @@ function getGroups(): array
 }
 
 /**
+ *
+ * @param int $regionId
  * @return Group[]
  * @throws DatabaseException
  */
@@ -26,9 +31,33 @@ function getGroupsByRegionId(int $regionId): array
 }
 
 /**
+ * @param int $userId
+ * @param int $groupId
+ * @return void
+ * @throws ReflectionException
+ * @throws DatabaseException
+ */
+function createGroupMembershipRequest(int $userId, int $groupId): void
+{
+    $membership = new GroupMembership();
+    $membership->setUserId($userId);
+    $membership->setGroupId($groupId);
+    $membership->setStatus(MembershipStatus::PENDING);
+    getGroupMembershipModel()->save($membership);
+}
+
+/**
  * @return GroupModel
  */
 function getGroupModel(): GroupModel
 {
     return new GroupModel();
+}
+
+/**
+ * @return GroupMembershipModel
+ */
+function getGroupMembershipModel(): GroupMembershipModel
+{
+    return new GroupMembershipModel();
 }

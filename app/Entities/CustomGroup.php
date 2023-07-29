@@ -3,6 +3,8 @@
 namespace App\Entities;
 
 use LdapRecord\Models\Model;
+use LdapRecord\Models\OpenLDAP\User;
+use LdapRecord\Models\Relations\HasManyIn;
 
 class CustomGroup extends Model
 {
@@ -14,4 +16,9 @@ class CustomGroup extends Model
         'groupofuniquenames',
         'uidobject'
     ];
+
+    public function members(): HasManyIn
+    {
+        return $this->hasManyIn([static::class, User::class], 'uniquemember')->using($this, 'uniquemember');
+    }
 }

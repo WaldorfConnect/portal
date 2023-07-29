@@ -3,9 +3,12 @@
 namespace App\Helpers;
 
 use App\Entities\User;
+use App\Entities\UserStatus;
 use App\Models\UserModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use InvalidArgumentException;
+use Ramsey\Uuid\Rfc4122\UuidV4;
+use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -60,13 +63,25 @@ function getUserByUsername(string $username): ?object
 }
 
 /**
+ * @param string $token
+ * @return ?User
+ * @throws DatabaseException
+ */
+function getUserByToken(string $token): ?object
+{
+    return getUserModel()->where('token', $token)->first();
+}
+
+/**
  * @param User $user
- * @return void
+ * @return string|int
  * @throws DatabaseException|ReflectionException
  */
-function saveUser(User $user): void
+function saveUser(User $user): string|int
 {
-    getUserModel()->save($user);
+    $model = getUserModel();
+    $model->save($user);
+    return $model->getInsertID();
 }
 
 /**
@@ -80,12 +95,13 @@ function saveUser(User $user): void
 function createUser(string $username, string $name, string $email, string $password, int $schoolId): User
 {
     $user = new User();
+    $user->setToken(Uuid::uuid4()->toString());
     $user->setUsername($username);
     $user->setName($name);
     $user->setEmail($email);
     $user->setPassword($password);
     $user->setSchoolId($schoolId);
-    $user->setStatus('PENDING');
+    $user->setStatus(UserStatus::PENDING_EMAIL);
     return $user;
 }
 

@@ -36,6 +36,11 @@ class GroupMembership extends Entity
         return $this->attributes['user_id'];
     }
 
+    public function setUserId(string $userId): void
+    {
+        $this->attributes['user_id'] = $userId;
+    }
+
     /**
      * @return ?int
      */
@@ -44,11 +49,21 @@ class GroupMembership extends Entity
         return $this->attributes['group_id'];
     }
 
+    public function setGroupId(string $groupId): void
+    {
+        $this->attributes['group_id'] = $groupId;
+    }
+
     /**
      * @return MembershipStatus
      */
     public function getStatus(): MembershipStatus
     {
         return MembershipStatus::from($this->attributes['status']);
+    }
+
+    public function setStatus(MembershipStatus $status): void
+    {
+        $this->attributes['status'] = $status->value;
     }
 }

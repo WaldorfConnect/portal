@@ -6,7 +6,9 @@ use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use InvalidArgumentException;
+use RuntimeException;
 use function App\Helpers\checkSSHA;
+use function App\Helpers\createGroupMembershipRequest;
 use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
 use function App\Helpers\getUserByUsername;
@@ -15,6 +17,7 @@ use function App\Helpers\hashSSHA;
 use function App\Helpers\login;
 use function App\Helpers\logout;
 use function App\Helpers\saveUser;
+use function App\Helpers\sendMail;
 
 class AuthenticationController extends BaseController
 {
@@ -78,12 +81,19 @@ class AuthenticationController extends BaseController
         $user = createUser($username, $name, $email, $hashedPassword, $schoolId);
 
         try {
-            saveUser($user);
+            $id = saveUser($user);
+            if ($id == 0)
+                throw new RuntimeException();
+
+            foreach ($groupIds as $groupId) {
+                createGroupMembershipRequest($id, $groupId);
+            }
+
+            sendMail($user->getEmail(), 'Registrierung', 'Demonachricht! Link zur Registrierung: https://portal.waldorfconnect.de/user/confirm?token=' . $user->getToken());
+
         } catch (Exception $e) {
             return redirect('register')->with('error', $e->getMessage());
         }
-
-        // TODO create group requests
 
         return redirect('register')->with('success', 1);
     }

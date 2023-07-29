@@ -9,6 +9,7 @@ class User extends Entity
 {
     protected $attributes = [
         'id' => null,
+        'token' => null,
         'username' => null,
         'name' => null,
         'email' => null,
@@ -19,6 +20,7 @@ class User extends Entity
 
     protected $casts = [
         'id' => 'integer',
+        'token' => 'string',
         'username' => 'string',
         'name' => 'string',
         'email' => 'string',
@@ -33,6 +35,19 @@ class User extends Entity
     public function getId(): ?int
     {
         return $this->attributes['id'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->attributes['token'];
+    }
+
+    public function setToken(string $token): void
+    {
+        $this->attributes['token'] = $token;
     }
 
     /**
