@@ -11,6 +11,7 @@ use function App\Helpers\checkSSHA;
 use function App\Helpers\createGroupMembershipRequest;
 use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
+use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\hashSSHA;
@@ -69,12 +70,29 @@ class AuthenticationController extends BaseController
 
         try {
             $username = generateUsername($name);
+            $user = getUserByUsername($username);
+
+            if ($user) {
+                $id = 2;
+                $newUsername = $username;
+                while (getUserByUsername($newUsername)) {
+                    $newUsername = $username . $id;
+                    $id++;
+                }
+
+                $username = $newUsername;
+            }
         } catch (InvalidArgumentException) {
             return redirect('register')->with('error', 'Vor- und Nachname ungültig!');
         }
 
         if ($password != $confirmedPassword) {
             return redirect('register')->with('error', 'Die Passwörter stimmen nicht überein!');
+        }
+
+        $user = getUserByEmail($email);
+        if ($user) {
+            return redirect('register')->with('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
         }
 
         $hashedPassword = hashSSHA($password);
@@ -89,8 +107,7 @@ class AuthenticationController extends BaseController
                 createGroupMembershipRequest($id, $groupId);
             }
 
-            sendMail($user->getEmail(), 'Registrierung', 'Demonachricht! Link zur Registrierung: https://portal.waldorfconnect.de/user/confirm?token=' . $user->getToken());
-
+            sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('register')->with('error', $e->getMessage());
         }

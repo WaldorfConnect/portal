@@ -10,7 +10,7 @@
     <meta property="og:url" content="<?= base_url('/') ?>"/>
     <meta property="og:title" content="Portal – WaldorfConnect"/>
     <meta property="og:description" content="Wir vernetzen Waldorfschüler*innen!"/>
-    <meta property="og:image" content="<?= base_url('/') ?>/assets/img/banner.png"/>
+    <meta property="og:image" content="<?= base_url('/') ?>/assets/img/banner_small.png""/>
     <meta property="og:type" content="website"/>
     <meta property="og:locale" content="<?= service('request')->getLocale(); ?>"/>
 

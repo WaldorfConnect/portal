@@ -4,8 +4,8 @@ namespace App\Entities;
 
 enum UserStatus: string
 {
+    case OK = "OK";
     case PENDING_ACCEPT = "PENDING_ACCEPT";
     case PENDING_EMAIL = "PENDING_EMAIL";
-    case USER = "USER";
-    case ADMIN = "ADMIN";
+    case PENDING_PWRESET = "PENDING_PWRESET";
 }

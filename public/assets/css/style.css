@@ -6,6 +6,7 @@
     src: url("font/firasans-latin-ext.woff2") format('woff2');
     unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 /* latin */
 @font-face {
     font-family: 'Fira Sans';
@@ -59,11 +60,18 @@ h1.header {
     font-weight: bold;
 }
 
+h3.subheader {
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: .75rem;
+    padding-bottom: .75rem;
+    padding-top: .75rem;
+}
+
 .card.login {
     margin: auto;
     max-width: 330px;
     text-align: center !important;
-    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
     border-radius: .5rem !important;
 }
 
@@ -71,7 +79,7 @@ h1.header {
     margin: auto;
     max-width: 640px;
     text-align: center !important;
-    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
     border-radius: .5rem !important;
 }
 

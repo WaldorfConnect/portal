@@ -9,24 +9,26 @@ class User extends Entity
 {
     protected $attributes = [
         'id' => null,
-        'token' => null,
         'username' => null,
         'name' => null,
         'email' => null,
         'password' => null,
         'school_id' => null,
-        'status' => null
+        'role' => null,
+        'status' => null,
+        'token' => null,
     ];
 
     protected $casts = [
         'id' => 'integer',
-        'token' => 'string',
         'username' => 'string',
         'name' => 'string',
         'email' => 'string',
         'password' => 'string',
         'school_id' => 'integer',
-        'status' => 'string'
+        'role' => 'string',
+        'status' => 'string',
+        'token' => 'string',
     ];
 
     /**
@@ -35,19 +37,6 @@ class User extends Entity
     public function getId(): ?int
     {
         return $this->attributes['id'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getToken(): string
-    {
-        return $this->attributes['token'];
-    }
-
-    public function setToken(string $token): void
-    {
-        $this->attributes['token'] = $token;
     }
 
     /**
@@ -144,6 +133,19 @@ class User extends Entity
     }
 
     /**
+     * @return UserRole
+     */
+    public function getRole(): UserRole
+    {
+        return UserRole::from($this->attributes['role']);
+    }
+
+    public function setRole(UserRole $status): void
+    {
+        $this->attributes['role'] = $status->value;
+    }
+
+    /**
      * @return UserStatus
      */
     public function getStatus(): UserStatus
@@ -154,5 +156,18 @@ class User extends Entity
     public function setStatus(UserStatus $status): void
     {
         $this->attributes['status'] = $status->value;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getToken(): ?string
+    {
+        return $this->attributes['token'];
+    }
+
+    public function setToken(?string $token): void
+    {
+        $this->attributes['token'] = $token;
     }
 }

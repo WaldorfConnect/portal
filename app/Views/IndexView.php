@@ -3,7 +3,7 @@
 use function App\Helpers\getCurrentUser;
 
 ?>
-<h1 class="header">Willkommen</h1>
+<h1 class="header">Willkommen <?= ($user = getCurrentUser())->getName() ?></h1>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
     <div class="col mb-4">
@@ -13,10 +13,10 @@ use function App\Helpers\getCurrentUser;
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2 mx-auto">
-                    <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/">
+                    <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/" target="_blank">
                         <i class="fas fa-cloud fa-3x"></i><br>Cloud
                     </a>
-                    <a class="btn btn-primary btn-lg disabled" href="https://chat.waldorfconnect.de/">
+                    <a class="btn btn-primary btn-lg disabled" href="https://chat.waldorfconnect.de/" target="_blank">
                         <i class="fas fa-message fa-3x"></i><br>Chat
                     </a>
                 </div>
@@ -30,10 +30,13 @@ use function App\Helpers\getCurrentUser;
             </div>
             <div class="card-body">
                 <ul class="list-group">
+                    <li class="list-group-item text-secondary">
+                        Funktion noch nicht verfügbar!
+                    </li>
                 </ul>
             </div>
             <div class="card-footer footer-plain">
-                <div class="mt-3 text-center">
+                <div class="text-center">
                     <a class="btn btn-block btn-outline-primary" href="/groups">
                         Alle Gruppen anzeigen
                     </a>
@@ -47,7 +50,12 @@ use function App\Helpers\getCurrentUser;
                 Schule
             </div>
             <div class="card-body text-center">
-                <h5><?= getCurrentUser()->getSchool()->getName() ?></h5>
+                <div class="d-grid gap-2 mx-auto">
+                    <a class="btn btn-primary btn-lg"
+                       href="<?= base_url('school') ?>/<?= ($school = $user->getSchool())->getId() ?>">
+                        <i class="fas fa-school fa-3x"></i><br><?= $school->getName() ?>
+                    </a>
+                </div>
             </div>
             <div class="card-footer footer-plain">
                 <div class="text-center">

@@ -6,7 +6,7 @@ use function App\Helpers\getCurrentUser;
 <nav class="navbar navbar-expand-md navbar-light navbar-expand-lg bg-white border-bottom fixed-top shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="<?= base_url('/') ?>">
-            <img class="navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner.svg" alt="Logo WaldorfConnect">
+            <img class="navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png" alt="Logo WaldorfConnect">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMobileToggle"
                 aria-controls="navbarMobileToggle" aria-expanded="false" aria-label="Toggle navigation">

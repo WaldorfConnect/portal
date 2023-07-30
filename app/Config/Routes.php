@@ -42,14 +42,17 @@ $routes->get('/logout', 'AuthenticationController::logout', ['filter' => LoggedI
 $routes->get('/register', 'AuthenticationController::register', ['filter' => LoggedOutFilter::class]);
 $routes->post('/register', 'AuthenticationController::handleRegister', ['filter' => LoggedOutFilter::class]);
 
-
 $routes->get('/user/reset_password', 'UserController::resetPassword', ['filter' => LoggedOutFilter::class]);
 $routes->post('/user/reset_password', 'UserController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/user/profile', 'UserController::profile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile', 'UserController::handleProfile', ['filter' => LoggedInFilter::class]);
 
-$routes->get('/user/confirm', 'UserController::handleConfirm', ['filter' => LoggedOutFilter::class]);
+$routes->get('/user/confirm', 'UserController::handleConfirm');
+
+$routes->get('/schools', 'SchoolController::list', ['filter' => LoggedInFilter::class]);
+
+$routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
 
 $routes->cli('/sync', 'SynchronisationController::index');
 

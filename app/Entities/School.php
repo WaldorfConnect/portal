@@ -77,17 +77,17 @@ class School extends Entity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getEmailSMV(): string
+    public function getEmailSMV(): ?string
     {
         return $this->attributes['email_smv'];
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getStateId(): string
+    public function getStateId(): ?string
     {
         return $this->attributes['state_id'];
     }

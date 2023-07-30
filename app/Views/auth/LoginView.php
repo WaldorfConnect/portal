@@ -4,7 +4,7 @@
         <form method="post">
             <div class="card login">
                 <div class="card-header header-plain">
-                    <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner.svg"
+                    <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
                          alt="WaldorfConnect Logo">
                     <h1 class="h2">Anmelden</h1>
                 </div>
