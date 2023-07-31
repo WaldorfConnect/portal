@@ -21,6 +21,17 @@ function getGroups(): array
 
 /**
  *
+ * @param int $id
+ * @return ?Group
+ * @throws DatabaseException
+ */
+function getGroupById(int $id): ?object
+{
+    return getGroupModel()->find($id);
+}
+
+/**
+ *
  * @param int $regionId
  * @return Group[]
  * @throws DatabaseException

@@ -51,8 +51,10 @@ $routes->post('/user/profile', 'UserController::handleProfile', ['filter' => Log
 $routes->get('/user/confirm', 'UserController::handleConfirm');
 
 $routes->get('/schools', 'SchoolController::list', ['filter' => LoggedInFilter::class]);
+$routes->get('/school/(:num)', 'SchoolController::school/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
+$routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->cli('/sync', 'SynchronisationController::index');
 

@@ -102,3 +102,13 @@ h3.subheader {
     display: block;
     width: 100%;
 }
+
+.breadcrumb {
+    background-color: rgba(0,0,0,.03) !important;
+    border-radius: .25rem !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    list-style: none !important;
+    margin-bottom: 1rem !important;
+    padding: .75rem 1rem !important;
+}
