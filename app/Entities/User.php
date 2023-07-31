@@ -156,6 +156,11 @@ class User extends Entity
     public function setStatus(UserStatus $status): void
     {
         $this->attributes['status'] = $status->value;
+
+        // Remove unnecessary token
+        if ($status != UserStatus::PENDING_PWRESET && $status != UserStatus::PENDING_EMAIL) {
+            $this->setToken(null);
+        }
     }
 
     /**

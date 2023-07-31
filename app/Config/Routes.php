@@ -3,6 +3,7 @@
 namespace Config;
 
 // Create a new instance of our RouteCollection class.
+use App\Filters\GlobalAdminFilter;
 use App\Filters\LoggedInFilter;
 use App\Filters\LoggedOutFilter;
 
@@ -55,6 +56,9 @@ $routes->get('/school/(:num)', 'SchoolController::school/$1', ['filter' => Logge
 
 $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
 $routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
+
+$routes->get('/admin', 'AdminController::index', ['filter' => GlobalAdminFilter::class]);
+$routes->get('/admin/ldap', 'AdminController::ldap', ['filter' => GlobalAdminFilter::class]);
 
 $routes->cli('/sync', 'SynchronisationController::index');
 

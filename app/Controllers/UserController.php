@@ -2,14 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
-use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
 use function App\Helpers\getUserByUsernameAndPassword;
@@ -74,9 +72,12 @@ class UserController extends BaseController
 
     public function resetPassword(): string
     {
+        // Clicked link in the mail
         $token = $this->request->getGet('token');
         if ($token) {
             $user = getUserByToken($token);
+
+            // Does password still need resetting
             if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
                 return $this->render('user/PasswordSetView', ['user' => $user], false);
             }
@@ -102,7 +103,6 @@ class UserController extends BaseController
             if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
                 $user->setPassword(hashSSHA($password));
                 $user->setStatus(UserStatus::OK);
-                $user->setToken(null);
 
                 try {
                     saveUser($user);
@@ -114,6 +114,7 @@ class UserController extends BaseController
             }
         }
 
+        // We are just getting started
         $username = mb_strtolower(trim($this->request->getPost('username')));
         $email = mb_strtolower(trim($this->request->getPost('email')));
         $user = getUserByUsernameAndEmail($username, $email);
@@ -142,22 +143,25 @@ class UserController extends BaseController
             return redirect('login')->with('error', 'Ungültiger Verifikationstoken!');
         }
 
-        if ($user->getStatus() != UserStatus::PENDING_EMAIL) {
-            return redirect('login')->with('error', 'Dein Account wurde bereits verifiziert!');
+        // Needs user verify their email
+        if ($user->getStatus() != UserStatus::PENDING_REGISTER && $user->getStatus() != UserStatus::PENDING_EMAIL) {
+            return redirect('login')->with('error', 'Dein E-Mail-Adresse ist bereits verifiziert!');
         }
 
-        $user->setStatus($user->getRole() == UserRole::NEWBIE ? UserStatus::PENDING_ACCEPT : UserStatus::OK);
-        $user->setToken(null);
+        // Is user a newbie or just changed his email
+        $user->setStatus($user->getStatus() == UserStatus::PENDING_REGISTER ? UserStatus::PENDING_ACCEPT : UserStatus::OK);
         try {
             saveUser($user);
         } catch (Exception $e) {
             return redirect('login')->with('error', 'Verifikation fehlgeschlagen! (' . $e->getMessage() . ')');
         }
 
-        if ($user->getRole() == UserRole::NEWBIE) {
+        // If newbie show accept information
+        if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
             return $this->render('user/ConfirmView', [], false);
         }
 
+        // If known redirect to profile page
         return redirect('user/profile');
     }
 }

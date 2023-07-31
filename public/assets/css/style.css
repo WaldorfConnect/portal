@@ -104,11 +104,15 @@ h3.subheader {
 }
 
 .breadcrumb {
-    background-color: rgba(0,0,0,.03) !important;
+    background-color: rgba(0, 0, 0, .03) !important;
     border-radius: .25rem !important;
     display: flex !important;
     flex-wrap: wrap !important;
     list-style: none !important;
     margin-bottom: 1rem !important;
     padding: .75rem 1rem !important;
+}
+
+textarea.log {
+    font-family: "Times New Roman", serif;
 }

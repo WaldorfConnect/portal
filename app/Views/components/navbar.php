@@ -1,12 +1,14 @@
 <?php
 
+use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
 
 ?>
 <nav class="navbar navbar-expand-md navbar-light navbar-expand-lg bg-white border-bottom fixed-top shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="<?= base_url('/') ?>">
-            <img class="navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png" alt="Logo WaldorfConnect">
+            <img class="navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
+                 alt="Logo WaldorfConnect">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMobileToggle"
                 aria-controls="navbarMobileToggle" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,10 +17,37 @@ use function App\Helpers\getCurrentUser;
         <div class="collapse navbar-collapse" id="navbarMobileToggle">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
             <ul class="navbar-nav">
+                <?php if (($user = getCurrentUser())->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="<?= base_url('/admin') ?>">
+                                Dashboard
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="<?= base_url('/admin/ldap') ?>">
+                                LDAP
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
+                                Nutzer
+                            </a>
+                            <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
+                                Gruppen
+                            </a>
+                            <a class="dropdown-item" href="<?= base_url('/admin/schools') ?>">
+                                Schulen
+                            </a>
+                        </div>
+                    </li>
+                <?php endif; ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <?= getCurrentUser()->getName() ?>
+                        <?= $user->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">

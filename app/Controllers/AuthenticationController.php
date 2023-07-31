@@ -6,7 +6,6 @@ use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use InvalidArgumentException;
-use RuntimeException;
 use function App\Helpers\checkSSHA;
 use function App\Helpers\createGroupMembershipRequest;
 use function App\Helpers\createUser;
@@ -42,16 +41,26 @@ class AuthenticationController extends BaseController
             return redirect('login')->with('name', $username)->with('error', 'Benutzername ungültig!');
         }
 
-        if ($user->getStatus() == UserStatus::PENDING_EMAIL) {
-            return redirect('login')->with('name', $username)->with('error', 'Bitte bestätige zunächst deine E-Mail-Adresse!');
+        if ($user->getStatus() == UserStatus::PENDING_REGISTER) {
+            return redirect('login')->with('name', $username)->with('error', 'Bitte schließe deine Registrierung zunächst ab, indem du deine E-Mail-Adresse bestätigst!');
         }
 
         if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
-            return redirect('login')->with('name', $username)->with('error', 'Dein Account wurde noch nicht von einem Administrator bestätigt.');
+            return redirect('login')->with('name', $username)->with('error', 'Dein Konto wurde noch nicht von einem Administrator freigegeben.');
         }
 
         if (!checkSSHA($password, $user->getPassword())) {
             return redirect('login')->with('name', $username)->with('error', 'Passwort ungültig!');
+        }
+
+        // Remove pending password reset if login was successful
+        if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
+            $user->setStatus(UserStatus::OK);
+            try {
+                saveUser($user);
+            } catch (Exception $e) {
+                return redirect('login')->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            }
         }
 
         session()->set('user_id', $user->getId());
@@ -72,9 +81,12 @@ class AuthenticationController extends BaseController
             $username = generateUsername($name);
             $user = getUserByUsername($username);
 
+            // If name is already taken add a number
             if ($user) {
                 $id = 2;
                 $newUsername = $username;
+
+                // Increment number till name is no longer taken
                 while (getUserByUsername($newUsername)) {
                     $newUsername = $username . $id;
                     $id++;
@@ -100,16 +112,12 @@ class AuthenticationController extends BaseController
 
         try {
             $id = saveUser($user);
-            if ($id == 0)
-                throw new RuntimeException();
-
             foreach ($groupIds as $groupId) {
                 createGroupMembershipRequest($id, $groupId);
             }
-
             sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('register')->with('error', $e->getMessage());
+            return redirect('register')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
         return redirect('register')->with('success', 1);

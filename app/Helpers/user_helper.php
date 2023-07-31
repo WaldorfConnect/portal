@@ -122,8 +122,8 @@ function createUser(string $username, string $name, string $email, string $passw
     $user->setEmail($email);
     $user->setPassword($password);
     $user->setSchoolId($schoolId);
-    $user->setRole(UserRole::NEWBIE);
-    $user->setStatus(UserStatus::PENDING_EMAIL);
+    $user->setRole(UserRole::USER);
+    $user->setStatus(UserStatus::PENDING_REGISTER);
     return $user;
 }
 
