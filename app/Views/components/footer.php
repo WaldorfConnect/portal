@@ -41,7 +41,7 @@
     </div>
 </footer>
 
-
+<script src="<?= base_url('/') ?>/assets/js/lightbox.min.js"></script>
 </body>
 
 </html>

@@ -30,10 +30,11 @@
                     <div class="accordion-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <table>
+                                <table style="border-spacing: 0 40px">
                                     <tr>
                                         <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/logo.png"
-                                             style="width: 512px; height: auto"
+                                             class="img-thumbnail mb-3"
+                                             style="max-width: 100%; width: 512px; height: auto"
                                              onerror="this.src = 'https://placehold.co/512x128.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Logo!'"
                                              alt="Logo <?= $school->getName() ?>">
                                     </tr>
@@ -83,10 +84,14 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
-                                     style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                                     onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
-                                     alt="Logo <?= $school->getName() ?>">
+                                <a href="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
+                                   data-toggle="lightbox">
+                                    <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
+                                         class="img-thumbnail mt-3"
+                                         style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
+                                         onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
+                                         alt="Logo <?= $school->getName() ?>">
+                                </a>
                             </div>
                         </div>
                     </div>
