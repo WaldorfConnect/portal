@@ -38,19 +38,19 @@ class AuthenticationController extends BaseController
         $user = getUserByUsername($username);
 
         if (!$user) {
-            return redirect('login')->with('name', $username)->with('error', 'Benutzername ungültig!');
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Benutzername ungültig!');
         }
 
         if ($user->getStatus() == UserStatus::PENDING_REGISTER) {
-            return redirect('login')->with('name', $username)->with('error', 'Bitte schließe deine Registrierung zunächst ab, indem du deine E-Mail-Adresse bestätigst!');
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Bitte schließe deine Registrierung zunächst ab, indem du deine E-Mail-Adresse bestätigst!');
         }
 
         if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
-            return redirect('login')->with('name', $username)->with('error', 'Dein Konto wurde noch nicht von einem Administrator freigegeben.');
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Dein Konto wurde noch nicht von einem Administrator freigegeben.');
         }
 
         if (!checkSSHA($password, $user->getPassword())) {
-            return redirect('login')->with('name', $username)->with('error', 'Passwort ungültig!');
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Passwort ungültig!');
         }
 
         // Remove pending password reset if login was successful
@@ -59,7 +59,7 @@ class AuthenticationController extends BaseController
             try {
                 saveUser($user);
             } catch (Exception $e) {
-                return redirect('login')->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+                return redirect('login')->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
             }
         }
 
@@ -95,16 +95,16 @@ class AuthenticationController extends BaseController
                 $username = $newUsername;
             }
         } catch (InvalidArgumentException) {
-            return redirect('register')->with('error', 'Vor- und Nachname ungültig!');
+            return redirect('register')->withInput()->with('error', 'Vor- und Nachname ungültig!');
         }
 
         if ($password != $confirmedPassword) {
-            return redirect('register')->with('error', 'Die Passwörter stimmen nicht überein!');
+            return redirect('register')->withInput()->with('error', 'Die Passwörter stimmen nicht überein!');
         }
 
         $user = getUserByEmail($email);
         if ($user) {
-            return redirect('register')->with('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
+            return redirect('register')->withInput()->with('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
         }
 
         $hashedPassword = hashSSHA($password);
@@ -117,7 +117,7 @@ class AuthenticationController extends BaseController
             }
             sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('register')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
         return redirect('register')->with('success', 1);

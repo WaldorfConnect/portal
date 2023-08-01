@@ -35,13 +35,13 @@ use function App\Helpers\getSchoolsByRegionId;
                 <div class="mb-3">
                     <label for="inputName" class="sr-only">Vorname(n)</label>
                     <input class="form-control" id="inputName" name="name" autocomplete="name"
-                           placeholder="Vor- und Nachname" required>
+                           placeholder="Vor- und Nachname" value="<?= old('name') ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="inputEmail" class="sr-only">E-Mail</label>
                     <input class="form-control" id="inputEmail" name="email" autocomplete="email"
-                           placeholder="E-Mail" required>
+                           placeholder="E-Mail" value="<?= old('email') ?>" required>
                 </div>
 
                 <div class="mb-3">
@@ -61,11 +61,12 @@ use function App\Helpers\getSchoolsByRegionId;
 
                 <div class="mb-3">
                     <label for="inputSchool" class="form-label">Schule</label>
-                    <select class="form-control" id="inputSchool" name="school" required>
+                    <select class="form-select" id="inputSchool" name="school" required>
                         <?php foreach (getRegions() as $region): ?>
                             <optgroup label="<?= $region->getName() ?>">
                                 <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
-                                    <option value="<?= $school->getId() ?>"><?= $school->name ?></option>
+                                    <option <?= $school->getId() == old('school') ? 'selected' : '' ?>
+                                            value="<?= $school->getId() ?>"><?= $school->name ?></option>
                                 <?php endforeach; ?>
                             </optgroup>
                         <?php endforeach; ?>
@@ -74,15 +75,19 @@ use function App\Helpers\getSchoolsByRegionId;
 
                 <div class="mb-3">
                     <label for="inputGroups" class="form-label">Organisationen/Gruppen</label>
-                    <select class="form-control" id="inputGroups" name="groups[]" multiple required>
+                    <select class="form-select" id="inputGroups" name="groups[]" aria-describedby="groupsHelp" multiple
+                            required>
                         <?php foreach (getRegions() as $region): ?>
                             <optgroup label="<?= $region->getName() ?>">
                                 <?php foreach (getGroupsByRegionId($region->getId()) as $group): ?>
-                                    <option value="<?= $group->getId() ?>"><?= $group->name ?></option>
+                                    <option <?= !is_null(old('groups')) && in_array($group->getId(), old('groups')) ? 'selected' : '' ?>
+                                            value="<?= $group->getId() ?>"><?= $group->name ?></option>
                                 <?php endforeach; ?>
                             </optgroup>
                         <?php endforeach; ?>
                     </select>
+                    <small id="groupsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
+                        Desktop-Geräten die STRG-Taste gedrückt halten.</small>
                 </div>
 
             </div>

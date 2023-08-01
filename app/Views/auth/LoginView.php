@@ -18,7 +18,7 @@
                 <div class="mb-3">
                     <label for="inputUsername" class="sr-only">Benutzername</label>
                     <input class="form-control" id="inputUsername" name="username" aria-describedby="usernameHelp"
-                           value="<?= session('username') ? session('username') : '' ?>" autocomplete="username"
+                           value="<?= old('username') ?>" autocomplete="username"
                            placeholder="Benutzername" required autofocus>
                 </div>
 
