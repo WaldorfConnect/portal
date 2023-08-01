@@ -1,7 +1,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-        <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Globale Administration</a></li>
+        <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
         <li class="breadcrumb-item active" aria-current="page">
             LDAP
         </li>

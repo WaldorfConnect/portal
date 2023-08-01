@@ -17,4 +17,9 @@ class AdminController extends BaseController
     {
         return $this->render('admin/LdapView');
     }
+
+    public function users(): string
+    {
+        return $this->render('admin/UsersView');
+    }
 }

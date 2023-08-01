@@ -17,30 +17,32 @@ use function App\Helpers\getCurrentUser;
         <div class="collapse navbar-collapse" id="navbarMobileToggle">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
             <ul class="navbar-nav">
-                <?php if (($user = getCurrentUser())->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                <?php if (($user = getCurrentUser())->isAdmin()): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Admin
+                            Administration
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?= base_url('/admin/ldap') ?>">
-                                LDAP
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
-                                Nutzer
-                            </a>
-                            <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
-                                Gruppen
-                            </a>
-                            <a class="dropdown-item" href="<?= base_url('/admin/schools') ?>">
-                                Schulen
-                            </a>
+                            <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="<?= base_url('/admin/ldap') ?>">
+                                    LDAP
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
+                                    Benutzer
+                                </a>
+                                <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
+                                    Gruppen
+                                </a>
+                                <a class="dropdown-item" href="<?= base_url('/admin/schools') ?>">
+                                    Schulen
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </li>
                 <?php endif; ?>

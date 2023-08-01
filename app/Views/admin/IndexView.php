@@ -2,9 +2,9 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            Globale Administration
+            Administration
         </li>
     </ol>
 </nav>
 
-<h1 class="header">Globale Administration</h1>
+<h1 class="header">Administration</h1>
