@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Entities\CustomGroup;
 use App\Entities\Group;
 use App\Entities\School;
+use App\Entities\UserStatus;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
 use LdapRecord\LdapRecordException;
@@ -42,6 +43,9 @@ class SynchronisationController extends BaseController
     private function syncUsersLDAP(): void
     {
         foreach (getUsers() as $user) {
+            // Do not sync user if accept is pending
+            if ($user->getStatus() == UserStatus::PENDING_ACCEPT) continue;
+
             try {
                 $this->updateOrCreateLDAPUser($user);
                 CLI::write('Successfully synced user ' . $user->getUsername());
@@ -49,6 +53,8 @@ class SynchronisationController extends BaseController
                 CLI::error('Error synchronizing user ' . $user->getUsername() . ': ' . $e->getMessage());
             }
         }
+
+        // TODO Remove old users
     }
 
     /**
@@ -85,6 +91,8 @@ class SynchronisationController extends BaseController
                 CLI::error('Error synchronizing group ' . $group->getName() . ': ' . $e->getMessage());
             }
         }
+
+        // TODO Remove old groups
     }
 
     /**

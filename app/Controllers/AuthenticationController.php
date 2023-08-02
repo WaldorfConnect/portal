@@ -37,26 +37,26 @@ class AuthenticationController extends BaseController
         $password = trim($this->request->getPost('password'));
         $user = getUserByUsername($username);
 
+        // Check if user exists
         if (!$user) {
             return redirect('login')->withInput()->with('name', $username)->with('error', 'Benutzername ungültig!');
         }
 
-        if ($user->getStatus() == UserStatus::PENDING_REGISTER) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Bitte schließe deine Registrierung zunächst ab, indem du deine E-Mail-Adresse bestätigst!');
-        }
-
-        if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Dein Konto wurde noch nicht von einem Administrator freigegeben.');
-        }
-
+        // Check if password is correct
         if (!checkSSHA($password, $user->getPassword())) {
             return redirect('login')->withInput()->with('name', $username)->with('error', 'Passwort ungültig!');
         }
 
+        // Check if logging is blocked by current status
+        $denyMessage = $user->getStatus()->getLoginDenyMessage();
+        if (!is_null($denyMessage)) {
+            return redirect('login')->withInput()->with('name', $username)->with('error', $denyMessage);
+        }
+
         // Remove pending password reset if login was successful
         if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
-            $user->setStatus(UserStatus::OK);
             try {
+                $user->setStatus(UserStatus::OK);
                 saveUser($user);
             } catch (Exception $e) {
                 return redirect('login')->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -64,7 +64,6 @@ class AuthenticationController extends BaseController
         }
 
         session()->set('user_id', $user->getId());
-
         return redirect('/');
     }
 

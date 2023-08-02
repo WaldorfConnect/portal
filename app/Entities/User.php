@@ -145,11 +145,6 @@ class User extends Entity
         $this->attributes['role'] = $status->value;
     }
 
-    public function isAdmin(): bool
-    {
-        return $this->getRole() == UserRole::SCHOOL_ADMIN || $this->getRole() == UserRole::REGION_ADMIN || $this->getRole() == UserRole::GLOBAL_ADMIN;
-    }
-
     /**
      * @return UserStatus
      */
@@ -162,8 +157,8 @@ class User extends Entity
     {
         $this->attributes['status'] = $status->value;
 
-        // Remove unnecessary token
-        if ($status != UserStatus::PENDING_REGISTER && $status != UserStatus::PENDING_PWRESET && $status != UserStatus::PENDING_EMAIL) {
+        // Remove token if target state isn't tokenized
+        if (!$status->isTokenized()) {
             $this->setToken(null);
         }
     }

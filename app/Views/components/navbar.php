@@ -17,7 +17,7 @@ use function App\Helpers\getCurrentUser;
         <div class="collapse navbar-collapse" id="navbarMobileToggle">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
             <ul class="navbar-nav">
-                <?php if (($user = getCurrentUser())->isAdmin()): ?>
+                <?php if (($user = getCurrentUser())->getRole()->isAdmin()): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -26,6 +26,9 @@ use function App\Helpers\getCurrentUser;
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
+                            </a>
+                            <a class="dropdown-item" href="<?= base_url('/admin/accept') ?>">
+                                Freizugebende Benutzer
                             </a>
                             <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
                                 <div class="dropdown-divider"></div>
@@ -52,6 +55,7 @@ use function App\Helpers\getCurrentUser;
                         <?= $user->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item disabled"><?= $user->getRole()->displayName() ?></a>
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
                             Profil bearbeiten
                         </a>
