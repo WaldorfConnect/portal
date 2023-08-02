@@ -141,7 +141,7 @@
                                                                 Wenn du diese Entscheidung f&#252;r ungerechtfertigt
                                                                 ansiehst, w&#252;rden wir dich bitten
                                                                 mit unserem <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorische-hilfedienst/"
+                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
                                                                         style="color: #0d6efd;">organisatorischen
                                                                     Hilfedienst</a> in Verbindung zu treten.
                                                                 <br>
@@ -156,7 +156,7 @@
                                                                align="left"><b>Du hast dich nicht bei WaldorfConnect
                                                                     registriert?</b> Dann wende dich bitte umgehend an
                                                                 unseren <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorische-hilfedienst/"
+                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
                                                                         style="color: #0d6efd;">organisatorischen
                                                                     Hilfedienst</a>!</p>
                                                         </td>
