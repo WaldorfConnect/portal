@@ -9,6 +9,15 @@ enum UserRole: string
     case REGION_ADMIN = "REGION_ADMIN";
     case GLOBAL_ADMIN = "GLOBAL_ADMIN";
 
+    public function badge(): string
+    {
+        $badge = match ($this) {
+            self::USER => '<span class="badge bg-success">%s</span>',
+            self::SCHOOL_ADMIN, self::REGION_ADMIN, self::GLOBAL_ADMIN => '<span class="badge bg-danger">%s</span>'
+        };
+        return sprintf($badge, $this->displayName());
+    }
+
     public function displayName(): string
     {
         return match ($this) {

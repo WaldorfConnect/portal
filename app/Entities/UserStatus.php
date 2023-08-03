@@ -38,4 +38,12 @@ enum UserStatus: string
             self::OK, self::PENDING_ACCEPT, self::DENIED, self::LOCKED => false
         };
     }
+
+    public function isReady(): bool
+    {
+        return match ($this) {
+            self::OK, self::PENDING_EMAIL, self::PENDING_PWRESET => true,
+            self::PENDING_REGISTER, self::PENDING_ACCEPT, self::DENIED, self::LOCKED => false
+        };
+    }
 }

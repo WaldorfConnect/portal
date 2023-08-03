@@ -31,6 +31,24 @@ function getGroupById(int $id): ?object
 }
 
 /**
+ * @param int $userId
+ * @return GroupMembership[]
+ */
+function getGroupMembershipsByUserId(int $userId): array
+{
+    return getGroupMembershipModel()->where('user_id', $userId)->findAll();
+}
+
+/**
+ * @param int $groupId
+ * @return GroupMembership[]
+ */
+function getGroupMembershipsByGroupId(int $groupId): array
+{
+    return getGroupMembershipModel()->where('group_id', $groupId)->findAll();
+}
+
+/**
  *
  * @param int $regionId
  * @return Group[]
@@ -55,6 +73,17 @@ function createGroupMembershipRequest(int $userId, int $groupId): void
     $membership->setGroupId($groupId);
     $membership->setStatus(MembershipStatus::PENDING);
     getGroupMembershipModel()->save($membership);
+}
+
+/**
+ * @param int $userId
+ * @param int $groupId
+ * @param MembershipStatus $status
+ * @return void
+ */
+function setGroupMembershipStatus(int $userId, int $groupId, MembershipStatus $status): void
+{
+
 }
 
 /**

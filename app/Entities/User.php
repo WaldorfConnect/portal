@@ -3,6 +3,8 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getGroupMembershipsByUserId;
+use function App\Helpers\getGroupsByUserId;
 use function App\Helpers\getSchoolById;
 
 class User extends Entity
@@ -174,5 +176,13 @@ class User extends Entity
     public function setToken(?string $token): void
     {
         $this->attributes['token'] = $token;
+    }
+
+    /**
+     * @return GroupMembership[]
+     */
+    public function getGroupMemberships(): array
+    {
+        return getGroupMembershipsByUserId($this->getId());
     }
 }

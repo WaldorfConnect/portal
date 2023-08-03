@@ -3,6 +3,8 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getGroupById;
+use function App\Helpers\getUserById;
 
 class GroupMembership extends Entity
 {
@@ -41,6 +43,11 @@ class GroupMembership extends Entity
         $this->attributes['user_id'] = $userId;
     }
 
+    public function getUser(): User
+    {
+        return getUserById($this->getUserId());
+    }
+
     /**
      * @return ?int
      */
@@ -52,6 +59,11 @@ class GroupMembership extends Entity
     public function setGroupId(string $groupId): void
     {
         $this->attributes['group_id'] = $groupId;
+    }
+
+    public function getGroup(): Group
+    {
+        return getGroupById($this->getGroupId());
     }
 
     /**

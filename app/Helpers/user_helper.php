@@ -94,6 +94,20 @@ function getUserByToken(string $token): ?object
 }
 
 /**
+ * @param int $schoolId
+ * @return User[]
+ */
+function getUsersBySchoolId(int $schoolId): array
+{
+    return getUserModel()->where('school_id', $schoolId)->findAll();
+}
+
+function countUsersBySchoolId(int $schoolId): int
+{
+    return getUserModel()->where('school_id', $schoolId)->countAllResults();
+}
+
+/**
  * @param User $user
  * @return string|int
  * @throws DatabaseException|ReflectionException

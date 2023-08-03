@@ -1,3 +1,9 @@
+<?php
+
+use App\Entities\MembershipStatus;
+use function App\Helpers\getGroupMembershipsByGroupId;
+
+?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
@@ -32,22 +38,42 @@
         </table>
     </div>
     <div class="col-md-6">
-        <a href="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png" data-toggle="lightbox">
-            <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
-                 class="img-thumbnail mt-3"
-                 style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                 onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
-                 alt="Logo <?= $group->getName() ?>">
-        </a>
+        <figure>
+            <a href="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png" data-toggle="lightbox">
+                <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
+                     class="img-thumbnail mt-3"
+                     style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
+                     onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
+                     alt="Logo <?= $group->getName() ?>">
+            </a>
+            <figcaption>
+                <small><?= !is_null($group->getImageAuthor()) ? '&copy;&nbsp;' . $group->getImageAuthor() : '' ?></small>
+            </figcaption>
+        </figure>
     </div>
 </div>
 
-<h3 class="subheader">Administrator*innen</h3>
-<div class="text-center">
-    Diese Funktion folgt bald!
-</div>
+<h3 class="subheader">Nutzer*innen</h3>
 
-<h3 class="subheader">Schüler*innen</h3>
-<div class="text-center">
-    Diese Funktion folgt bald!
-</div>
+<table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
+       data-toggle="table" data-search="true" data-height="500" data-pagination="true"
+       data-show-columns="true" data-cookie="true" data-cookie-id-table="user"
+       data-search-highlight="true" data-show-columns-toggle-all="true">
+    <thead>
+    <tr>
+        <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
+        <th data-field="role" data-sortable="true" scope="col">Rolle</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach (getGroupMembershipsByGroupId($group->getId()) as $membership): ?>
+        <?php if ($membership->getStatus() == MembershipStatus::PENDING): continue; endif; ?>
+        <tr>
+            <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
+                class="td-class-<?= $user->getId() ?>"
+                data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
+            <td><?= $user->getRole()->badge() ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>

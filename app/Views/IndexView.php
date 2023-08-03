@@ -1,6 +1,7 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
+use function App\Helpers\getGroupsByUserId;
 
 ?>
 <h1 class="header">Willkommen <?= ($user = getCurrentUser())->getName() ?></h1>
@@ -16,7 +17,8 @@ use function App\Helpers\getCurrentUser;
                     <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/" target="_blank">
                         <i class="fas fa-cloud fa-3x"></i><br>Cloud
                     </a>
-                    <a class="btn btn-primary btn-lg disabled" href="https://chat.waldorfconnect.de/" target="_blank">
+                    <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/apps/spreed/"
+                       target="_blank">
                         <i class="fas fa-message fa-3x"></i><br>Chat
                     </a>
                 </div>
@@ -30,9 +32,22 @@ use function App\Helpers\getCurrentUser;
             </div>
             <div class="card-body">
                 <ul class="list-group">
-                    <li class="list-group-item text-secondary">
-                        Funktion noch nicht verfügbar!
-                    </li>
+                    <?php foreach ($user->getGroupMemberships() as $membership): ?>
+                        <li class="list-group-item">
+                            <div class="flex-container">
+                                <div class="flex-main">
+                                    <?= ($group = $membership->getGroup())->getName() ?>
+                                    <?= $membership->getStatus()->badge() ?>
+                                </div>
+                                <div class="flex-actions">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="<?= base_url('group') ?>/<?= $group->getId() ?>">
+                                        Öffnen
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
             <div class="card-footer footer-plain">

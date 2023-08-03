@@ -60,14 +60,19 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <a href="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
-                                   data-toggle="lightbox">
-                                    <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
-                                         class="img-thumbnail mt-3"
-                                         style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                                         onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
-                                         alt="Logo <?= $group->getName() ?>">
-                                </a>
+                                <figure>
+                                    <a href="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
+                                       data-toggle="lightbox">
+                                        <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
+                                             class="img-thumbnail mt-3"
+                                             style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
+                                             onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
+                                             alt="Logo <?= $group->getName() ?>">
+                                    </a>
+                                    <figcaption>
+                                        <small><?= !is_null($group->getImageAuthor()) ? '&copy;&nbsp;' . $group->getImageAuthor() : '' ?></small>
+                                    </figcaption>
+                                </figure>
                             </div>
                         </div>
                     </div>

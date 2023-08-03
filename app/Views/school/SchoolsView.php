@@ -21,7 +21,20 @@
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#schoolcollapse<?= $school->getId() ?>"
                             aria-expanded="true" aria-controls="schoolcollapse<?= $school->getId() ?>">
-                        <?= $school->getName() ?>
+                        <?= $school->getName() ?>&nbsp;
+                        <?php if (($count = \App\Helpers\countUsersBySchoolId($school->getId())) == 0): ?>
+                            <span class="badge bg-danger">
+                                Keine Nutzer*innen
+                            </span>
+                        <?php elseif ($count == 1): ?>
+                            <span class="badge bg-success">
+                                ein/e Nutzer/in
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-success">
+                                <?= $count ?> Nutzer*innen
+                            </span>
+                        <?php endif; ?>
                     </button>
                 </h2>
                 <div id="schoolcollapse<?= $school->getId() ?>" class="accordion-collapse collapse"
@@ -84,14 +97,19 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <a href="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
-                                   data-toggle="lightbox">
-                                    <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
-                                         class="img-thumbnail mt-3"
-                                         style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                                         onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
-                                         alt="Logo <?= $school->getName() ?>">
-                                </a>
+                                <figure>
+                                    <a href="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
+                                       data-toggle="lightbox">
+                                        <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
+                                             class="img-thumbnail mt-3"
+                                             style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
+                                             onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
+                                             alt="Logo <?= $school->getName() ?>">
+                                    </a>
+                                    <figcaption>
+                                        <small><?= !is_null($school->getImageAuthor()) ? '&copy;&nbsp;' . $school->getImageAuthor() : '' ?></small>
+                                    </figcaption>
+                                </figure>
                             </div>
                         </div>
                     </div>

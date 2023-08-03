@@ -14,7 +14,8 @@ class School extends Entity
         'address' => null,
         'email_bureau' => null,
         'email_smv' => null,
-        'state_id' => null
+        'state_id' => null,
+        'image_author' => null,
     ];
 
     protected $casts = [
@@ -25,7 +26,8 @@ class School extends Entity
         'address' => 'string',
         'email_bureau' => 'string',
         'email_smv' => 'string',
-        'state_id' => 'integer'
+        'state_id' => 'integer',
+        'image_author' => 'string'
     ];
 
     /**
@@ -90,5 +92,13 @@ class School extends Entity
     public function getStateId(): ?string
     {
         return $this->attributes['state_id'];
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getImageAuthor(): ?string
+    {
+        return $this->attributes['image_author'];
     }
 }
