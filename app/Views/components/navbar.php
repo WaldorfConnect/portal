@@ -32,10 +32,6 @@ use function App\Helpers\getCurrentUser;
                             </a>
                             <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="<?= base_url('/admin/ldap') ?>">
-                                    LDAP
-                                </a>
-                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                     Benutzer
                                 </a>
