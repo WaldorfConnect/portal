@@ -9,7 +9,9 @@ use App\Entities\UserStatus;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Models\Model;
 use LdapRecord\Models\OpenLDAP\User;
+use LdapRecord\Query\Model\Builder;
 use function App\Helpers\getGroups;
 use function App\Helpers\getSchools;
 use function App\Helpers\getUserByUsernameAndPassword;
@@ -48,7 +50,6 @@ class SynchronisationController extends BaseController
 
             try {
                 $this->updateOrCreateLDAPUser($user);
-                CLI::write('Successfully synced user ' . $user->getUsername());
             } catch (LdapRecordException $e) {
                 CLI::error('Error synchronizing user ' . $user->getUsername() . ': ' . $e->getMessage());
             }
@@ -79,6 +80,16 @@ class SynchronisationController extends BaseController
         $ldapUser->mail = $user->getEmail();
         $ldapUser->o = $user->getSchool()->getName();
         $ldapUser->save();
+        CLI::write('Successfully synced user ' . $user->getUsername());
+    }
+
+    /**
+     * @param string $username
+     * @return User|Model|Builder
+     */
+    private function getLDAPUserByUsername(string $username): User|Model|Builder
+    {
+        return User::query()->findBy('uid', $username);
     }
 
     private function syncGroupsLDAP(): void
@@ -86,7 +97,6 @@ class SynchronisationController extends BaseController
         foreach (getGroups() as $group) {
             try {
                 $this->updateOrCreateLDAPGroup($group);
-                CLI::write('Successfully synced group ' . $group->getName());
             } catch (LdapRecordException $e) {
                 CLI::error('Error synchronizing group ' . $group->getName() . ': ' . $e->getMessage());
             }
@@ -100,11 +110,17 @@ class SynchronisationController extends BaseController
      */
     private function updateOrCreateLDAPGroup(Group $group): void
     {
+        $memberships = $group->getMemberships();
+        if (count($memberships) == 0) {
+            CLI::write('Skipping empty group ' . $group->getName());
+            return;
+        }
+
         $ldapGroup = CustomGroup::query()->in(getenv('ldap.groupsDN'))->findBy('uid', $group->getId());
         if (!$ldapGroup) {
             $ldapGroup = new CustomGroup([
                 'uid' => $group->getId(),
-                'uniquemember' => 'uid=lgroschke,ou=users,dc=waldorfconnect,dc=de'
+                'uniquemember' => "uid={$memberships[0]->getUser()->getUsername()},ou=users,dc=waldorfconnect,dc=de"
             ]);
             $ldapGroup->inside(getenv('ldap.groupsDN'));
             $ldapGroup->setDn('uid=' . $group->getId() . ',' . getenv('ldap.groupsDN'));
@@ -112,9 +128,19 @@ class SynchronisationController extends BaseController
 
         $ldapGroup->cn = $group->getName();
 
-        // TODO add new members
-        // TODO remove old members
+        foreach ($ldapGroup->members()->get() as $member) {
+            foreach ($memberships as $membership) {
+                if($member->uid[0] == $membership->)
+            }
+        }
+
+        foreach ($memberships as $membership) {
+            $ldapUser = $this->getLDAPUserByUsername($membership->getUser()->getUsername());
+            $ldapGroup->members()->attach($ldapUser);
+        }
+
         $ldapGroup->save();
+        CLI::write('Successfully synced group ' . $group->getName());
     }
 
     private function syncSchoolsLDAP(): void
@@ -122,7 +148,6 @@ class SynchronisationController extends BaseController
         foreach (getSchools() as $school) {
             try {
                 $this->updateOrCreateLDAPSchool($school);
-                CLI::write('Successfully synced school ' . $school->getName());
             } catch (LdapRecordException $e) {
                 CLI::error('Error synchronizing school ' . $school->getName() . ': ' . $e->getMessage());
             }
@@ -134,11 +159,17 @@ class SynchronisationController extends BaseController
      */
     private function updateOrCreateLDAPSchool(School $school): void
     {
+        $students = $school->getStudents();
+        if (count($students) == 0) {
+            CLI::write('Skipping empty school ' . $school->getName());
+            return;
+        }
+
         $ldapGroup = CustomGroup::query()->in(getenv('ldap.schoolsDN'))->findBy('uid', $school->getId());
         if (!$ldapGroup) {
             $ldapGroup = new CustomGroup([
                 'uid' => $school->getId(),
-                'uniquemember' => 'uid=lgroschke,ou=users,dc=waldorfconnect,dc=de'
+                'uniquemember' => "uid={$students[0]->getUsername()},ou=users,dc=waldorfconnect,dc=de"
             ]);
             $ldapGroup->inside(getenv('ldap.schoolsDN'));
             $ldapGroup->setDn('uid=' . $school->getId() . ',' . getenv('ldap.schoolsDN'));
@@ -146,8 +177,18 @@ class SynchronisationController extends BaseController
 
         $ldapGroup->cn = $school->getName();
 
+        foreach ($ldapGroup->members()->get() as $member) {
+            CLI::write($member->uid[0]);
+        }
+
+        foreach ($students as $user) {
+            $ldapUser = $this->getLDAPUserByUsername($user->getUsername());
+            $ldapGroup->members()->attach($ldapUser);
+        }
+
         // TODO add new members
         // TODO remove old members
         $ldapGroup->save();
+        CLI::write('Successfully synced school ' . $school->getName());
     }
 }

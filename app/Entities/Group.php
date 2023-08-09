@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getGroupMembershipsByGroupId;
 
 class Group extends Entity
 {
@@ -60,5 +61,13 @@ class Group extends Entity
     public function getImageAuthor(): ?string
     {
         return $this->attributes['image_author'];
+    }
+
+    /**
+     * @return GroupMembership[]
+     */
+    public function getMemberships(): array
+    {
+        return getGroupMembershipsByGroupId($this->getId());
     }
 }

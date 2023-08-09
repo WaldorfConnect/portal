@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getUsersBySchoolId;
 
 class School extends Entity
 {
@@ -100,5 +101,13 @@ class School extends Entity
     public function getImageAuthor(): ?string
     {
         return $this->attributes['image_author'];
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getStudents(): array
+    {
+        return getUsersBySchoolId($this->getId());
     }
 }
