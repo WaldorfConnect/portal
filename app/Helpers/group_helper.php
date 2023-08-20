@@ -49,6 +49,15 @@ function getGroupMembershipsByGroupId(int $groupId): array
 }
 
 /**
+ * @param int $groupId
+ * @return ?GroupMembership
+ */
+function getGroupMembershipsByUserIdAndGroupId(int $userId, int $groupId): ?object
+{
+    return getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->first();
+}
+
+/**
  *
  * @param int $regionId
  * @return Group[]

@@ -30,7 +30,10 @@ use function App\Helpers\getUsers;
     </tr>
     </thead>
     <tbody>
+    <?php $currentUser = \App\Helpers\getCurrentUser() ?>
     <?php foreach (getUsers() as $user): ?>
+        <?php if (!$currentUser->mayAdminister($user)): continue; endif; ?>
+
         <tr>
             <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"
                 data-title="<?= $user->getUsername() ?>"><?= $user->getUsername() ?></td>

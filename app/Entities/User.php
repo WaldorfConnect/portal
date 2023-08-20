@@ -185,4 +185,25 @@ class User extends Entity
     {
         return getGroupMembershipsByUserId($this->getId());
     }
+
+    public function mayAdminister(User $user): bool
+    {
+        if ($this->getRole() == UserRole::GLOBAL_ADMIN)
+            return true;
+
+        if ($this->getRole() == UserRole::REGION_ADMIN
+            && $user->getRole() != UserRole::REGION_ADMIN
+            && $user->getRole() != UserRole::GLOBAL_ADMIN
+            && $this->getSchool()->getRegionId() == $user->getSchool()->getRegionId())
+            return true;
+
+        if ($this->getRole() == UserRole::SCHOOL_ADMIN
+            && $user->getRole() != UserRole::SCHOOL_ADMIN
+            && $user->getRole() != UserRole::REGION_ADMIN
+            && $user->getRole() != UserRole::GLOBAL_ADMIN
+            && $this->getSchoolId() == $user->getSchoolId())
+            return true;
+
+        return false;
+    }
 }

@@ -17,10 +17,9 @@ use function App\Helpers\getUsers;
 <h1 class="header">Freizugebende Benutzer</h1>
 
 <p>
-    Hier angezeigt werden die Benutzer, die sich in für deinen administrativen Zuständigkeitsbereich registriert haben
-    und nun nur noch freigegeben werden müssen.<br>Bitte lasse bei der Freigabe von Benutzern absolute sorgfalt walten!
-    Wir
-    möchten vermeiden, dass versehentlich unbefugten Zugriff erteilt wird.
+    Hier angezeigt werden die Benutzer, die sich in deinem administrativen Zuständigkeitsbereich registriert haben
+    und nun freigegeben werden müssen.<br>Bitte lasse bei der Freigabe von Benutzern absolute sorgfalt walten!
+    Wir möchten vermeiden, dass versehentlich unbefugten Zugriff erteilt wird.
 </p>
 
 <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
@@ -36,8 +35,9 @@ use function App\Helpers\getUsers;
     </tr>
     </thead>
     <tbody>
+    <?php $currentUser = \App\Helpers\getCurrentUser() ?>
     <?php foreach (getUsers() as $user): ?>
-        <?php if ($user->getStatus() != UserStatus::PENDING_ACCEPT): continue; endif; ?>
+        <?php if ($user->getStatus() != UserStatus::PENDING_ACCEPT || !$currentUser->mayAdminister($user)): continue; endif; ?>
 
         <tr>
             <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"

@@ -1,7 +1,9 @@
 <?php
 
 use App\Entities\MembershipStatus;
+use function App\Helpers\getCurrentUser;
 use function App\Helpers\getGroupMembershipsByGroupId;
+use function App\Helpers\getGroupMembershipsByUserIdAndGroupId;
 
 ?>
 <nav aria-label="breadcrumb">
@@ -14,7 +16,10 @@ use function App\Helpers\getGroupMembershipsByGroupId;
     </ol>
 </nav>
 
-<h1 class="header"><?= $group->getName() ?></h1>
+<h1 class="header">
+    <?= $group->getName() ?>
+    <?= getGroupMembershipsByUserIdAndGroupId(getCurrentUser()->getId(), $group->getId())->getStatus()->badge() ?>
+</h1>
 
 <h3 class="subheader">Allgemeines</h3>
 <div class="row">
@@ -67,13 +72,22 @@ use function App\Helpers\getGroupMembershipsByGroupId;
     </thead>
     <tbody>
     <?php foreach (getGroupMembershipsByGroupId($group->getId()) as $membership): ?>
-        <?php if ($membership->getStatus() == MembershipStatus::PENDING): continue; endif; ?>
-        <tr>
-            <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
-                class="td-class-<?= $user->getId() ?>"
-                data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
-            <td><?= $user->getRole()->badge() ?></td>
-        </tr>
+        <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
+            <tr>
+                <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
+                    class="td-class-<?= $user->getId() ?>"
+                    data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
+                <td><?= $user->getRole()->badge() ?></td>
+            </tr>
+        <?php else: ?>
+            <tr>
+                <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
+                    class="td-class-<?= $user->getId() ?>"
+                    data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
+                <td><?= $user->getRole()->badge() ?></td>
+            </tr>
+        <?php endif; ?>
+
     <?php endforeach; ?>
     </tbody>
 </table>

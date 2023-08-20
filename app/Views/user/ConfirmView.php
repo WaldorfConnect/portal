@@ -16,9 +16,8 @@ use function App\Helpers\getSchoolsByRegionId;
             <div class="card-body">
                 <div class="alert alert-success">
                     <b>Konto verifiziert!</b> Dein Konto wurde erfolgreich verifiziert. Die
-                    Administratoren deines Bundeslandes bzw. Regionalverbands und die Administratoren der Gruppen,
-                    denen du beitreten möchtest, wurden nun benachrichtigt.<br><br>
-                    Sobald deine Registrierungsanfrage von einer dieser Personen akzeptiert wird, ist dein Konto
+                    Administratoren deiner Schule bzw. deines Bundeslandes oder Regionalverbands wurden benachrichtigt.<br><br>
+                    Sobald dein Registrierungswunsch von einer dieser Personen akzeptiert wurde, ist dein Konto
                     einsatzbereit! <br>Wir werden dich hierzu umgehend benachrichtigen.
                 </div>
             </div>

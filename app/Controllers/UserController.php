@@ -158,6 +158,11 @@ class UserController extends BaseController
 
         // If newbie show accept information
         if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
+            try {
+                sendMail($user->getName(), 'Erwarte Freigabe', view('mail/ResetPassword', ['user' => $user]));
+            } catch (Exception $e) {
+                return redirect('login')->with('error', 'Verifikation fehlgeschlagen! (' . $e->getMessage() . ')');
+            }
             return $this->render('user/ConfirmView', [], false);
         }
 
