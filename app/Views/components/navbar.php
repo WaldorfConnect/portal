@@ -27,14 +27,11 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
-                            <a class="dropdown-item" href="<?= base_url('/admin/accept') ?>">
-                                Freizugebende Benutzer
+                            <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
+                                Benutzer
                             </a>
-                            <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                            <?php if ($user->getRole() == UserRole::REGION_ADMIN || $user->getRole() == UserRole::GLOBAL_ADMIN): ?>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
-                                    Benutzer
-                                </a>
                                 <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
                                     Gruppen
                                 </a>

@@ -4,13 +4,15 @@ namespace App\Controllers;
 
 use App\Entities\CustomGroup;
 use App\Entities\Group;
-use App\Entities\UserStatus;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
+use Composer\CaBundle\CaBundle;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\RequestOptions;
 use LdapRecord\LdapRecordException;
-use LdapRecord\Models\Model;
 use LdapRecord\Models\OpenLDAP\User;
-use LdapRecord\Query\Model\Builder;
 use function App\Helpers\getGroupById;
 use function App\Helpers\getGroups;
 use function App\Helpers\getUserByUsername;
@@ -28,11 +30,15 @@ class SynchronisationController extends BaseController
             openLDAPConnection();
 
             CLI::write('Synchronizing LDAP users ...');
-            $this->syncUsersLDAP();
+            // $this->syncUsersLDAP();
 
             CLI::write(' ');
             CLI::write('Synchronizing LDAP groups ...');
-            $this->syncGroupsLDAP();
+            //$this->syncGroupsLDAP();
+
+            CLI::write(' ');
+            CLI::write('Synchronizing Nextcloud group folders ...');
+            $this->syncNextcloudGroupFolders();
 
             CLI::write('Finished!');
         } catch (LDAPException $e) {
@@ -43,8 +49,9 @@ class SynchronisationController extends BaseController
     private function syncUsersLDAP(): void
     {
         foreach (getUsers() as $user) {
-            // Do not sync user if accept is pending
-            if ($user->getStatus() == UserStatus::PENDING_ACCEPT) continue;
+            // Skip users in a non-synchronizable state
+            if (!$user->getStatus()->isSynchronizable())
+                continue;
 
             try {
                 $this->updateOrCreateLDAPUser($user);
@@ -169,5 +176,42 @@ class SynchronisationController extends BaseController
 
         $ldapGroup->save();
         CLI::write('Successfully synced group ' . $group->getName());
+    }
+
+    private function syncNextcloudGroupFolders(): void
+    {
+        $client = new Client([
+            RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
+            RequestOptions::AUTH => [
+                getenv('nextcloud.username'),
+                getenv('nextcloud.password')
+            ],
+            RequestOptions::HEADERS => [
+                'Accept' => 'application/json',
+                'OCS-APIRequest' => 'true'
+            ]
+        ]);
+
+        $folders = $this->getGroupFolders($client);
+    }
+
+    private function updateOrCreateGroupFolder(Client $client, Group $group): void
+    {
+        CLI::write(exec("php /var/www/cloud.waldorfconnect.de/occ groupfolders:create \"" . $group->getName() . "\""));
+        CLI::write(exec("php /var/www/cloud.waldorfconnect.de/occ groupfolders:group \"" . $group->getName() . "\"" . " \"" . $group->getName() . "\" write"));
+        CLI::write('Successfully created/updated group folder for group ' . $group->getName());
+    }
+
+    private function getGroupFolders(Client $client): array
+    {
+        try {
+            $request = new Request('GET', GROUP_FOLDERS_API . '/folders');
+            $response = $client->send($request);
+            $decodedResponse = json_decode($response->getBody()->getContents());
+            return $decodedResponse->ocs->data;
+        } catch (GuzzleException $e) {
+            CLI::error("Error while requesting folders: " . $e->getMessage());
+        }
+        return [];
     }
 }

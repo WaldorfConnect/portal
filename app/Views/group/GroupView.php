@@ -18,7 +18,9 @@ use function App\Helpers\getGroupMembershipsByUserIdAndGroupId;
 
 <h1 class="header">
     <?= $group->getName() ?>
-    <?= getGroupMembershipsByUserIdAndGroupId(getCurrentUser()->getId(), $group->getId())->getStatus()->badge() ?>
+    <?php if (($membership = getGroupMembershipsByUserIdAndGroupId(getCurrentUser()->getId(), $group->getId()))): ?>
+        <?= $membership->getStatus()->badge() ?>
+    <?php endif; ?>
 </h1>
 
 <h3 class="subheader">Allgemeines</h3>

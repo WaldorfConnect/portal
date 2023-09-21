@@ -9,18 +9,15 @@ use function App\Helpers\getUsers;
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            Benutzer
+            Gruppen
         </li>
     </ol>
 </nav>
 
-<h1 class="header">Benutzer</h1>
+<h1 class="header">Gruppen</h1>
 
 <p>
-    Hier werden die Benutzer angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden oder für
-    diesen registriert haben und nun freigegeben werden müssen. <br>Bitte lasse hier äußerste sorgfalt walten!
-    Wir möchten vermeiden, dass versehentlich unbefugten Zugriff erteilt wird, oder berechtigten Personen versehentlich
-    der Zugriff verweigert wird.
+    Hier werden alle Gruppen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
 </p>
 
 <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
@@ -29,12 +26,10 @@ use function App\Helpers\getUsers;
        data-search-highlight="true" data-show-columns-toggle-all="true">
     <thead>
     <tr>
-        <th data-field="username" data-sortable="true" scope="col">Benutzername</th>
-        <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
-        <th data-field="school" data-sortable="true" scope="col">Schule</th>
-        <th data-field="role" data-sortable="true" scope="col">Rolle</th>
-        <th data-field="status" data-sortable="true" scope="col">Status</th>
-        <th data-field="action" scope="col">Aktion</th>
+        <th data-field="id" data-sortable="true" scope="col">Name</th>
+        <th data-field="name" data-sortable="true" scope="col">Name</th>
+        <th data-field="description" data-sortable="true" scope="col">Beschreibung</th>
+        <th data-field="region" data-sortable="true" scope="col">Region</th>
     </tr>
     </thead>
     <tbody>

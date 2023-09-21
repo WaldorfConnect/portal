@@ -17,10 +17,10 @@ use function App\Helpers\getGroupsByUserId;
                     <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/" target="_blank">
                         <i class="fas fa-cloud fa-3x"></i><br>Cloud
                     </a>
-                    <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/apps/spreed/"
+                    <!--<a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/apps/spreed/"
                        target="_blank">
                         <i class="fas fa-message fa-3x"></i><br>Chat
-                    </a>
+                    </a>-->
                 </div>
             </div>
         </div>
