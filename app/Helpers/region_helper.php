@@ -16,6 +16,15 @@ function getRegions(): array
 }
 
 /**
+ * @param int $id
+ * @return ?Region
+ */
+function getRegionById(int $id): ?object
+{
+    return getRegionModel()->find($id);
+}
+
+/**
  * @return RegionModel
  */
 function getRegionModel(): RegionModel

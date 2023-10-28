@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
 use function App\Helpers\getGroupMembershipsByGroupId;
+use function App\Helpers\getRegionById;
 
 class Group extends Entity
 {
@@ -37,6 +38,14 @@ class Group extends Entity
     public function getRegionId(): ?int
     {
         return $this->attributes['region_id'];
+    }
+
+    /**
+     * @return Region
+     */
+    public function getRegion(): object
+    {
+        return getRegionById($this->getRegionId());
     }
 
     /**

@@ -20,9 +20,9 @@
                 </div>
             <?php else: ?>
                 <div class="card-body">
-                    <?php if (isset($error)): ?>
+                    <?php if (isset($success)): ?>
                         <div class="alert alert-danger">
-                            <?= $error ?>
+                            <?= $success ?>
                         </div>
                     <?php endif; ?>
 
@@ -41,7 +41,7 @@
                                autocomplete="new-password" placeholder="Passwort wiederholen" required>
                     </div>
 
-                    <input name="token" value="<?= $user->getToken() ?>" type="hidden">
+                    <input name="token" value="<?= $school->getToken() ?>" type="hidden">
                 </div>
                 <div class="card-footer footer-plain">
                     <button class="btn btn-primary btn-block" type="submit">Passwort zurücksetzen</button>

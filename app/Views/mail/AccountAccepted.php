@@ -129,7 +129,7 @@
                                                                 </tbody>
                                                             </table>
                                                             <h4 style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;"
-                                                                align="left">Hallo <?= $user->getName() ?>,</h4>
+                                                                align="left">Hallo <?= $school->getName() ?>,</h4>
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
@@ -140,7 +140,7 @@
                                                                 Vernetzungstools in der Waldorfwelt! Herzlich
                                                                 willkommen!<br>
                                                                 <br>
-                                                                <b>Dein Benutzername:</b> <?= $user->getUsername() ?>
+                                                                <b>Dein Benutzername:</b> <?= $school->getUsername() ?>
                                                                 <br>
                                                                 <br>
                                                                 Dein Passwort hast du bei deiner Registrierung

@@ -186,7 +186,7 @@ class User extends Entity
         return getGroupMembershipsByUserId($this->getId());
     }
 
-    public function mayAdminister(User $user): bool
+    public function mayManage(User $user): bool
     {
         if ($this->getRole() == UserRole::GLOBAL_ADMIN)
             return true;

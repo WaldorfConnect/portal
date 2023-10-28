@@ -43,6 +43,25 @@ function getUsers(): array
 }
 
 /**
+ * @return User[]
+ * @throws DatabaseException
+ */
+function getManageableUsers(): array
+{
+    $self = getCurrentUser();
+    $manageableUsers = [];
+
+    $allUsers = getUsers();
+    foreach ($allUsers as $user) {
+        if ($self->mayManage($user)) {
+            $manageableUsers[] = $user;
+        }
+    }
+
+    return $manageableUsers;
+}
+
+/**
  * @param int $id
  * @return ?User
  * @throws DatabaseException

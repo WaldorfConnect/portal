@@ -1,6 +1,7 @@
 <?php
 
 use App\Entities\UserStatus;
+use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUsers;
 
 ?>
@@ -9,16 +10,31 @@ use function App\Helpers\getUsers;
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            Gruppen
+            Benutzer
         </li>
     </ol>
 </nav>
 
-<h1 class="header">Gruppen</h1>
+<h1 class="header">Benutzer</h1>
 
 <p>
-    Hier werden alle Gruppen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
+    Hier werden die Benutzer angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden oder für
+    diesen registriert haben und nun freigegeben werden müssen. <br>Bitte lasse hier äußerste sorgfalt walten!
+    Wir möchten vermeiden, dass versehentlich unbefugten Zugriff erteilt wird, oder berechtigten Personen versehentlich
+    der Zugriff verweigert wird.
 </p>
+
+<?php if ($success = session('error')): ?>
+    <div class="alert alert-danger">
+        <?= $success ?>
+    </div>
+<?php endif; ?>
+
+<?php if ($success = session('success')): ?>
+    <div class="alert alert-success">
+        <?= $success ?>
+    </div>
+<?php endif; ?>
 
 <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
        data-toggle="table" data-search="true" data-height="1000" data-pagination="true"
@@ -26,16 +42,18 @@ use function App\Helpers\getUsers;
        data-search-highlight="true" data-show-columns-toggle-all="true">
     <thead>
     <tr>
-        <th data-field="id" data-sortable="true" scope="col">Name</th>
-        <th data-field="name" data-sortable="true" scope="col">Name</th>
-        <th data-field="description" data-sortable="true" scope="col">Beschreibung</th>
-        <th data-field="region" data-sortable="true" scope="col">Region</th>
+        <th data-field="username" data-sortable="true" scope="col">Benutzername</th>
+        <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
+        <th data-field="school" data-sortable="true" scope="col">Schule</th>
+        <th data-field="role" data-sortable="true" scope="col">Rolle</th>
+        <th data-field="status" data-sortable="true" scope="col">Status</th>
+        <th data-field="action" scope="col">Aktion</th>
     </tr>
     </thead>
     <tbody>
-    <?php $currentUser = \App\Helpers\getCurrentUser() ?>
+    <?php $currentUser = getCurrentUser() ?>
     <?php foreach (getUsers() as $user): ?>
-        <?php if (!$currentUser->mayAdminister($user)): continue; endif; ?>
+        <?php if (!$currentUser->mayManage($user)): continue; endif; ?>
 
         <tr>
             <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"
@@ -60,18 +78,20 @@ use function App\Helpers\getUsers;
                     </button>
                     <?= form_close() ?>
                 <?php else: ?>
-                    <?= form_open('admin/user/delete') ?>
-                    <?= form_hidden('id', $user->getId()) ?>
-                    <div class="btn-group d-flex gap-2" role="group">
+                    <div class="btn-group gap-2" role="group">
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('admin/user/edit') . '/' . $user->getId() ?>">
-                            <i class="fas fa-pen"></i>
+                           href="<?= base_url('admin/user/edit') . '/' . $user->getId() ?>"><i class="fas fa-pen"></i>
                         </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div>
+                            <?= form_open('admin/user/delete') ?>
+                            <?= form_hidden('id', $user->getId()) ?>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <?= form_close() ?>
+                        </div>
                     </div>
-                    <?= form_close() ?>
+
                 <?php endif ?>
             </td>
         </tr>

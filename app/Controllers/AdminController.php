@@ -31,7 +31,7 @@ class AdminController extends BaseController
 
         // User awaiting acceptance
         if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
-            return redirect('admin/accept')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
+            return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
         }
 
         $user->setStatus(UserStatus::OK);
@@ -39,10 +39,10 @@ class AdminController extends BaseController
             saveUser($user);
             sendMail($user->getEmail(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('admin/accept')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
-        return redirect('admin/accept')->with('success', $user->getName() . ' erfolgreich freigegeben!');
+        return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich freigegeben!');
     }
 
     public function denyUser(): RedirectResponse
@@ -52,7 +52,7 @@ class AdminController extends BaseController
 
         // User awaiting acceptance
         if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
-            return redirect('admin/accept')->with('error', 'Dieser Nutzer wurde bereits abgelehnt.');
+            return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits abgelehnt.');
         }
 
         $user->setStatus(UserStatus::DENIED);
@@ -60,19 +60,24 @@ class AdminController extends BaseController
             saveUser($user);
             sendMail($user->getEmail(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('admin/accept')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
-        return redirect('admin/accept')->with('success', $user->getName() . ' erfolgreich abgelehnt!');
-    }
-
-    public function ldap(): string
-    {
-        return $this->render('admin/LdapView');
+        return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich abgelehnt!');
     }
 
     public function users(): string
     {
-        return $this->render('admin/UsersView');
+        return $this->render('admin/user/UsersView');
+    }
+
+    public function groups(): string
+    {
+        return $this->render('admin/group/GroupsView');
+    }
+
+    public function schools(): string
+    {
+        return $this->render('admin/school/SchoolsView');
     }
 }

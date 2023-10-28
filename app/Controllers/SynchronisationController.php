@@ -30,11 +30,11 @@ class SynchronisationController extends BaseController
             openLDAPConnection();
 
             CLI::write('Synchronizing LDAP users ...');
-            // $this->syncUsersLDAP();
+            $this->syncUsersLDAP();
 
             CLI::write(' ');
             CLI::write('Synchronizing LDAP groups ...');
-            //$this->syncGroupsLDAP();
+            $this->syncGroupsLDAP();
 
             CLI::write(' ');
             CLI::write('Synchronizing Nextcloud group folders ...');

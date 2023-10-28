@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getRegionById;
 use function App\Helpers\getUsersBySchoolId;
 
 class School extends Entity
@@ -64,6 +65,14 @@ class School extends Entity
     }
 
     /**
+     * @return Region
+     */
+    public function getRegion(): object
+    {
+        return getRegionById($this->getRegionId());
+    }
+
+    /**
      * @return string
      */
     public function getAddress(): string
@@ -109,5 +118,22 @@ class School extends Entity
     public function getStudents(): array
     {
         return getUsersBySchoolId($this->getId());
+    }
+
+    public function mayManage(User $user): bool
+    {
+        if ($user->getRole() == UserRole::GLOBAL_ADMIN) {
+            return true;
+        }
+
+        if ($user->getRole() == UserRole::REGION_ADMIN && $this->getRegionId() == $user->getSchool()->getRegionId()) {
+            return true;
+        }
+
+        if ($user->getRole() == UserRole::SCHOOL_ADMIN && $this->getId() == $user->getSchoolId()) {
+            return true;
+        }
+
+        return false;
     }
 }
