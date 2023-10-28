@@ -129,7 +129,7 @@
                                                                 </tbody>
                                                             </table>
                                                             <h4 style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;"
-                                                                align="left">Hallo Linus Groschke,</h4>
+                                                                align="left">Hallo <?= $user->getName() ?>,</h4>
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
@@ -144,7 +144,7 @@
                                                                 <tr>
                                                                     <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;"
                                                                         align="center" bgcolor="#0d6efd">
-                                                                        <a href="<?= base_url('user/reset_password') . '?token=' . $school->getToken() ?>"
+                                                                        <a href="<?= base_url('user/reset_password') . '?token=' . $user->getToken() ?>"
                                                                            style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">
                                                                             Passwort zur&#252;cksetzen
                                                                         </a>

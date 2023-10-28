@@ -1,7 +1,7 @@
 <main>
     <div class="container login">
 
-        <?= form_open('user/password_reset') ?>
+        <?= form_open('user/reset_password') ?>
         <div class="card register">
             <div class="card-header header-plain">
                 <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"

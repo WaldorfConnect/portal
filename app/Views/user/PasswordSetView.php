@@ -1,7 +1,7 @@
 <main>
     <div class="container login">
 
-        <?= form_open('user/password_reset') ?>
+        <?= form_open('user/reset_password') ?>
         <div class="card register">
             <div class="card-header header-plain">
                 <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
@@ -41,7 +41,7 @@
                                autocomplete="new-password" placeholder="Passwort wiederholen" required>
                     </div>
 
-                    <input name="token" value="<?= $school->getToken() ?>" type="hidden">
+                    <input name="token" value="<?= $user->getToken() ?>" type="hidden">
                 </div>
                 <div class="card-footer footer-plain">
                     <button class="btn btn-primary btn-block" type="submit">Passwort zurücksetzen</button>
