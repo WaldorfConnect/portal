@@ -11,6 +11,7 @@ use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
 use function App\Helpers\getUserByUsernameAndPassword;
+use function App\Helpers\getUsers;
 use function App\Helpers\hashSSHA;
 use function App\Helpers\login;
 use function App\Helpers\logout;
@@ -159,7 +160,14 @@ class UserController extends BaseController
         // If newbie show accept information
         if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
             try {
-                sendMail($user->getName(), 'Erwarte Freigabe', view('mail/ResetPassword', ['user' => $user]));
+                sendMail($user->getEmail(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
+
+                // Send announcement to all admins
+                foreach (getUsers() as $admin) {
+                    if ($admin->getRole()->isAdmin() && $admin->mayManage($user)) {
+                        sendMail($admin->getEmail(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $admin, 'target' => $user]));
+                    }
+                }
             } catch (Exception $e) {
                 return redirect('login')->with('error', 'Verifikation fehlgeschlagen! (' . $e->getMessage() . ')');
             }

@@ -133,31 +133,26 @@
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
-                                                                wir haben deinen Registrierungswunsch erhalten!
-                                                                Die Administratoren deiner Schule bzw. deines
-                                                                Bundeslandes oder Regionalverbands wurden
-                                                                benachrichtigt.
+                                                                ein neuer Nutzer hat sich bei WaldorfConnect
+                                                                registriert.<br>
+                                                                <br>
+                                                                <b>Vor- und Nachname:</b> <?= $target->getName() ?><br>
+                                                                <b>Schule:</b> <?= $target->getSchool()->getName() ?>
                                                                 <br>
                                                                 <br>
-                                                                Sobald dein Regstrierungswunsch von einer dieser
-                                                                Personen akzeptiert wurde, ist dein Konto einsatzbereit!<br>
-                                                                <br>
-                                                                In der Regel dauert dieser Vorgang nur wenige Stunden.
-                                                                Sobald dein Konto aktiviert wurde, werden wir dich
-                                                                erneut benachrichtigen.
-                                                                Sollten wir uns nach 48 Stunden noch nicht gemeldet
-                                                                haben, kontaktiere bitte unseren <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
-                                                                        style="color: #0d6efd;">organisatorischen
-                                                                    Hilfedienst</a>.
+                                                                Um diesen Registrierungswunsch zu bearbeiten, <a
+                                                                        href="https://portal.waldorfconnect.de/admin/users"
+                                                                        style="color: #0d6efd;">klicke bitte hier</a>.
                                                                 <br>
                                                             </p>
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
-                                                               align="left"><b>Du hast dich nicht bei WaldorfConnect
-                                                                    registriert?</b> Dann wende dich bitte umgehend an
-                                                                unseren <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorische-hilfedienst/"
+                                                               align="left">Du erh&#228;ltst diese Nachricht als
+                                                                Mitglied des Administrationsteams f&#252;r
+                                                                WaldorfConnect.
+                                                                <b>Du bist kein Admin?</b> Dann wende dich bitte
+                                                                umgehend an unseren <a
+                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
                                                                         style="color: #0d6efd;">organisatorischen
                                                                     Hilfedienst</a>!</p>
                                                         </td>
