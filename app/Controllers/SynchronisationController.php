@@ -193,25 +193,45 @@ class SynchronisationController extends BaseController
         ]);
 
         $folders = $this->getGroupFolders($client);
+        $groups = getGroups();
+
+        // Check if folder for group exists
+        foreach ($groups as $group) {
+            $this->updateOrCreateGroupFolder($client, $folders, $group);
+        }
+
+        // Check if group for folder exists
+        foreach ($folders as $folder) {
+
+        }
     }
 
-    private function updateOrCreateGroupFolder(Client $client, Group $group): void
+    private function updateOrCreateGroupFolder(Client $client, array $folders, Group $group): void
     {
-        CLI::write(exec("php /var/www/cloud.waldorfconnect.de/occ groupfolders:create \"" . $group->getName() . "\""));
-        CLI::write(exec("php /var/www/cloud.waldorfconnect.de/occ groupfolders:group \"" . $group->getName() . "\"" . " \"" . $group->getName() . "\" write"));
-        CLI::write('Successfully created/updated group folder for group ' . $group->getName());
+
     }
 
     private function getGroupFolders(Client $client): array
     {
+        $dataArray = [];
         try {
             $request = new Request('GET', GROUP_FOLDERS_API . '/folders');
             $response = $client->send($request);
             $decodedResponse = json_decode($response->getBody()->getContents());
-            return $decodedResponse->ocs->data;
+            $data = $decodedResponse->ocs->data;
+
+            $index = 1;
+            while (true) {
+                if (!property_exists($data, $index)) {
+                    break;
+                }
+
+                $dataArray[] = $data->{$index};
+                $index++;
+            }
         } catch (GuzzleException $e) {
             CLI::error("Error while requesting folders: " . $e->getMessage());
         }
-        return [];
+        return $dataArray;
     }
 }
