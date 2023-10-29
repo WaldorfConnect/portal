@@ -75,7 +75,7 @@ $self = getCurrentUser();
         <label for="inputSchool" class="col-form-label col-md-4 col-lg-3">Schule</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputSchool" name="school"
-                    required <?= !$self->getRole()->isAdmin() ? "disabled" : "" ?>>
+                    required <?= $self->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
                 <?php foreach (getRegions() as $region): ?>
                     <optgroup label="<?= $region->getName() ?>">
                         <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
@@ -92,7 +92,7 @@ $self = getCurrentUser();
         <label for="inputRole" class="col-form-label col-md-4 col-lg-3">Rolle</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputRole" name="role"
-                    required <?= !$self->getRole()->isAdmin() ? "disabled" : "" ?>>
+                    required <?= $self->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
                 <?php foreach (UserRole::cases() as $role): ?>
                     <option <?= $role == $user->getRole() ? 'selected' : '' ?>
                             value="<?= $role->name ?>"><?= $role->displayName() ?></option>

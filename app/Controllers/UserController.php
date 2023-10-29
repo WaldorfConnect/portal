@@ -68,8 +68,8 @@ class UserController extends BaseController
             $user->setName($name);
             $user->setEmail($email);
 
-            // Only apply school and role change if editor is admin
-            if ($editor->getRole()->isAdmin()) {
+            // Only apply school and role change if editor is global admin
+            if ($editor->getRole() == UserRole::GLOBAL_ADMIN) {
                 $user->setSchoolId($schoolId);
                 $user->setRole(UserRole::from($role));
             }
