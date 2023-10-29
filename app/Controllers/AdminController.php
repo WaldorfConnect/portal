@@ -5,10 +5,24 @@ namespace App\Controllers;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use function App\Helpers\createGroup;
+use function App\Helpers\createRegion;
+use function App\Helpers\createSchool;
+use function App\Helpers\deleteGroup;
+use function App\Helpers\deleteRegion;
+use function App\Helpers\deleteSchool;
+use function App\Helpers\deleteUser;
+use function App\Helpers\getCurrentUser;
+use function App\Helpers\getGroupById;
+use function App\Helpers\getRegionById;
+use function App\Helpers\getSchoolById;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\login;
 use function App\Helpers\logout;
+use function App\Helpers\saveGroup;
+use function App\Helpers\saveRegion;
+use function App\Helpers\saveSchool;
 use function App\Helpers\saveUser;
 use function App\Helpers\sendMail;
 
@@ -71,13 +85,239 @@ class AdminController extends BaseController
         return $this->render('admin/user/UsersView');
     }
 
+    public function editUser(int $userId): string|RedirectResponse
+    {
+        $self = getCurrentUser();
+        $user = getUserById($userId);
+
+        if (!$user) {
+            return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
+        }
+
+        if (!$self->mayManage($user)) {
+            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
+        }
+
+        return $this->render('user/EditProfileView', ['user' => $user]);
+    }
+
+    public function handleDeleteUser(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $userId = $this->request->getPost('id');
+        $user = getUserById($userId);
+
+        if (!$user) {
+            return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
+        }
+
+        if (!$self->mayManage($user)) {
+            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht löschen.');
+        }
+
+        deleteUser($userId);
+        return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
+    }
+
     public function groups(): string
     {
         return $this->render('admin/group/GroupsView');
     }
 
+    public function createGroup(): string
+    {
+        return $this->render('admin/group/GroupCreateView');
+    }
+
+    public function handleCreateGroup(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $name = $this->request->getPost('name');
+        $regionId = $this->request->getPost('region');
+        $region = getRegionById($regionId);
+
+        if (!$region) {
+            return redirect('admin/groups')->with('error', 'Unbekannte Region.');
+        }
+
+        if (!$region->mayManage($self)) {
+            return redirect('admin/groups')->with('error', 'Du darfst in dieser Region keine Gruppen verwalten.');
+        }
+
+        $group = createGroup($name, $regionId);
+
+        try {
+            saveGroup($group);
+            return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
+        } catch (Exception $e) {
+            return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+    }
+
+    public function handleDeleteGroup(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $groupId = $this->request->getPost('id');
+        $group = getGroupById($groupId);
+
+        if (!$group) {
+            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        }
+
+        if (!$group->mayManage($self)) {
+            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht löschen.');
+        }
+
+        deleteGroup($groupId);
+        return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
+    }
+
+    public function editGroup(int $groupId): RedirectResponse|string
+    {
+        $self = getCurrentUser();
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        }
+
+        if (!$group->mayManage($self)) {
+            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
+        }
+
+        return $this->render('admin/group/GroupEditView', ['group' => $group]);
+    }
+
+    public function handleEditGroup(): RedirectResponse
+    {
+        // TODO handle edit
+    }
+
     public function schools(): string
     {
         return $this->render('admin/school/SchoolsView');
+    }
+
+    public function createSchool(): string
+    {
+        return $this->render('admin/school/SchoolCreateView');
+    }
+
+    public function handleCreateSchool(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $name = $this->request->getPost('name');
+        $shortName = $this->request->getPost('shortName');
+        $address = $this->request->getPost('address');
+        $emailBureau = $this->request->getPost('emailBureau');
+        $regionId = $this->request->getPost('region');
+        $region = getRegionById($regionId);
+
+        if (!$region) {
+            return redirect('admin/schools')->with('error', 'Unbekannte Region.');
+        }
+
+        if (!$region->mayManage($self)) {
+            return redirect('admin/schools')->with('error', 'Du darfst in dieser Region keine Schulen verwalten.');
+        }
+
+        $group = createSchool($name, $shortName, $address, $emailBureau, $regionId);
+
+        try {
+            saveSchool($group);
+            return redirect('admin/schools')->with('success', 'Schule erstellt.');
+        } catch (Exception $e) {
+            return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+    }
+
+    public function handleDeleteSchool(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $schoolId = $this->request->getPost('id');
+        $school = getSchoolById($schoolId);
+
+        if (!$school) {
+            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
+        }
+
+        if (!$school->mayManage($self)) {
+            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht löschen.');
+        }
+
+        deleteSchool($schoolId);
+        return redirect('admin/schools')->with('success', 'Schule gelöscht.');
+    }
+
+    public function editSchool(int $schoolId): RedirectResponse|string
+    {
+        $self = getCurrentUser();
+        $school = getSchoolById($schoolId);
+        if (!$school) {
+            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
+        }
+
+        if (!$school->mayManage($self)) {
+            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht bearbeiten.');
+        }
+
+        return $this->render('admin/school/SchoolEditView', ['school' => $school]);
+    }
+
+    public function handleEditSchool(): RedirectResponse
+    {
+        // TODO handle edit
+    }
+
+    public function regions(): string
+    {
+        return $this->render('admin/region/RegionsView');
+    }
+
+    public function createRegion(): string
+    {
+        return $this->render('admin/region/RegionCreateView');
+    }
+
+    public function handleCreateRegion(): RedirectResponse
+    {
+        $name = $this->request->getPost('name');
+        $isoCode = $this->request->getPost('iso');
+
+        $region = createRegion($name, $isoCode);
+
+        try {
+            saveRegion($region);
+            return redirect('admin/regions')->with('success', 'Region erstellt.');
+        } catch (Exception $e) {
+            return redirect('admin/regions')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+    }
+
+    public function handleDeleteRegion(): RedirectResponse
+    {
+        $regionId = $this->request->getPost('id');
+        $region = getRegionById($regionId);
+
+        if (!$region) {
+            return redirect('admin/regions')->with('error', 'Unbekannte Region.');
+        }
+
+        deleteRegion($regionId);
+        return redirect('admin/regions')->with('success', 'Region gelöscht.');
+    }
+
+    public function editRegion(int $regionId): RedirectResponse|string
+    {
+        $region = getRegionById($regionId);
+        if (!$region) {
+            return redirect('admin/regions')->with('error', 'Unbekannte Region.');
+        }
+
+        return $this->render('admin/region/RegionEditView', ['region' => $region]);
+    }
+
+    public function handleEditRegion(): RedirectResponse
+    {
+        // TODO handle edit
     }
 }

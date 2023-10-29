@@ -63,10 +63,29 @@ $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class
 $routes->get('/admin/users', 'AdminController::users', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/accept', 'AdminController::acceptUser', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/deny', 'AdminController::denyUser', ['filter' => AdminFilter::class]);
+$routes->get('/admin/user/edit/(:num)', 'AdminController::editUser/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/delete', 'AdminController::handleDeleteUser', ['filter' => AdminFilter::class]);
 
 $routes->get('/admin/groups', 'AdminController::groups', ['filter' => AdminFilter::class]);
+$routes->get('/admin/group/create', 'AdminController::createGroup', ['filter' => AdminFilter::class]);
+$routes->post('/admin/group/create', 'AdminController::handleCreateGroup', ['filter' => AdminFilter::class]);
+$routes->post('/admin/group/delete', 'AdminController::handleDeleteGroup', ['filter' => AdminFilter::class]);
+$routes->get('/admin/group/edit/(:num)', 'AdminController::editGroup/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/group/edit', 'AdminController::handleEditGroup', ['filter' => AdminFilter::class]);
+
 $routes->get('/admin/schools', 'AdminController::schools', ['filter' => AdminFilter::class]);
+$routes->get('/admin/school/create', 'AdminController::createSchool', ['filter' => AdminFilter::class]);
+$routes->post('/admin/school/create', 'AdminController::handleCreateSchool', ['filter' => AdminFilter::class]);
+$routes->post('/admin/school/delete', 'AdminController::handleDeleteSchool', ['filter' => AdminFilter::class]);
+$routes->get('/admin/school/edit/(:num)', 'AdminController::editSchool/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/school/edit', 'AdminController::handleEditSchool', ['filter' => AdminFilter::class]);
+
 $routes->get('/admin/regions', 'AdminController::regions', ['filter' => GlobalAdminFilter::class]);
+$routes->get('/admin/region/create', 'AdminController::createRegion', ['filter' => GlobalAdminFilter::class]);
+$routes->post('/admin/region/create', 'AdminController::handleCreateRegion', ['filter' => GlobalAdminFilter::class]);
+$routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['filter' => GlobalAdminFilter::class]);
+$routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => GlobalAdminFilter::class]);
+$routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => GlobalAdminFilter::class]);
 
 $routes->cli('/sync', 'SynchronisationController::index');
 

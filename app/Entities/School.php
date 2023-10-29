@@ -48,6 +48,11 @@ class School extends Entity
         return $this->attributes['name'];
     }
 
+    public function setName(string $name): void
+    {
+        $this->attributes['name'] = $name;
+    }
+
     /**
      * @return string
      */
@@ -56,12 +61,22 @@ class School extends Entity
         return $this->attributes['short_name'];
     }
 
+    public function setShortName(string $shortName): void
+    {
+        $this->attributes['short_name'] = $shortName;
+    }
+
     /**
      * @return ?int
      */
     public function getRegionId(): ?int
     {
         return $this->attributes['region_id'];
+    }
+
+    public function setRegionId(int $regionId): void
+    {
+        $this->attributes['region_id'] = $regionId;
     }
 
     /**
@@ -80,12 +95,22 @@ class School extends Entity
         return $this->attributes['address'];
     }
 
+    public function setAddress(string $address): void
+    {
+        $this->attributes['address'] = $address;
+    }
+
     /**
      * @return string
      */
     public function getEmailBureau(): string
     {
         return $this->attributes['email_bureau'];
+    }
+
+    public function setEmailBureau(string $emailBureau): void
+    {
+        $this->attributes['email_bureau'] = $emailBureau;
     }
 
     /**
@@ -96,6 +121,11 @@ class School extends Entity
         return $this->attributes['email_smv'];
     }
 
+    public function setEmailSMV(string $emailSMV): void
+    {
+        $this->attributes['email_smv'] = $emailSMV;
+    }
+
     /**
      * @return ?string
      */
@@ -104,12 +134,22 @@ class School extends Entity
         return $this->attributes['state_id'];
     }
 
+    public function setStateId(string $stateId): void
+    {
+        $this->attributes['state_id'] = $stateId;
+    }
+
     /**
      * @return ?string
      */
     public function getImageAuthor(): ?string
     {
         return $this->attributes['image_author'];
+    }
+
+    public function setImageAuthor(string $imageAuthor): void
+    {
+        $this->attributes['image_author'] = $imageAuthor;
     }
 
     /**

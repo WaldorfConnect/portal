@@ -188,6 +188,9 @@ class User extends Entity
 
     public function mayManage(User $user): bool
     {
+        if ($this->getId() == $user->getId())
+            return true;
+
         if ($this->getRole() == UserRole::GLOBAL_ADMIN)
             return true;
 

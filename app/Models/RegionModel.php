@@ -14,7 +14,7 @@ class RegionModel extends Model
     protected $returnType = Region::class;
 
     protected $allowedFields = [
-        'name', 'iso_code', 'supervisor_group_id'
+        'name', 'iso_code'
     ];
 }
 

@@ -9,15 +9,13 @@ class Region extends Entity
     protected $attributes = [
         'id' => null,
         'name' => null,
-        'iso_code' => null,
-        'supervisor_group_id' => null
+        'iso_code' => null
     ];
 
     protected $casts = [
         'id' => 'integer',
         'name' => 'string',
-        'iso_code' => 'string',
-        'supervisor_group_id' => 'integer'
+        'iso_code' => 'string'
     ];
 
     /**
@@ -36,6 +34,11 @@ class Region extends Entity
         return $this->attributes['name'];
     }
 
+    public function setName(string $name): void
+    {
+        $this->attributes['name'] = $name;
+    }
+
     /**
      * @return string
      */
@@ -44,11 +47,21 @@ class Region extends Entity
         return $this->attributes['iso_code'];
     }
 
-    /**
-     * @return ?int
-     */
-    public function getSupervisorGroupId(): ?int
+    public function setIsoCode(string $isoCode): void
     {
-        return $this->attributes['supervisor_group_id'];
+        $this->attributes['iso_code'] = $isoCode;
+    }
+
+    public function mayManage(User $user): bool
+    {
+        if ($user->getRole() == UserRole::GLOBAL_ADMIN) {
+            return true;
+        }
+
+        if ($user->getRole() == UserRole::REGION_ADMIN && $this->getId() == $user->getSchool()->getRegionId()) {
+            return true;
+        }
+
+        return false;
     }
 }

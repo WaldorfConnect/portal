@@ -40,6 +40,11 @@ class Group extends Entity
         return $this->attributes['region_id'];
     }
 
+    public function setRegionId(int $regionId): void
+    {
+        $this->attributes['region_id'] = $regionId;
+    }
+
     /**
      * @return Region
      */
@@ -56,12 +61,22 @@ class Group extends Entity
         return $this->attributes['name'];
     }
 
+    public function setName(string $name): void
+    {
+        $this->attributes['name'] = $name;
+    }
+
     /**
-     * @return string
+     * @return ?string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->attributes['description'];
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->attributes['description'] = $description;
     }
 
     /**
@@ -72,11 +87,29 @@ class Group extends Entity
         return $this->attributes['image_author'];
     }
 
+    public function setImageAuthor(string $imageAuthor): void
+    {
+        $this->attributes['image_author'] = $imageAuthor;
+    }
+
     /**
      * @return GroupMembership[]
      */
     public function getMemberships(): array
     {
         return getGroupMembershipsByGroupId($this->getId());
+    }
+
+    public function mayManage(User $user): bool
+    {
+        if ($user->getRole() == UserRole::GLOBAL_ADMIN) {
+            return true;
+        }
+
+        if ($user->getRole() == UserRole::REGION_ADMIN && $this->getRegionId() == $user->getSchool()->getRegionId()) {
+            return true;
+        }
+
+        return false;
     }
 }

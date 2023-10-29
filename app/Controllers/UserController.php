@@ -2,13 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
+use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
+use function App\Helpers\getUserByUsername;
 use function App\Helpers\getUserByUsernameAndEmail;
 use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\getUsers;
@@ -22,42 +25,60 @@ class UserController extends BaseController
 {
     public function profile(): string
     {
-        return $this->render('user/EditProfileView');
+        return $this->render('user/EditProfileView', ['user' => getCurrentUser()]);
     }
 
     public function handleProfile(): RedirectResponse
     {
+        $editor = getCurrentUser();
+
+        $id = $this->request->getPost('id');
+        $user = getUserById($id);
+
         $name = trim($this->request->getPost('name'));
         $email = mb_strtolower(trim($this->request->getPost('email')));
         $schoolId = $this->request->getPost('school');
+        $role = $this->request->getPost('role');
 
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
 
-        $user = getCurrentUser();
+        $redirectUrl = $editor->getId() == $user->getId() ? 'user/profile' : 'admin/user/edit/' . $id;
+
+        if (!$editor->mayManage($user)) {
+            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
+        }
 
         try {
             // If email changed set status accordingly
             if ($user->getEmail() != $email) {
                 if (getUserByEmail($email)) {
-                    return redirect('user/profile')->with('error', 'Diese E-Mail wird bereits verwendet.');
+                    return redirect()->to($redirectUrl)->with('error', 'Diese E-Mail wird bereits verwendet.');
                 }
 
-                $token = Uuid::uuid4()->toString();
-                $user->setToken($token);
-                $user->setStatus(UserStatus::PENDING_EMAIL);
-                sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+                // Admins may change email without confirmation
+                if ($editor->getRole()->isAdmin()) {
+                    $token = Uuid::uuid4()->toString();
+                    $user->setToken($token);
+                    $user->setStatus(UserStatus::PENDING_EMAIL);
+                    sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+                }
             }
 
             $user->setName($name);
             $user->setEmail($email);
-            $user->setSchoolId($schoolId);
+
+            // Only apply school and role change if editor is admin
+            if ($editor->getRole()->isAdmin()) {
+                $user->setSchoolId($schoolId);
+                $user->setRole(UserRole::from($role));
+            }
 
             // Check if user wants to change password
             if (strlen($password) > 0) {
                 // Ensure matching
                 if ($password != $confirmedPassword) {
-                    return redirect('user/profile')->with('error', 'Passwörter stimmen nicht überein.');
+                    return redirect()->to($redirectUrl)->with('error', 'Passwörter stimmen nicht überein.');
                 }
 
                 $user->setPassword(hashSSHA($password));
@@ -65,10 +86,10 @@ class UserController extends BaseController
 
             saveUser($user);
         } catch (Exception $e) {
-            return redirect('user/profile')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect()->to($redirectUrl)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
-        return redirect('user/profile')->with('success', 1);
+        return redirect()->to($redirectUrl)->with('success', 1);
     }
 
     public function resetPassword(): string

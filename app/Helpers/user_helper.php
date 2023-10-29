@@ -160,6 +160,11 @@ function createUser(string $username, string $name, string $email, string $passw
     return $user;
 }
 
+function deleteUser(int $id): void
+{
+    getUserModel()->delete($id);
+}
+
 /**
  * @return UserModel
  */

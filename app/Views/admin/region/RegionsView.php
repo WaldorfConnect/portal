@@ -2,6 +2,7 @@
 
 use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
+use function App\Helpers\getRegions;
 use function App\Helpers\getSchools;
 
 $currentUser = getCurrentUser();
@@ -12,18 +13,34 @@ $currentUser = getCurrentUser();
             <li class="breadcrumb-item"><a href="/">Startseite</a></li>
             <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-                Schuladministration
+                Regionsadministration
             </li>
         </ol>
     </nav>
 
-    <h1 class="header">Schuladministration</h1>
+    <h1 class="header">Regionsadministration</h1>
 
     <p>
-        Hier werden alle Schulen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
+        Hier werden alle Regionen angezeigt, in denen sich Gruppen bzw. Schulen befinden können.<br><br>
+        <b>Achtung!</b> Die Angabe des Kürzels <u>muss</u> nach ISO 3166-1/ISO 3166-2 erfolgen.
+        Es ist <u>keine Mehrfachnennung</u>
+        möglich, d. h. bei Landesverbänden, die mehrere Bundesländer
+        einschließen muss <u>ein</u> Bundesland ausgewählt werden.
+        Hier bietet es sich z. B. an das Bundesland der Geschäftsstelle der ortsansässigen W-LSV zu wählen.<br>
+        Die ISO 3166-2 Codes für alle deutschsprachigen Ländern finden sich hier:<br>
     </p>
 
+    <div>
+        <ul>
+            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:DE">Deutschland</a></li>
+            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:AT">Österreich</a></li>
+            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:CH">Schweiz</a></li>
+            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:LU">Luxemburg</a></li>
+        </ul>
+    </div>
+
     <?php if ($success = session('error')): ?>
+        <br><br>
         <div class="col-md-12">
             <div class="alert alert-danger">
                 <?= $success ?>
@@ -32,6 +49,7 @@ $currentUser = getCurrentUser();
     <?php endif; ?>
 
     <?php if ($success = session('success')): ?>
+        <br><br>
         <div class="col-md-12">
             <div class="alert alert-success">
                 <?= $success ?>
@@ -42,12 +60,10 @@ $currentUser = getCurrentUser();
 
 <div class="row">
     <div class="col-md-5 w-auto ms-auto">
-        <?php if ($currentUser->getRole() == UserRole::REGION_ADMIN || $currentUser->getRole() == UserRole::GLOBAL_ADMIN): ?>
-            <a class="btn btn-primary"
-               href="<?= base_url('admin/school/create') ?>">
-                <i class="fas fa-plus-square"></i> Schule erstellen
-            </a>
-        <?php endif; ?>
+        <a class="btn btn-primary"
+           href="<?= base_url('admin/region/create') ?>">
+            <i class="fas fa-plus-square"></i> Region erstellen
+        </a>
     </div>
 </div>
 
@@ -59,31 +75,25 @@ $currentUser = getCurrentUser();
         <thead>
         <tr>
             <th data-field="id" data-sortable="true" scope="col">Name</th>
-            <th data-field="description" data-sortable="true" scope="col">Region</th>
+            <th data-field="description" data-sortable="true" scope="col">ISO 3166-2</th>
             <th data-field="action" scope="col">Aktion</th>
         </tr>
         </thead>
         <tbody>
-        <?php foreach (getSchools() as $school): ?>
-            <?php if (!$school->mayManage($currentUser)): continue; endif; ?>
-
+        <?php foreach (getRegions() as $region): ?>
             <tr>
-                <td id="td-id-<?= $school->getId() ?>" class="td-class-<?= $school->getId() ?>"
-                    data-title="<?= $school->getName() ?>"><?= $school->getName() ?></td>
-                <td><?= $school->getRegion()->getName() ?></td>
+                <td id="td-id-<?= $region->getId() ?>" class="td-class-<?= $region->getId() ?>"
+                    data-title="<?= $region->getName() ?>"><?= $region->getName() ?></td>
+                <td><?= $region->getIsoCode() ?></td>
                 <td>
                     <div class="btn-group gap-2" role="group">
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('school') . '/' . $school->getId() ?>">
-                            <i class="fas fa-info-circle"></i>
-                        </a>
-                        <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('admin/school/edit') . '/' . $school->getId() ?>"><i
+                           href="<?= base_url('admin/region/edit') . '/' . $region->getId() ?>"><i
                                     class="fas fa-pen"></i>
                         </a>
                         <div>
-                            <?= form_open('admin/school/delete') ?>
-                            <?= form_hidden('id', $school->getId()) ?>
+                            <?= form_open('admin/region/delete') ?>
+                            <?= form_hidden('id', $region->getId()) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i>
                             </button>

@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Entities\Group;
 use App\Entities\GroupMembership;
 use App\Entities\MembershipStatus;
+use App\Entities\User;
 use App\Models\GroupMembershipModel;
 use App\Models\GroupModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
@@ -28,6 +29,31 @@ function getGroups(): array
 function getGroupById(int $id): ?object
 {
     return getGroupModel()->find($id);
+}
+
+/**
+ * @param Group $group
+ * @return string|int
+ * @throws DatabaseException|ReflectionException
+ */
+function saveGroup(Group $group): string|int
+{
+    $model = new GroupModel();
+    $model->save($group);
+    return $model->getInsertID();
+}
+
+function createGroup(string $name, int $regionId): Group
+{
+    $group = new Group();
+    $group->setName($name);
+    $group->setRegionId($regionId);
+    return $group;
+}
+
+function deleteGroup(int $id): void
+{
+    getGroupModel()->delete($id);
 }
 
 /**

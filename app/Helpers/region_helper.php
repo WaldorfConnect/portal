@@ -3,8 +3,10 @@
 namespace App\Helpers;
 
 use App\Entities\Region;
+use App\Entities\User;
 use App\Models\RegionModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
+use ReflectionException;
 
 /**
  * @return Region[]
@@ -22,6 +24,31 @@ function getRegions(): array
 function getRegionById(int $id): ?object
 {
     return getRegionModel()->find($id);
+}
+
+/**
+ * @param Region $region
+ * @return string|int
+ * @throws DatabaseException|ReflectionException
+ */
+function saveRegion(Region $region): string|int
+{
+    $model = getRegionModel();
+    $model->save($region);
+    return $model->getInsertID();
+}
+
+function createRegion(string $name, string $iso): Region
+{
+    $region = new Region();
+    $region->setName($name);
+    $region->setIsoCode($iso);
+    return $region;
+}
+
+function deleteRegion(int $id): void
+{
+    getRegionModel()->delete($id);
 }
 
 /**
