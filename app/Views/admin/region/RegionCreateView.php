@@ -17,7 +17,6 @@ $currentUser = getCurrentUser();
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Region erstellen</h1>
 </div>
 

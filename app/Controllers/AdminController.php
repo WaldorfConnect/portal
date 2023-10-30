@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
@@ -18,6 +19,7 @@ use function App\Helpers\getRegionById;
 use function App\Helpers\getSchoolById;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByUsernameAndPassword;
+use function App\Helpers\hashSSHA;
 use function App\Helpers\login;
 use function App\Helpers\logout;
 use function App\Helpers\saveGroup;
@@ -98,7 +100,62 @@ class AdminController extends BaseController
             return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
         }
 
-        return $this->render('user/EditProfileView', ['user' => $user]);
+        return $this->render('admin/user/UserEditView', ['user' => $user]);
+    }
+
+    public function handleEditUser(): RedirectResponse
+    {
+        $self = getCurrentUser();
+        $userId = $this->request->getPost('id');
+        $user = getUserById($userId);
+
+        if (!$user) {
+            return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
+        }
+
+        if (!$self->mayManage($user)) {
+            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
+        }
+
+        $name = $this->request->getPost('name');
+        $email = $this->request->getPost('email');
+        $schoolId = $this->request->getPost('school');
+        $role = $this->request->getPost('role');
+        $password = $this->request->getPost('password');
+        $confirmedPassword = $this->request->getPost('confirmedPassword');
+
+        $user->setName($name);
+        $user->setEmail($email);
+
+        $school = getSchoolById($schoolId);
+        if (!$school) {
+            return redirect()->to('admin/user/edit/' . $userId)->with('error', 'Unbekannte Schule.');
+        }
+
+        if ($school->mayManage($self)) {
+            $user->setSchoolId($schoolId);
+        }
+
+        if ($self->getRole() == UserRole::GLOBAL_ADMIN) {
+            $user->setRole(UserRole::from($role));
+        }
+
+        // Check if user wants to change password
+        if (strlen($password) > 0) {
+            // Ensure matching
+            if ($password != $confirmedPassword) {
+                return redirect()->to('admin/user/edit/' . $userId)->with('error', 'Passwörter stimmen nicht überein.');
+            }
+
+            $user->setPassword(hashSSHA($password));
+        }
+
+        try {
+            saveUser($user);
+            return redirect('admin/users')->with('success', 'Benutzer bearbeitet.');
+        } catch (Exception $e) {
+            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
     }
 
     public function handleDeleteUser(): RedirectResponse
@@ -115,8 +172,12 @@ class AdminController extends BaseController
             return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht löschen.');
         }
 
-        deleteUser($userId);
-        return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
+        try {
+            deleteUser($userId);
+            return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
+        } catch (Exception $e) {
+            return redirect('admin/users')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
     }
 
     public function groups(): string
@@ -168,8 +229,12 @@ class AdminController extends BaseController
             return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht löschen.');
         }
 
-        deleteGroup($groupId);
-        return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
+        try {
+            deleteGroup($groupId);
+            return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
+        } catch (Exception $e) {
+            return redirect('admin/groups')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
     }
 
     public function editGroup(int $groupId): RedirectResponse|string
@@ -189,7 +254,29 @@ class AdminController extends BaseController
 
     public function handleEditGroup(): RedirectResponse
     {
-        // TODO handle edit
+        $self = getCurrentUser();
+        $groupId = $this->request->getPost('id');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        }
+
+        if (!$group->mayManage($self)) {
+            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
+        }
+
+        $name = $this->request->getPost('name');
+        $regionId = $this->request->getPost('region');
+
+        $group->setName($name);
+        $group->setRegionId($regionId);
+
+        try {
+            saveGroup($group);
+            return redirect('admin/groups')->with('success', 'Gruppe bearbeitet.');
+        } catch (Exception $e) {
+            return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
     }
 
     public function schools(): string
@@ -244,8 +331,12 @@ class AdminController extends BaseController
             return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht löschen.');
         }
 
-        deleteSchool($schoolId);
-        return redirect('admin/schools')->with('success', 'Schule gelöscht.');
+        try {
+            deleteSchool($schoolId);
+            return redirect('admin/schools')->with('success', 'Schule gelöscht.');
+        } catch (Exception $e) {
+            return redirect('admin/schools')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
     }
 
     public function editSchool(int $schoolId): RedirectResponse|string
@@ -265,7 +356,38 @@ class AdminController extends BaseController
 
     public function handleEditSchool(): RedirectResponse
     {
-        // TODO handle edit
+        $self = getCurrentUser();
+        $schoolId = $this->request->getPost('id');
+        $school = getSchoolById($schoolId);
+
+        if (!$school) {
+            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
+        }
+
+        if (!$school->mayManage($self)) {
+            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht löschen.');
+        }
+
+        $name = $this->request->getPost('name');
+        $shortName = $this->request->getPost('shortName');
+        $address = $this->request->getPost('address');
+        $emailBureau = $this->request->getPost('emailBureau');
+        $emailSMV = $this->request->getPost('emailSMV');
+        $regionId = $this->request->getPost('region');
+
+        $school->setName($name);
+        $school->setShortName($shortName);
+        $school->setAddress($address);
+        $school->setEmailBureau($emailBureau);
+        $school->setEmailSMV($emailSMV);
+        $school->setRegionId($regionId);
+
+        try {
+            saveSchool($school);
+            return redirect('admin/schools')->with('success', 'Schule bearbeitet.');
+        } catch (Exception $e) {
+            return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
     }
 
     public function regions(): string
@@ -282,7 +404,6 @@ class AdminController extends BaseController
     {
         $name = $this->request->getPost('name');
         $isoCode = $this->request->getPost('iso');
-
         $region = createRegion($name, $isoCode);
 
         try {
@@ -302,8 +423,12 @@ class AdminController extends BaseController
             return redirect('admin/regions')->with('error', 'Unbekannte Region.');
         }
 
-        deleteRegion($regionId);
-        return redirect('admin/regions')->with('success', 'Region gelöscht.');
+        try {
+            deleteRegion($regionId);
+            return redirect('admin/regions')->with('success', 'Region gelöscht.');
+        } catch (Exception $e) {
+            return redirect('admin/regions')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
     }
 
     public function editRegion(int $regionId): RedirectResponse|string
@@ -318,6 +443,24 @@ class AdminController extends BaseController
 
     public function handleEditRegion(): RedirectResponse
     {
-        // TODO handle edit
+        $regionId = $this->request->getPost('id');
+        $region = getRegionById($regionId);
+
+        if (!$region) {
+            return redirect('admin/regions')->with('error', 'Unbekannte Region.');
+        }
+
+        $name = $this->request->getPost('name');
+        $iso = $this->request->getPost('iso');
+
+        $region->setName($name);
+        $region->setIsoCode($iso);
+
+        try {
+            saveRegion($region);
+            return redirect('admin/regions')->with('success', 'Region bearbeitet.');
+        } catch (Exception $e) {
+            return redirect('admin/regions')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
     }
 }

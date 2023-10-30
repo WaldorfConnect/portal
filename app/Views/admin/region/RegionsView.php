@@ -17,9 +17,7 @@ $currentUser = getCurrentUser();
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Regionsadministration</h1>
-
     <p>
         Hier werden alle Regionen angezeigt, in denen sich Gruppen bzw. Schulen befinden können.<br><br>
         <b>Achtung!</b> Die Angabe des Kürzels <u>muss</u> nach ISO 3166-1/ISO 3166-2 erfolgen.
@@ -92,7 +90,7 @@ $currentUser = getCurrentUser();
                                     class="fas fa-pen"></i>
                         </a>
                         <div>
-                            <?= form_open('admin/region/delete') ?>
+                            <?= form_open('admin/region/delete', ['onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
                             <?= form_hidden('id', $region->getId()) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i>

@@ -15,9 +15,7 @@ use function App\Helpers\getUsers;
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Benutzeradministration</h1>
-
     <p>
         Hier werden die Benutzer angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden oder für
         diesen registriert haben und nun freigegeben werden müssen. <br>Bitte lasse hier äußerste sorgfalt walten!
@@ -62,7 +60,6 @@ use function App\Helpers\getUsers;
         <?php $currentUser = getCurrentUser() ?>
         <?php foreach (getUsers() as $user): ?>
             <?php if (!$currentUser->mayManage($user)): continue; endif; ?>
-
             <tr>
                 <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"
                     data-title="<?= $user->getUsername() ?>"><?= $user->getUsername() ?></td>
@@ -92,7 +89,7 @@ use function App\Helpers\getUsers;
                                         class="fas fa-pen"></i>
                             </a>
                             <div>
-                                <?= form_open('admin/user/delete') ?>
+                                <?= form_open('admin/user/delete', ['onsubmit' => "return confirm('Möchtest du den Benutzer {$user->getName()} wirklich löschen?');"]) ?>
                                 <?= form_hidden('id', $user->getId()) ?>
                                 <button type="submit" class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i>
@@ -100,7 +97,6 @@ use function App\Helpers\getUsers;
                                 <?= form_close() ?>
                             </div>
                         </div>
-
                     <?php endif ?>
                 </td>
             </tr>

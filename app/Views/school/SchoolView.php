@@ -27,10 +27,6 @@ use function App\Helpers\getUsersBySchoolId;
                      alt="Logo <?= $school->getName() ?>">
             </tr>
             <tr>
-                <th>Schulnummer:&nbsp;</th>
-                <td><?= $school->getStateId() ?></td>
-            </tr>
-            <tr>
                 <th>Schulname:&nbsp;</th>
                 <td><?= $school->getName() ?></td>
             </tr>

@@ -16,7 +16,6 @@ $currentUser = getCurrentUser();
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Gruppe erstellen</h1>
 </div>
 

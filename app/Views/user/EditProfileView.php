@@ -1,34 +1,14 @@
 <?php
 
-use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getRegions;
-use function App\Helpers\getSchoolsByRegionId;
 
 $self = getCurrentUser();
 ?>
-
     <div class="row">
-        <?php if ($self->getId() != $user->getId()): ?>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-                    <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
-                    <li class="breadcrumb-item"><a href="<?= base_url('/admin/users') ?>">Benutzeradministration</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <?= $user->getName() ?>
-                    </li>
-                </ol>
-            </nav>
-            <h1 class="header">Benutzer bearbeiten: <?= $user->getName() ?></h1>
-        <?php else: ?>
-            <h1 class="header">Profil bearbeiten</h1>
-        <?php endif; ?>
+        <h1 class="header">Profil bearbeiten</h1>
     </div>
 <?= form_open('user/profile') ?>
-<?= form_hidden('id', $user->getId()) ?>
 
 <?php if ($error = session('error')): ?>
     <div class="alert alert-danger mb-3">
@@ -46,7 +26,7 @@ $self = getCurrentUser();
         <label for="inputUsername" class="col-form-label col-md-4 col-lg-3">Benutzername</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputUsername" name="username"
-                   value="<?= $user->getUsername() ?>" required disabled>
+                   value="<?= $self->getUsername() ?>" required disabled>
         </div>
     </div>
 
@@ -54,7 +34,7 @@ $self = getCurrentUser();
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Vor- und Nachname</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputName" name="name" autocomplete="name"
-                   placeholder="Vor- und Nachname" value="<?= $user->getName() ?>" required>
+                   placeholder="Vor- und Nachname" value="<?= $self->getName() ?>" required>
         </div>
     </div>
 
@@ -62,42 +42,12 @@ $self = getCurrentUser();
         <label for="inputEmail" class="col-form-label col-md-4 col-lg-3">E-Mail</label>
         <div class="col-md-8 col-lg-9">
             <input type="email" class="form-control" id="inputEmail" name="email" autocomplete="email"
-                   placeholder="E-Mail" value="<?= $user->getEmail() ?>" aria-describedby="emailHelp" required>
-            <?php if ($user->getStatus() == UserStatus::PENDING_EMAIL): ?>
+                   placeholder="E-Mail" value="<?= $self->getEmail() ?>" aria-describedby="emailHelp" required>
+            <?php if ($self->getStatus() == UserStatus::PENDING_EMAIL): ?>
                 <span id="emailHelp" class="badge bg-warning">Warte auf Bestätigung</span>
             <?php else: ?>
                 <span id="emailHelp" class="badge bg-success">E-Mail bestätigt</span>
             <?php endif; ?>
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputSchool" class="col-form-label col-md-4 col-lg-3">Schule</label>
-        <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputSchool" name="school"
-                    required <?= $self->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
-                <?php foreach (getRegions() as $region): ?>
-                    <optgroup label="<?= $region->getName() ?>">
-                        <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
-                            <option <?= $user->getSchoolId() == $school->getId() ? 'selected' : '' ?>
-                                    value="<?= $school->getId() ?>"><?= $school->name ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputRole" class="col-form-label col-md-4 col-lg-3">Rolle</label>
-        <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputRole" name="role"
-                    required <?= $self->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
-                <?php foreach (UserRole::cases() as $role): ?>
-                    <option <?= $role == $user->getRole() ? 'selected' : '' ?>
-                            value="<?= $role->name ?>"><?= $role->displayName() ?></option>
-                <?php endforeach; ?>
-            </select>
         </div>
     </div>
 

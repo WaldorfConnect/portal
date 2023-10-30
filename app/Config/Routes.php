@@ -63,8 +63,9 @@ $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class
 $routes->get('/admin/users', 'AdminController::users', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/accept', 'AdminController::acceptUser', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/deny', 'AdminController::denyUser', ['filter' => AdminFilter::class]);
-$routes->get('/admin/user/edit/(:num)', 'AdminController::editUser/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/delete', 'AdminController::handleDeleteUser', ['filter' => AdminFilter::class]);
+$routes->get('/admin/user/edit/(:num)', 'AdminController::editUser/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/edit', 'AdminController::handleEditUser', ['filter' => AdminFilter::class]);
 
 $routes->get('/admin/groups', 'AdminController::groups', ['filter' => AdminFilter::class]);
 $routes->get('/admin/group/create', 'AdminController::createGroup', ['filter' => AdminFilter::class]);

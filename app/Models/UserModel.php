@@ -16,7 +16,7 @@ class UserModel extends Model
     protected $returnType = User::class;
 
     protected $allowedFields = [
-        'token', 'username', 'name', 'email', 'password', 'school_id', 'status'
+        'token', 'username', 'name', 'email', 'password', 'school_id', 'role', 'status'
     ];
 }
 

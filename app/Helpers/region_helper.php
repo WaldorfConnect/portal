@@ -46,6 +46,11 @@ function createRegion(string $name, string $iso): Region
     return $region;
 }
 
+/**
+ * @param int $id
+ * @return void
+ * @throws DatabaseException
+ */
 function deleteRegion(int $id): void
 {
     getRegionModel()->delete($id);

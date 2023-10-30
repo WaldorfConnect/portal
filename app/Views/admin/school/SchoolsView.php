@@ -16,9 +16,7 @@ $currentUser = getCurrentUser();
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Schuladministration</h1>
-
     <p>
         Hier werden alle Schulen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
@@ -82,7 +80,7 @@ $currentUser = getCurrentUser();
                                     class="fas fa-pen"></i>
                         </a>
                         <div>
-                            <?= form_open('admin/school/delete') ?>
+                            <?= form_open('admin/school/delete', ['onsubmit' => "return confirm('Möchtest du die Schule {$school->getName()} wirklich löschen?');"]) ?>
                             <?= form_hidden('id', $school->getId()) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i>

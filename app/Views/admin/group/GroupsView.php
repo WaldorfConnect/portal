@@ -16,9 +16,7 @@ use function App\Helpers\getGroups;
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Gruppenadministration</h1>
-
     <p>
         Hier werden alle Gruppen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
@@ -81,7 +79,7 @@ use function App\Helpers\getGroups;
                             <i class="fas fa-pen"></i>
                         </a>
                         <div>
-                            <?= form_open('admin/group/delete') ?>
+                            <?= form_open('admin/group/delete', ['onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich löschen?');"]) ?>
                             <?= form_hidden('id', $group->getId()) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i>

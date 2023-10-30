@@ -18,7 +18,35 @@ $currentUser = getCurrentUser();
             </li>
         </ol>
     </nav>
-
     <h1 class="header">Gruppe bearbeiten: <?= $group->getName() ?></h1>
 </div>
 
+<div class="row">
+    <?= form_open('admin/group/edit') ?>
+    <?= form_hidden('id', $group->getId()) ?>
+
+    <div class="form-group row mb-3">
+        <label for="inputName" class="col-form-label col-md-4 col-lg-3">Name</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputName" name="name" autocomplete="name"
+                   placeholder="Name" value="<?= $group->getName() ?>" required>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="inputRegion" class="col-form-label col-md-4 col-lg-3">Region</label>
+        <div class="col-md-8 col-lg-9">
+            <select class="form-select" id="inputRegion" name="region" required>
+                <?php foreach (getRegions() as $region): ?>
+                    <?php if (!$region->mayManage($currentUser)): continue; endif; ?>
+                    <option value="<?= $region->getId() ?>" <?= $region->getId() == $group->getRegionId() ? "selected" : "" ?>>
+                        <?= $region->getName() ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" type="submit">Bearbeiten</button>
+    <?= form_close() ?>
+</div>
