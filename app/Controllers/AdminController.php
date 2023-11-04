@@ -26,7 +26,7 @@ use function App\Helpers\saveGroup;
 use function App\Helpers\saveRegion;
 use function App\Helpers\saveSchool;
 use function App\Helpers\saveUser;
-use function App\Helpers\sendMail;
+use function App\Helpers\queueMail;
 
 class AdminController extends BaseController
 {
@@ -53,7 +53,7 @@ class AdminController extends BaseController
         $user->setStatus(UserStatus::OK);
         try {
             saveUser($user);
-            sendMail($user->getEmail(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
+            queueMail($user->getEmail(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -74,7 +74,7 @@ class AdminController extends BaseController
         $user->setStatus(UserStatus::DENIED);
         try {
             saveUser($user);
-            sendMail($user->getEmail(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
+            queueMail($user->getEmail(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }

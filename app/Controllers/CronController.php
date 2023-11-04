@@ -7,6 +7,7 @@ use App\Entities\Group;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
 use Composer\CaBundle\CaBundle;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
@@ -16,33 +17,38 @@ use LdapRecord\Models\OpenLDAP\User;
 use function App\Helpers\getGroupById;
 use function App\Helpers\getGroups;
 use function App\Helpers\getUserByUsername;
-use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\getUsers;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 use function App\Helpers\openLDAPConnection;
+use function App\Helpers\workMailQueue;
 
-class SynchronisationController extends BaseController
+class CronController extends BaseController
 {
     public function index(): void
     {
+        try {
+            CLI::write('Working mail queue ...');
+            workMailQueue();
+        } catch (Exception $e) {
+            CLI::error("Error working mail queue: {$e->getMessage()}");
+        }
+
         try {
             openLDAPConnection();
 
             CLI::write('Synchronizing LDAP users ...');
             $this->syncUsersLDAP();
 
-            CLI::write(' ');
             CLI::write('Synchronizing LDAP groups ...');
             $this->syncGroupsLDAP();
+        } catch (LDAPException $e) {
+            CLI::error("Error synchronizing with LDAP: {$e->getMessage()}");
+        }
 
-            CLI::write(' ');
+        try {
             CLI::write('Synchronizing Nextcloud group folders ...');
             $this->syncNextcloudGroupFolders();
-
-            CLI::write('Finished!');
-        } catch (LDAPException $e) {
-            CLI::error('Error with ldap connection: ' . $e->getMessage());
+        } catch (Exception $e) {
+            CLI::error("Error synchronizing with Nextcloud: {$e->getMessage()}");
         }
     }
 
@@ -178,6 +184,9 @@ class SynchronisationController extends BaseController
         CLI::write('Successfully synced group ' . $group->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     private function syncNextcloudGroupFolders(): void
     {
         $client = new Client([

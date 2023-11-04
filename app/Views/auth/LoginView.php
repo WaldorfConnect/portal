@@ -2,6 +2,10 @@
     <div class="container login">
 
         <?= form_open('login') ?>
+        <?php if ($return): ?>
+            <?= form_hidden('return', $return) ?>
+        <?php endif; ?>
+
         <div class="card login">
             <div class="card-header header-plain">
                 <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"

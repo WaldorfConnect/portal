@@ -99,5 +99,6 @@ const MEMBERSHIPS = PREFIX . "memberships";
 const REGIONS = PREFIX . "regions";
 const SCHOOLS = PREFIX . "schools";
 const USERS = PREFIX . "users";
+const MAILS = PREFIX . "mails";
 
 const GROUP_FOLDERS_API = "https://cloud.waldorfconnect.de/apps/groupfolders";

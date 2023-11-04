@@ -12,17 +12,19 @@ use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
 use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserByUsername;
-use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 use function App\Helpers\saveUser;
-use function App\Helpers\sendMail;
+use function App\Helpers\queueMail;
 
 class AuthenticationController extends BaseController
 {
     public function login(): string|RedirectResponse
     {
+        $returnUrl = $this->request->getGet('return');
+        if ($returnUrl) {
+            return $this->render('auth/LoginView', ['return' => $returnUrl], false);
+        }
+
         return $this->render('auth/LoginView', [], false);
     }
 
@@ -63,8 +65,12 @@ class AuthenticationController extends BaseController
             }
         }
 
+        // Everything worked - welcome!
         session()->set('user_id', $user->getId());
-        return redirect('/');
+
+        // Check if user is returning and redirect
+        $returnUrl = $this->request->getPost('return');
+        return redirect()->to($returnUrl ?: '/');
     }
 
     public function handleRegister(): string|RedirectResponse
@@ -114,7 +120,7 @@ class AuthenticationController extends BaseController
             foreach ($groupIds as $groupId) {
                 createGroupMembershipRequest($id, $groupId);
             }
-            sendMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+            queueMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }

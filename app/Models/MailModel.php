@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use App\Entities\Group;
+use App\Entities\Mail;
+use CodeIgniter\Model;
+
+class MailModel extends Model
+{
+    protected $table = MAILS;
+    protected $primaryKey = "id";
+    protected $returnType = Mail::class;
+
+    protected $allowedFields = [
+        'recipient', 'subject', 'body'
+    ];
+}
+
+
