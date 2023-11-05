@@ -2,7 +2,7 @@
     <div class="container login">
 
         <?= form_open('login') ?>
-        <?php if ($return): ?>
+        <?php if (isset($return)): ?>
             <?= form_hidden('return', $return) ?>
         <?php endif; ?>
 
