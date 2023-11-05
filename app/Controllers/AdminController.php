@@ -35,6 +35,11 @@ class AdminController extends BaseController
         return $this->render('admin/IndexView');
     }
 
+    public function debug(): string
+    {
+        return $this->render('admin/DebugView');
+    }
+
     public function accept(): string
     {
         return $this->render('admin/AcceptView');

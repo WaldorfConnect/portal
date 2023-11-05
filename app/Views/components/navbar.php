@@ -27,6 +27,11 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
+                            <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                                <a class="dropdown-item" href="<?= base_url('/admin/debug') ?>">
+                                    Debug
+                                </a>
+                            <?php endif; ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer

@@ -35,6 +35,7 @@ $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::cl
 $routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class]);
+$routes->get('/admin/debug', 'AdminController::debug', ['filter' => GlobalAdminFilter::class]);
 
 $routes->get('/admin/users', 'AdminController::users', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/accept', 'AdminController::acceptUser', ['filter' => AdminFilter::class]);

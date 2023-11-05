@@ -25,6 +25,8 @@ class CronController extends BaseController
 {
     public function index(): void
     {
+        CLI::write(date("d.m.Y H:i:s"));
+
         try {
             CLI::write('Working mail queue ...');
             workMailQueue();
