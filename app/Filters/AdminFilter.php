@@ -13,7 +13,12 @@ class AdminFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         helper('user');
-        if (!($user = getCurrentUser()) || !$user->getRole()->isAdmin()) {
+        $user = getCurrentUser();
+        if (!$user) {
+            return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}");
+        }
+
+        if (!$user->getRole()->isAdmin()) {
             return redirect()->to(site_url('/'));
         }
     }
