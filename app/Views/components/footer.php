@@ -27,23 +27,10 @@
                 </ul>
             </div>
             <div class="col-md">
-                <h1 class="h5">Hilfe</h1>
-                <ul class="list-unstyled">
-                    <li>
-                        <a href="//waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/" target="_blank">Organisatorischer
-                            Hilfedienst</a>
-                    </li>
-                    <li>
-                        <a href="//waldorfconnect.de/hilfedienst/technischer-hilfedienst/" target="_blank">Technischer
-                            Hilfedienst</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md">
                 <h1 class="h5">Partner & Unterstützung</h1>
                 <ul class="list-unstyled">
                     <li>
-                        <a href="//elektronisch.dev" target="_blank">elektronisch.dev</a>
+                        <a href="//linus.bayern" target="_blank">linus.bayern</a>
                     </li>
                     <li>
                         <a href="//waldorfsv.de" target="_blank">WaldorfSV</a>
