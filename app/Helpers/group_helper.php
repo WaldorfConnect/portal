@@ -158,8 +158,8 @@ function getGroupsByRegionId(int $regionId): array
  * @param int $userId
  * @param int $groupId
  * @return void
- * @throws ReflectionException
  * @throws DatabaseException
+ * @throws ReflectionException
  */
 function createGroupMembershipRequest(int $userId, int $groupId): void
 {
@@ -167,6 +167,23 @@ function createGroupMembershipRequest(int $userId, int $groupId): void
     $membership->setUserId($userId);
     $membership->setGroupId($groupId);
     $membership->setStatus(MembershipStatus::PENDING);
+    saveMembership($membership);
+}
+
+function deleteGroupMembership(int $userId, int $groupId): void
+{
+    getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->delete();
+}
+
+/**
+ * Saves given membership model.
+ *
+ * @param GroupMembership $membership
+ * @return void
+ * @throws ReflectionException
+ */
+function saveMembership(GroupMembership $membership): void
+{
     getGroupMembershipModel()->save($membership);
 }
 

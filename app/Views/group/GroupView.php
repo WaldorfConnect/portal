@@ -26,6 +26,22 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
     <?php endif; ?>
 </h1>
 
+<?php if ($success = session('error')): ?>
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <?= $success ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($success = session('success')): ?>
+    <div class="col-md-12">
+        <div class="alert alert-success">
+            <?= $success ?>
+        </div>
+    </div>
+<?php endif; ?>
+
 <h3 class="subheader">Allgemeines</h3>
 <div class="row">
     <div class="col-md-6">
@@ -73,13 +89,15 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
         <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
         <th data-field="userRole" data-sortable="true" scope="col">Nutzerrolle</th>
         <th data-field="groupRole" data-sortable="true" scope="col">Gruppenrolle</th>
-        <th data-field="actions" data-sortable="true" scope="col">Aktionen</th>
+        <?php if ($group->mayManage($currentUser)): ?>
+            <th data-field="actions" data-sortable="true" scope="col">Aktionen</th>
+        <?php endif; ?>
     </tr>
     </thead>
     <tbody>
     <?php foreach (getGroupMembershipsByGroupId($group->getId()) as $membership): ?>
         <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
-            <?php if ($ownMembership->getStatus() != MembershipStatus::ADMIN): continue; endif; ?>
+            <?php if (!$group->mayManage($currentUser)): continue; endif; ?>
 
             <tr>
                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
@@ -112,7 +130,7 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                     data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
                 <td><?= $user->getRole()->badge() ?></td>
                 <td><?= $membership->getStatus()->badge() ?></td>
-                <?php if ($ownMembership->getStatus() == MembershipStatus::ADMIN || $group->mayManage($currentUser)): ?>
+                <?php if ($group->mayManage($currentUser)): ?>
                     <td>
                         <?php if ($membership->getStatus() == MembershipStatus::ADMIN): ?>
                             <?= form_open('group/change_user_status') ?>

@@ -9,10 +9,28 @@
 
 <h1 class="header">Alle Schulen</h1>
 
-<?php use function App\Helpers\countUsersBySchoolId;
+<?php if ($success = session('error')): ?>
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <?= $success ?>
+        </div>
+    </div>
+<?php endif; ?>
 
-foreach (\App\Helpers\getRegions() as $region): ?>
-    <?php $schools = \App\Helpers\getSchoolsByRegionId($region->getId()) ?>
+<?php if ($success = session('success')): ?>
+    <div class="col-md-12">
+        <div class="alert alert-success">
+            <?= $success ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php use function App\Helpers\countUsersBySchoolId;
+use function App\Helpers\getRegions;
+use function App\Helpers\getSchoolsByRegionId;
+
+foreach (getRegions() as $region): ?>
+    <?php $schools = getSchoolsByRegionId($region->getId()) ?>
     <?php if (empty($schools)): continue; endif; ?>
 
     <h3 class="subheader"><?= $region->getName() ?></h3>

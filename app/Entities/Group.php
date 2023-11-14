@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getGroupMembership;
 use function App\Helpers\getGroupMembershipsByGroupId;
 use function App\Helpers\getRegionById;
 
@@ -107,6 +108,11 @@ class Group extends Entity
         }
 
         if ($user->getRole() == UserRole::REGION_ADMIN && $this->getRegionId() == $user->getSchool()->getRegionId()) {
+            return true;
+        }
+
+        $membership = getGroupMembership($user->getId(), $this->getId());
+        if ($membership && $membership->getStatus() == MembershipStatus::ADMIN) {
             return true;
         }
 
