@@ -17,16 +17,21 @@ use ReflectionException;
 function workMailQueue(): void
 {
     foreach (getMails() as $mail) {
+        $recipient = getUserById($mail->getRecipientId());
+        if (!$recipient) {
+            CLI::error("Invalid user id {$mail->getRecipientId()}");
+        }
+
         $mailer = createMailer();
-        $mailer->addAddress($mail->getRecipient());
+        $mailer->addAddress($recipient->getEmail());
         $mailer->Subject = $mail->getSubject();
         $mailer->Body = $mail->getBody();
 
         if ($mailer->send()) {
             deleteMail($mail->getId());
-            CLI::write("Successfully sent mail {$mail->getId()} to {$mail->getRecipient()}");
+            CLI::write("Successfully sent mail {$mail->getId()} to {$recipient->getEmail()}");
         } else {
-            CLI::error("Error sending mail {$mail->getId()} to {$mail->getRecipient()}: {$mailer->ErrorInfo}");
+            CLI::error("Error sending mail {$mail->getId()} to {$recipient->getEmail()}: {$mailer->ErrorInfo}");
         }
     }
 }
@@ -36,9 +41,9 @@ function workMailQueue(): void
  *
  * @throws ReflectionException
  */
-function queueMail(string $recipient, string $subject, string $body): string|int
+function queueMail(int $recipientId, string $subject, string $body): string|int
 {
-    $mail = createMail($recipient, $subject, $body);
+    $mail = createMail($recipientId, $subject, $body);
     $model = getMailModel();
     $model->save($mail);
     return $model->getInsertID();
@@ -68,15 +73,15 @@ function getMails(): array
 /**
  * Create mail object.
  *
- * @param string $recipient
+ * @param int $recipientId
  * @param string $subject
  * @param string $body
  * @return Mail
  */
-function createMail(string $recipient, string $subject, string $body): Mail
+function createMail(int $recipientId, string $subject, string $body): Mail
 {
     $mail = new Mail();
-    $mail->setRecipient($recipient);
+    $mail->setRecipientId($recipientId);
     $mail->setSubject($subject);
     $mail->setBody($body);
     return $mail;

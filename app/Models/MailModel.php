@@ -13,7 +13,7 @@ class MailModel extends Model
     protected $returnType = Mail::class;
 
     protected $allowedFields = [
-        'recipient', 'subject', 'body'
+        'recipient_id', 'subject', 'body'
     ];
 }
 

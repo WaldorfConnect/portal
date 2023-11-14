@@ -43,7 +43,7 @@ class UserController extends BaseController
                 $token = Uuid::uuid4()->toString();
                 $user->setToken($token);
                 $user->setStatus(UserStatus::PENDING_EMAIL);
-                queueMail($user->getEmail(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+                queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
             }
 
             $user->setName($name);
@@ -123,7 +123,7 @@ class UserController extends BaseController
 
             try {
                 saveUser($user);
-                queueMail($user->getEmail(), 'Passwort vergessen', view('mail/ResetPassword', ['user' => $user]));
+                queueMail($user->getId(), 'Passwort vergessen', view('mail/ResetPassword', ['user' => $user]));
             } catch (Exception $e) {
                 return redirect('user/reset_password')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
             }
@@ -156,12 +156,12 @@ class UserController extends BaseController
         // If newbie show accept information
         if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
             try {
-                queueMail($user->getEmail(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
+                queueMail($user->getId(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
 
                 // Send announcement to all admins
                 foreach (getUsers() as $admin) {
                     if ($admin->getRole()->isAdmin() && $admin->mayManage($user)) {
-                        queueMail($admin->getEmail(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $admin, 'target' => $user]));
+                        queueMail($admin->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $admin, 'target' => $user]));
                     }
                 }
             } catch (Exception $e) {

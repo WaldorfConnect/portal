@@ -3,21 +3,19 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getRegionById;
-use function App\Helpers\getUsersBySchoolId;
 
 class Mail extends Entity
 {
     protected $attributes = [
         'id' => null,
-        'recipient' => null,
+        'recipient_id' => null,
         'subject' => null,
         'body' => null
     ];
 
     protected $casts = [
         'id' => 'integer',
-        'recipient' => 'string',
+        'recipient_id' => 'integer',
         'subject' => 'string',
         'body' => 'string',
     ];
@@ -31,16 +29,16 @@ class Mail extends Entity
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getRecipient(): string
+    public function getRecipientId(): int
     {
-        return $this->attributes['recipient'];
+        return $this->attributes['recipient_id'];
     }
 
-    public function setRecipient(string $recipient): void
+    public function setRecipientId(int $recipientId): void
     {
-        $this->attributes['recipient'] = $recipient;
+        $this->attributes['recipient_id'] = $recipientId;
     }
 
     /**

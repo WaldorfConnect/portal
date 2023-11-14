@@ -58,7 +58,7 @@ class AdminController extends BaseController
         $user->setStatus(UserStatus::OK);
         try {
             saveUser($user);
-            queueMail($user->getEmail(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
+            queueMail($user->getId(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -79,7 +79,7 @@ class AdminController extends BaseController
         $user->setStatus(UserStatus::DENIED);
         try {
             saveUser($user);
-            queueMail($user->getEmail(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
+            queueMail($user->getId(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
