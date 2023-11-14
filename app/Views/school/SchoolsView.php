@@ -49,7 +49,8 @@
                                              class="img-thumbnail mb-3"
                                              style="max-width: 100%; width: 512px; height: auto"
                                              onerror="this.src = 'https://placehold.co/512x128.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Logo!'"
-                                             alt="Logo <?= $school->getName() ?>">
+                                             alt="Logo <?= $school->getName() ?>"
+                                             loading="lazy">
                                     </tr>
                                     <tr>
                                         <th>Schulname:&nbsp;</th>
@@ -100,7 +101,8 @@
                                              class="img-thumbnail mt-3"
                                              style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
                                              onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
-                                             alt="Logo <?= $school->getName() ?>">
+                                             alt="Logo <?= $school->getName() ?>"
+                                             loading="lazy">
                                     </a>
                                     <figcaption>
                                         <small><?= !is_null($school->getImageAuthor()) ? '&copy;&nbsp;' . $school->getImageAuthor() : '' ?></small>
