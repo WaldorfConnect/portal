@@ -26,9 +26,11 @@
 <?php endif; ?>
 
 <?php use function App\Helpers\countGroupMembers;
+use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getRegions;
 
-foreach (\App\Helpers\getRegions() as $region): ?>
-    <?php $groups = \App\Helpers\getGroupsByRegionId($region->getId()) ?>
+foreach (getRegions() as $region): ?>
+    <?php $groups = getGroupsByRegionId($region->getId()) ?>
     <?php if (empty($groups)): continue; endif; ?>
 
     <h3 class="subheader"><?= $region->getName() ?></h3>
@@ -67,7 +69,8 @@ foreach (\App\Helpers\getRegions() as $region): ?>
                                              class="img-thumbnail mb-3"
                                              style="max-width: 100%; width: 512px; height: auto"
                                              onerror="this.src = 'https://placehold.co/512x128.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Logo!'"
-                                             alt="Logo <?= $group->getName() ?>">
+                                             alt="Logo <?= $group->getName() ?>"
+                                             loading="lazy">
                                     </tr>
                                     <tr>
                                         <th>Name:&nbsp;</th>
@@ -99,7 +102,8 @@ foreach (\App\Helpers\getRegions() as $region): ?>
                                              class="img-thumbnail mt-3"
                                              style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
                                              onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
-                                             alt="Logo <?= $group->getName() ?>">
+                                             alt="Logo <?= $group->getName() ?>"
+                                             loading="lazy">
                                     </a>
                                     <figcaption>
                                         <small><?= !is_null($group->getImageAuthor()) ? '&copy;&nbsp;' . $group->getImageAuthor() : '' ?></small>
