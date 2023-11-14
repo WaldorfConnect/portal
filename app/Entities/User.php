@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getGroupMembership;
 use function App\Helpers\getGroupMembershipsByUserId;
 use function App\Helpers\getGroupsByUserId;
 use function App\Helpers\getSchoolById;
@@ -184,6 +185,15 @@ class User extends Entity
     public function getGroupMemberships(): array
     {
         return getGroupMembershipsByUserId($this->getId());
+    }
+
+    /**
+     * @param int $group
+     * @return ?GroupMembership
+     */
+    public function getGroupMembership(int $groupId): ?object
+    {
+        return getGroupMembership($this->getId(), $groupId);
     }
 
     public function mayManage(User $user): bool

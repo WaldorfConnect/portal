@@ -2,10 +2,8 @@
 
 namespace App\Controllers;
 
+use CodeIgniter\HTTP\RedirectResponse;
 use function App\Helpers\getGroupById;
-use function App\Helpers\getUserByUsernameAndPassword;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 
 class GroupController extends BaseController
 {
@@ -18,5 +16,30 @@ class GroupController extends BaseController
     {
         $group = getGroupById($groupId);
         return $this->render('group/GroupView', ['group' => $group]);
+    }
+
+    public function handleJoin(): string|RedirectResponse
+    {
+
+    }
+
+    public function handleAcceptJoin(): string|RedirectResponse
+    {
+
+    }
+
+    public function handleDenyJoin(): string|RedirectResponse
+    {
+
+    }
+
+    public function handleChangeUserStatus(): string|RedirectResponse
+    {
+
+    }
+
+    public function handleKickUser(): string|RedirectResponse
+    {
+
     }
 }

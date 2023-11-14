@@ -9,7 +9,9 @@
 
 <h1 class="header">Alle Gruppen</h1>
 
-<?php foreach (\App\Helpers\getRegions() as $region): ?>
+<?php use function App\Helpers\countGroupMembers;
+
+foreach (\App\Helpers\getRegions() as $region): ?>
     <?php $groups = \App\Helpers\getGroupsByRegionId($region->getId()) ?>
     <?php if (empty($groups)): continue; endif; ?>
 
@@ -21,7 +23,20 @@
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#groupcollapse<?= $group->getId() ?>"
                             aria-expanded="true" aria-controls="groupcollapse<?= $group->getId() ?>">
-                        <?= $group->getName() ?>
+                        <?= $group->getName() ?>&nbsp;
+                        <?php if (($count = countGroupMembers($group->getId())) == 0): ?>
+                            <span class="badge bg-danger">
+                                Keine Mitglieder
+                            </span>
+                        <?php elseif ($count == 1): ?>
+                            <span class="badge bg-success">
+                                ein Mitglied
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-success">
+                                <?= $count ?> Mitglieder
+                            </span>
+                        <?php endif; ?>
                     </button>
                 </h2>
                 <div id="groupcollapse<?= $group->getId() ?>" class="accordion-collapse collapse"
@@ -43,18 +58,19 @@
                                         <td><?= $group->getName() ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Beschreibung:&nbsp;</th>
-                                        <td><?= $group->getDescription() ?></td>
-                                    </tr>
-                                    <tr>
                                         <th>
                                             Aktionen:&nbsp;
                                         </th>
                                         <td>
-                                            <br>
+                                            <?= form_open('group/join', ['onsubmit' => "return confirm('Möchtest du der Gruppe {$group->getName()} wirklich beitreten?');"]) ?>
+                                            <?= form_hidden('id', $group->getId()) ?>
                                             <a class="btn btn-primary btn-sm" href="group/<?= $group->getId() ?>">
-                                                Übersichtseite öffnen
+                                                <i class="fas fa-people-group"></i> Gruppenseite öffnen
                                             </a>
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-sign-in"></i> Beitrittsanfrage senden
+                                            </button>
+                                            <?= form_close() ?>
                                         </td>
                                     </tr>
                                 </table>

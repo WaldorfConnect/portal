@@ -5,13 +5,14 @@ namespace App\Helpers;
 use App\Entities\Group;
 use App\Entities\GroupMembership;
 use App\Entities\MembershipStatus;
-use App\Entities\User;
 use App\Models\GroupMembershipModel;
 use App\Models\GroupModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;
 
 /**
+ * Returns all groups.
+ *
  * @return Group[]
  * @throws DatabaseException
  */
@@ -21,6 +22,7 @@ function getGroups(): array
 }
 
 /**
+ * Returns the group corresponding to the given id.
  *
  * @param int $id
  * @return ?Group
@@ -32,6 +34,8 @@ function getGroupById(int $id): ?object
 }
 
 /**
+ * Saves the given group model and returns the id of the new entry.
+ *
  * @param Group $group
  * @return string|int
  * @throws DatabaseException|ReflectionException
@@ -43,6 +47,13 @@ function saveGroup(Group $group): string|int
     return $model->getInsertID();
 }
 
+/**
+ * Creates a group model with the given parameters.
+ *
+ * @param string $name
+ * @param int $regionId
+ * @return Group
+ */
 function createGroup(string $name, int $regionId): Group
 {
     $group = new Group();
@@ -51,12 +62,32 @@ function createGroup(string $name, int $regionId): Group
     return $group;
 }
 
+/**
+ * Deletes the group with the corresponding id.
+ *
+ * @param int $id
+ * @return void
+ */
 function deleteGroup(int $id): void
 {
     getGroupModel()->delete($id);
 }
 
 /**
+ * Returns the group membership (or join request) for a given user in a given group.
+ *
+ * @param int $userId
+ * @param int $groupId
+ * @return ?GroupMembership
+ */
+function getGroupMembership(int $userId, int $groupId): ?object
+{
+    return getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->first();
+}
+
+/**
+ * Returns the group memberships (or join requests) for a given user.
+ *
  * @param int $userId
  * @return GroupMembership[]
  */
@@ -66,6 +97,8 @@ function getGroupMembershipsByUserId(int $userId): array
 }
 
 /**
+ * Returns the group memberships (or join requests) for a given group.
+ *
  * @param int $groupId
  * @return GroupMembership[]
  */
@@ -75,15 +108,40 @@ function getGroupMembershipsByGroupId(int $groupId): array
 }
 
 /**
+ * Returns the members (join requests excluded) for a given group.
+ *
  * @param int $groupId
- * @return ?GroupMembership
+ * @return GroupMembership[]
  */
-function getGroupMembershipsByUserIdAndGroupId(int $userId, int $groupId): ?object
+function getGroupMembers(int $groupId): array
 {
-    return getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->first();
+    return getGroupMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->findAll();
 }
 
 /**
+ * Returns count of members (join requests excluded) for a given group.
+ *
+ * @param int $groupId
+ * @return int
+ */
+function countGroupMembers(int $groupId): int
+{
+    return getGroupMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->countAllResults();
+}
+
+/**
+ * Returns the join requests (members excluded) for a given group.
+ *
+ * @param int $groupId
+ * @return GroupMembership[]
+ */
+function getGroupJoinRequests(int $groupId): array
+{
+    return getGroupMembershipModel()->where('group_id', $groupId)->where('status', MembershipStatus::PENDING->value)->findAll();
+}
+
+/**
+ * Returns all groups in a given region.
  *
  * @param int $regionId
  * @return Group[]
@@ -95,6 +153,8 @@ function getGroupsByRegionId(int $regionId): array
 }
 
 /**
+ * Creates a group membership request with the given parameters.
+ *
  * @param int $userId
  * @param int $groupId
  * @return void
@@ -111,17 +171,8 @@ function createGroupMembershipRequest(int $userId, int $groupId): void
 }
 
 /**
- * @param int $userId
- * @param int $groupId
- * @param MembershipStatus $status
- * @return void
- */
-function setGroupMembershipStatus(int $userId, int $groupId, MembershipStatus $status): void
-{
-
-}
-
-/**
+ * Returns the group table wrapper and query builder.
+ *
  * @return GroupModel
  */
 function getGroupModel(): GroupModel
@@ -130,6 +181,8 @@ function getGroupModel(): GroupModel
 }
 
 /**
+ * Returns the group membership table wrapper and query builder.
+ *
  * @return GroupMembershipModel
  */
 function getGroupMembershipModel(): GroupMembershipModel

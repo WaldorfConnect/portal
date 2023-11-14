@@ -13,7 +13,6 @@ class GlobalAdminFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         helper('user');
-        helper('user');
         $user = getCurrentUser();
         if (!$user) {
             return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}");

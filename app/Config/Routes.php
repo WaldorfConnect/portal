@@ -34,6 +34,12 @@ $routes->get('/school/(:num)', 'SchoolController::school/$1', ['filter' => Logge
 $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
 $routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
 
+$routes->post('/group/join', 'GroupController::handleJoin', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/accept', 'GroupController::handleAcceptJoin', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/deny', 'GroupController::handleDenyJoin', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/change_user_status', 'GroupController::handleChangeUserStatus', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/kick_user', 'GroupController::handleKickUser', ['filter' => LoggedInFilter::class]);
+
 $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class]);
 $routes->get('/admin/debug', 'AdminController::debug', ['filter' => GlobalAdminFilter::class]);
 

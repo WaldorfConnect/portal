@@ -9,7 +9,9 @@
 
 <h1 class="header">Alle Schulen</h1>
 
-<?php foreach (\App\Helpers\getRegions() as $region): ?>
+<?php use function App\Helpers\countUsersBySchoolId;
+
+foreach (\App\Helpers\getRegions() as $region): ?>
     <?php $schools = \App\Helpers\getSchoolsByRegionId($region->getId()) ?>
     <?php if (empty($schools)): continue; endif; ?>
 
@@ -22,7 +24,7 @@
                             data-bs-target="#schoolcollapse<?= $school->getId() ?>"
                             aria-expanded="true" aria-controls="schoolcollapse<?= $school->getId() ?>">
                         <?= $school->getName() ?>&nbsp;
-                        <?php if (($count = \App\Helpers\countUsersBySchoolId($school->getId())) == 0): ?>
+                        <?php if (($count = countUsersBySchoolId($school->getId())) == 0): ?>
                             <span class="badge bg-danger">
                                 Keine Nutzer*innen
                             </span>
