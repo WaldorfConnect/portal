@@ -65,12 +65,17 @@ foreach (getRegions() as $region): ?>
                             <div class="col-md-6">
                                 <table>
                                     <tr>
-                                        <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/logo.png"
-                                             class="img-thumbnail mb-3"
+                                        <?php
+                                        $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.png";
+                                        if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath)) {
+                                            $groupLogoSrc = base_url($groupLogoPath);
+                                        } else {
+                                            $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.png');
+                                        }
+                                        ?>
+                                        <img class="img-thumbnail mb-3" src="<?= $groupLogoSrc ?>"
                                              style="max-width: 100%; width: 512px; height: auto"
-                                             onerror="this.src = 'https://placehold.co/512x128.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Logo!'"
-                                             alt="Logo <?= $group->getName() ?>"
-                                             loading="lazy">
+                                             alt="Logo <?= $group->getName() ?>" loading="lazy">
                                     </tr>
                                     <tr>
                                         <th>Name:&nbsp;</th>
@@ -96,14 +101,18 @@ foreach (getRegions() as $region): ?>
                             </div>
                             <div class="col-md-6">
                                 <figure>
-                                    <a href="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
-                                       data-toggle="lightbox">
-                                        <img src="<?= base_url('/') ?>assets/img/group/<?= $group->getId() ?>/image.png"
-                                             class="img-thumbnail mt-3"
+                                    <?php
+                                    $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.png";
+                                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupImagePath)) {
+                                        $groupImageSrc = base_url($groupImagePath);
+                                    } else {
+                                        $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.png');
+                                    }
+                                    ?>
+                                    <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
+                                        <img class="img-thumbnail mt-3" src="<?= $groupImageSrc ?>"
                                              style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                                             onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Gruppe%20noch%20kein%20Bild!'"
-                                             alt="Logo <?= $group->getName() ?>"
-                                             loading="lazy">
+                                             alt="Logo <?= $group->getName() ?>" loading="lazy">
                                     </a>
                                     <figcaption>
                                         <small><?= !is_null($group->getImageAuthor()) ? '&copy;&nbsp;' . $group->getImageAuthor() : '' ?></small>

@@ -65,12 +65,17 @@ foreach (getRegions() as $region): ?>
                             <div class="col-md-6">
                                 <table style="border-spacing: 0 40px">
                                     <tr>
-                                        <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/logo.png"
-                                             class="img-thumbnail mb-3"
+                                        <?php
+                                        $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.png";
+                                        if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath)) {
+                                            $schoolLogoSrc = base_url($schoolLogoPath);
+                                        } else {
+                                            $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.png');
+                                        }
+                                        ?>
+                                        <img class="img-thumbnail mb-3" src="<?= $schoolLogoSrc ?>"
                                              style="max-width: 100%; width: 512px; height: auto"
-                                             onerror="this.src = 'https://placehold.co/512x128.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Logo!'"
-                                             alt="Logo <?= $school->getName() ?>"
-                                             loading="lazy">
+                                             alt="Logo <?= $school->getName() ?>" loading="lazy">
                                     </tr>
                                     <tr>
                                         <th>Schulname:&nbsp;</th>
@@ -115,14 +120,18 @@ foreach (getRegions() as $region): ?>
                             </div>
                             <div class="col-md-6">
                                 <figure>
-                                    <a href="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
-                                       data-toggle="lightbox">
-                                        <img src="<?= base_url('/') ?>assets/img/school/<?= $school->getId() ?>/image.png"
-                                             class="img-thumbnail mt-3"
+                                    <?php
+                                    $schoolImagePath = "/assets/img/school/" . $school->getId() . "/image.png";
+                                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolImagePath)) {
+                                        $schoolImageSrc = base_url($schoolImagePath);
+                                    } else {
+                                        $schoolImageSrc = base_url('/assets/img/placeholders/school-image_1920x1080.png');
+                                    }
+                                    ?>
+                                    <a href="<?= $schoolImageSrc ?>" data-toggle="lightbox">
+                                        <img class="img-thumbnail mt-3" src="<?= $schoolImageSrc ?>"
                                              style="max-width: 100%; width: auto; height: auto; border-radius: 10px;"
-                                             onerror="this.src = 'https://placehold.co/1920x1080.png?text=Leider%20haben%20wir%20f%C3%BCr%20diese%20Schule%20noch%20kein%20Bild!'"
-                                             alt="Logo <?= $school->getName() ?>"
-                                             loading="lazy">
+                                             alt="Logo <?= $school->getName() ?>" loading="lazy">
                                     </a>
                                     <figcaption>
                                         <small><?= !is_null($school->getImageAuthor()) ? '&copy;&nbsp;' . $school->getImageAuthor() : '' ?></small>
