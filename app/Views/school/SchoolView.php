@@ -21,9 +21,10 @@ use function App\Helpers\getUsersBySchoolId;
         <table>
             <tr>
                 <?php
-                $schoolLogoSrc = base_url('/') . "assets/img/school/" . $school->getId() . "/logo.png";
-                if (!file_exists($schoolLogoSrc)) {
-                    $schoolLogoSrc = base_url('/') . "assets/img/placeholders/school-logo_512x128.png";
+                $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.png";
+                $schoolLogoSrc = base_url($schoolLogoPath);
+                if (!file_exists($schoolLogoPath)) {
+                    $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.png');
                 }
                 ?>
                 <img class="img-thumbnail mb-3" src="<?= $schoolLogoSrc ?>"
@@ -63,9 +64,10 @@ use function App\Helpers\getUsersBySchoolId;
     <div class="col-md-6">
         <figure>
             <?php
-            $schoolImageSrc = base_url('/') . "assets/img/school/" . $school->getId() . "/image.png";
-            if (!file_exists($schoolImageSrc)) {
-                $schoolImageSrc = base_url('/') . "assets/img/placeholders/school-image_1920x1080.png";
+            $schoolImagePath = "/assets/img/school/" . $school->getId() . "/image.png";
+            $schoolImageSrc = base_url($schoolImagePath);
+            if (!file_exists($schoolImagePath)) {
+                $schoolImageSrc = base_url('/assets/img/placeholders/school-image_1920x1080.png');
             }
             ?>
             <a href="<?= $schoolImageSrc ?>" data-toggle="lightbox">

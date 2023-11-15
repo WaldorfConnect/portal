@@ -66,9 +66,10 @@ foreach (getRegions() as $region): ?>
                                 <table>
                                     <tr>
                                         <?php
-                                        $groupLogoSrc = base_url('/') . "assets/img/group/" . $group->getId() . "/logo.png";
-                                        if (!file_exists($groupLogoSrc)) {
-                                            $groupLogoSrc = base_url('/') . "assets/img/placeholders/group-logo_512x128.png";
+                                        $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.png";
+                                        $groupLogoSrc = base_url($groupLogoPath);
+                                        if (!file_exists($groupLogoPath)) {
+                                            $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.png');
                                         }
                                         ?>
                                         <img class="img-thumbnail mb-3" src="<?= $groupLogoSrc ?>"
@@ -100,9 +101,10 @@ foreach (getRegions() as $region): ?>
                             <div class="col-md-6">
                                 <figure>
                                     <?php
-                                    $groupImageSrc = base_url('/') . "assets/img/group/" . $group->getId() . "/image.png";
-                                    if (!file_exists($groupImageSrc)) {
-                                        $groupImageSrc = base_url('/') . "assets/img/placeholders/group-image_1920x1080.png";
+                                    $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.png";
+                                    $groupImageSrc = base_url($groupImagePath);
+                                    if (!file_exists($groupImagePath)) {
+                                        $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.png');
                                     }
                                     ?>
                                     <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
