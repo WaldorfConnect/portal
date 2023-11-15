@@ -120,7 +120,7 @@ class AuthenticationController extends BaseController
             foreach ($groupIds as $groupId) {
                 createGroupMembershipRequest($id, $groupId);
             }
-            queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+            queueMail($id, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
