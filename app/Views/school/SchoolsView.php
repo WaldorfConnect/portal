@@ -67,8 +67,9 @@ foreach (getRegions() as $region): ?>
                                     <tr>
                                         <?php
                                         $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.png";
-                                        $schoolLogoSrc = base_url($schoolLogoPath);
-                                        if (!file_exists($schoolLogoPath)) {
+                                        if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath)) {
+                                            $schoolLogoSrc = base_url($schoolLogoPath);
+                                        } else {
                                             $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.png');
                                         }
                                         ?>
@@ -121,8 +122,9 @@ foreach (getRegions() as $region): ?>
                                 <figure>
                                     <?php
                                     $schoolImagePath = "/assets/img/school/" . $school->getId() . "/image.png";
-                                    $schoolImageSrc = base_url($schoolImagePath);
-                                    if (!file_exists($schoolImagePath)) {
+                                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolImagePath)) {
+                                        $schoolImageSrc = base_url($schoolImagePath);
+                                    } else {
                                         $schoolImageSrc = base_url('/assets/img/placeholders/school-image_1920x1080.png');
                                     }
                                     ?>

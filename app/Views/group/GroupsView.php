@@ -67,8 +67,9 @@ foreach (getRegions() as $region): ?>
                                     <tr>
                                         <?php
                                         $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.png";
-                                        $groupLogoSrc = base_url($groupLogoPath);
-                                        if (!file_exists($groupLogoPath)) {
+                                        if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath)) {
+                                            $groupLogoSrc = base_url($groupLogoPath);
+                                        } else {
                                             $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.png');
                                         }
                                         ?>
@@ -102,8 +103,9 @@ foreach (getRegions() as $region): ?>
                                 <figure>
                                     <?php
                                     $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.png";
-                                    $groupImageSrc = base_url($groupImagePath);
-                                    if (!file_exists($groupImagePath)) {
+                                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupImagePath)) {
+                                        $groupImageSrc = base_url($groupImagePath);
+                                    } else {
                                         $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.png');
                                     }
                                     ?>
