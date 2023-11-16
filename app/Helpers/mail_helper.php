@@ -112,5 +112,6 @@ function createMailer(): PHPMailer
 
     $mailer->setFrom(getenv('mail.from.address'), getenv('mail.from.name'));
     $mailer->isHTML();
+    $mailer->CharSet = PHPMailer::CHARSET_UTF8;
     return $mailer;
 }

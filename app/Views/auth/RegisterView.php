@@ -40,7 +40,7 @@ use function App\Helpers\getSchoolsByRegionId;
 
                 <div class="mb-3">
                     <label for="inputEmail" class="sr-only">E-Mail</label>
-                    <input class="form-control" id="inputEmail" name="email" autocomplete="email"
+                    <input type="email" class="form-control" id="inputEmail" name="email" autocomplete="email"
                            placeholder="E-Mail" value="<?= old('email') ?>" required>
                 </div>
 
