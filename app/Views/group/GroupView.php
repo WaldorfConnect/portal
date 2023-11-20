@@ -98,7 +98,7 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body">
                 <?= form_open('group/join', ['onsubmit' => "return confirm('Möchtest du der Gruppe {$group->getName()} wirklich beitreten?');"]) ?>

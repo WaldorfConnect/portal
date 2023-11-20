@@ -89,7 +89,7 @@ use function App\Helpers\getUsersBySchoolId;
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body text-center">
             </div>
