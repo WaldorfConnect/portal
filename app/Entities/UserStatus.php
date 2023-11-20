@@ -23,6 +23,30 @@ enum UserStatus: string
         };
     }
 
+    public function displayName(): string
+    {
+        return match ($this) {
+            self::OK => 'OK',
+            self::PENDING_REGISTER => 'Registrierung ausstehend',
+            self::PENDING_ACCEPT => 'Bestätigung ausstehend',
+            self::PENDING_EMAIL => 'E-Mail-Bestätigung ausstehend',
+            self::PENDING_PWRESET => 'Passwortzurücksetzung ausstehend',
+            self::DENIED => 'Abgelehnt',
+            self::LOCKED => 'Gesperrt'
+        };
+    }
+
+    public function badge(): string
+    {
+        $badge = match ($this) {
+            self::OK => '<span class="badge bg-success">%s</span>',
+            self::PENDING_REGISTER, self::PENDING_ACCEPT, self::PENDING_EMAIL, self::PENDING_PWRESET => '<span class="badge bg-warning">%s</span>',
+            self::DENIED, self::LOCKED => '<span class="badge bg-danger">%s</span>'
+        };
+
+        return sprintf($badge, $this->displayName());
+    }
+
     public function isSynchronizable(): bool
     {
         return match ($this) {

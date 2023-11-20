@@ -66,7 +66,7 @@ use function App\Helpers\getUsers;
                 <td><?= $user->getName() ?></td>
                 <td><?= $user->getSchool()->getName() ?></td>
                 <td><?= $user->getRole()->badge() ?></td>
-                <td><?= $user->getStatus()->name ?></td>
+                <td><?= $user->getStatus()->badge() ?></td>
                 <td>
                     <?php if ($user->getStatus() == UserStatus::PENDING_ACCEPT): ?>
                         <?= form_open('admin/user/accept') ?>
