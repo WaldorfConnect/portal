@@ -47,6 +47,12 @@ use function App\Helpers\getUsersBySchoolId;
                                 <th>Adresse:&nbsp;</th>
                                 <td><?= $school->getAddress() ?></td>
                             </tr>
+                            <?php if (!empty($school->getWebsiteUrl())): ?>
+                                <tr>
+                                    <th>Website:&nbsp;</th>
+                                    <td><a href="<?= $school->getWebsiteUrl() ?>"><?= parse_url($school->getWebsiteUrl())['host'] ?></a></td>
+                                </tr>
+                            <?php endif; ?>
                             <tr>
                                 <th>E-Mail (Verwaltung):&nbsp;</th>
                                 <td>

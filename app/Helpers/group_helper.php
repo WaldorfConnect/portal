@@ -51,13 +51,15 @@ function saveGroup(Group $group): string|int
  * Creates a group model with the given parameters.
  *
  * @param string $name
+ * @param string $websiteUrl
  * @param int $regionId
  * @return Group
  */
-function createGroup(string $name, int $regionId): Group
+function createGroup(string $name, string $websiteUrl, int $regionId): Group
 {
     $group = new Group();
     $group->setName($name);
+    $group->setWebsiteUrl($websiteUrl);
     $group->setRegionId($regionId);
     return $group;
 }

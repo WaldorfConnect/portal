@@ -18,6 +18,7 @@ class School extends Entity
         'email_smv' => null,
         'state_id' => null,
         'image_author' => null,
+        'website_url' => null,
     ];
 
     protected $casts = [
@@ -29,7 +30,8 @@ class School extends Entity
         'email_bureau' => 'string',
         'email_smv' => 'string',
         'state_id' => 'integer',
-        'image_author' => 'string'
+        'image_author' => 'string',
+        'website_url' => 'string'
     ];
 
     /**
@@ -150,6 +152,19 @@ class School extends Entity
     public function setImageAuthor(string $imageAuthor): void
     {
         $this->attributes['image_author'] = $imageAuthor;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getWebsiteUrl(): ?string
+    {
+        return $this->attributes['website_url'];
+    }
+
+    public function setWebsiteUrl(string $websiteUrl): void
+    {
+        $this->attributes['website_url'] = $websiteUrl;
     }
 
     /**

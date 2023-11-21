@@ -15,6 +15,7 @@ class Group extends Entity
         'name' => null,
         'description' => null,
         'image_author' => null,
+        'website_url' => null,
     ];
 
     protected $casts = [
@@ -22,7 +23,8 @@ class Group extends Entity
         'region_id' => 'integer',
         'name' => 'string',
         'description' => 'string',
-        'image_author' => 'string'
+        'image_author' => 'string',
+        'website_url' => 'string'
     ];
 
     /**
@@ -91,6 +93,19 @@ class Group extends Entity
     public function setImageAuthor(string $imageAuthor): void
     {
         $this->attributes['image_author'] = $imageAuthor;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getWebsiteUrl(): ?string
+    {
+        return $this->attributes['website_url'];
+    }
+
+    public function setWebsiteUrl(string $websiteUrl): void
+    {
+        $this->attributes['website_url'] = $websiteUrl;
     }
 
     /**

@@ -66,6 +66,12 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                                 <th>Name:&nbsp;</th>
                                 <td><?= $group->getName() ?></td>
                             </tr>
+                            <?php if (!empty($group->getWebsiteUrl())): ?>
+                                <tr>
+                                    <th>Website:&nbsp;</th>
+                                    <td><a href="<?= $group->getWebsiteUrl() ?>"><?= parse_url($group->getWebsiteUrl())['host'] ?></a></td>
+                                </tr>
+                            <?php endif; ?>
                         </table>
                     </div>
                     <div class="col-lg-6">

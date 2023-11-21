@@ -50,6 +50,14 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
+        <label for="inputWebsite" class="col-form-label col-md-4 col-lg-3">Website</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputWebsite" name="websiteUrl" type="url"
+                   placeholder="https://example.com" value="<?= $school->getWebsiteUrl() ?>">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
         <label for="inputEmailBureau" class="col-form-label col-md-4 col-lg-3">E-Mail (Verwaltung)</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputEmailBureau" type="email" name="emailBureau" autocomplete="email"

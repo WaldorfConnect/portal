@@ -49,12 +49,13 @@ function saveSchool(School $school): string|int
     return $model->getInsertID();
 }
 
-function createSchool(string $name, string $shortName, string $address, string $emailBureau, int $regionId): School
+function createSchool(string $name, string $shortName, string $address, string $websiteUrl, string $emailBureau, int $regionId): School
 {
     $school = new School();
     $school->setName($name);
     $school->setShortName($shortName);
     $school->setAddress($address);
+    $school->setWebsiteUrl($websiteUrl);
     $school->setEmailBureau($emailBureau);
     $school->setRegionId($regionId);
     return $school;

@@ -199,6 +199,7 @@ class AdminController extends BaseController
     {
         $self = getCurrentUser();
         $name = $this->request->getPost('name');
+        $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -210,7 +211,7 @@ class AdminController extends BaseController
             return redirect('admin/groups')->with('error', 'Du darfst in dieser Region keine Gruppen verwalten.');
         }
 
-        $group = createGroup($name, $regionId);
+        $group = createGroup($name, $websiteUrl, $regionId);
 
         try {
             saveGroup($group);
@@ -271,9 +272,11 @@ class AdminController extends BaseController
         }
 
         $name = $this->request->getPost('name');
+        $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
 
         $group->setName($name);
+        $group->setWebsiteUrl($websiteUrl);
         $group->setRegionId($regionId);
 
         try {
@@ -300,6 +303,7 @@ class AdminController extends BaseController
         $name = $this->request->getPost('name');
         $shortName = $this->request->getPost('shortName');
         $address = $this->request->getPost('address');
+        $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
@@ -312,7 +316,7 @@ class AdminController extends BaseController
             return redirect('admin/schools')->with('error', 'Du darfst in dieser Region keine Schulen verwalten.');
         }
 
-        $group = createSchool($name, $shortName, $address, $emailBureau, $regionId);
+        $group = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $regionId);
 
         try {
             saveSchool($group);
@@ -376,6 +380,7 @@ class AdminController extends BaseController
         $name = $this->request->getPost('name');
         $shortName = $this->request->getPost('shortName');
         $address = $this->request->getPost('address');
+        $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $emailSMV = $this->request->getPost('emailSMV');
         $regionId = $this->request->getPost('region');
@@ -383,6 +388,7 @@ class AdminController extends BaseController
         $school->setName($name);
         $school->setShortName($shortName);
         $school->setAddress($address);
+        $school->setWebsiteUrl($websiteUrl);
         $school->setEmailBureau($emailBureau);
         $school->setEmailSMV($emailSMV);
         $school->setRegionId($regionId);

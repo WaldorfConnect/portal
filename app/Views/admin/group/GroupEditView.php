@@ -34,6 +34,14 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
+        <label for="inputWebsite" class="col-form-label col-md-4 col-lg-3">Website</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputWebsite" name="websiteUrl" type="url"
+                   placeholder="https://example.com" value="<?= $group->getWebsiteUrl() ?>">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
         <label for="inputRegion" class="col-form-label col-md-4 col-lg-3">Region</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputRegion" name="region" required>

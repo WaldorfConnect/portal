@@ -15,7 +15,7 @@ class SchoolModel extends Model
     protected $returnType = School::class;
 
     protected $allowedFields = [
-        'name', 'short_name', 'region_id', 'address', 'email_bureau', 'email_smv', 'state_id'
+        'name', 'short_name', 'region_id', 'address', 'website_url', 'email_bureau', 'email_smv', 'state_id', 'image_author'
     ];
 }
 
