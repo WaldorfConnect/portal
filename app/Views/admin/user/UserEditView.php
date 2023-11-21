@@ -97,6 +97,20 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
+        <label for="inputStatus" class="col-form-label col-md-4 col-lg-3">Status</label>
+        <div class="col-md-8 col-lg-9">
+            <select class="form-select" id="inputStatus" name="status"
+                    required <?= $currentUser->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
+                <?php foreach (UserStatus::cases() as $status): ?>
+                    <option <?= $status == $user->getStatus() ? 'selected' : '' ?>
+                            value="<?= $status->value ?>"><?= $status->displayName() ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group row mb-3">
         <label for="inputPassword" class="col-form-label col-md-4 col-lg-3">Passwort</label>
         <div class="col-md-8 col-lg-9">
             <input type="password" class="form-control" id="inputPassword" name="password"
