@@ -218,13 +218,8 @@ class AdminController extends BaseController
         try {
             $id = saveGroup($group);
 
-            if ($logoFile->isValid()) {
-                $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'logo.png');
-            }
-
-            if ($imageFile->isValid()) {
-                $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'image.png');
-            }
+            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'logo.png', true);
+            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'image.png', true);
 
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
@@ -284,10 +279,14 @@ class AdminController extends BaseController
 
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $group->setName($name);
         $group->setWebsiteUrl($websiteUrl);
+        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.png', true);
+        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.png', true);
         $group->setRegionId($regionId);
 
         try {
@@ -335,13 +334,8 @@ class AdminController extends BaseController
         try {
             $id = saveSchool($school);
 
-            if ($logoFile->isValid()) {
-                $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'logo.png');
-            }
-
-            if ($imageFile->isValid()) {
-                $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'image.png');
-            }
+            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'logo.png', true);
+            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'image.png', true);
 
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
         } catch (Exception $e) {
@@ -406,6 +400,8 @@ class AdminController extends BaseController
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $emailSMV = $this->request->getPost('emailSMV');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $school->setName($name);
@@ -414,6 +410,8 @@ class AdminController extends BaseController
         $school->setWebsiteUrl($websiteUrl);
         $school->setEmailBureau($emailBureau);
         $school->setEmailSMV($emailSMV);
+        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.png', true);
+        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.png', true);
         $school->setRegionId($regionId);
 
         try {
