@@ -200,6 +200,8 @@ class AdminController extends BaseController
         $self = getCurrentUser();
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -214,7 +216,16 @@ class AdminController extends BaseController
         $group = createGroup($name, $websiteUrl, $regionId);
 
         try {
-            saveGroup($group);
+            $id = saveGroup($group);
+
+            if ($logoFile->isValid()) {
+                $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'logo.png');
+            }
+
+            if ($imageFile->isValid()) {
+                $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'image.png');
+            }
+
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
             return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -305,6 +316,9 @@ class AdminController extends BaseController
         $address = $this->request->getPost('address');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
+        $emailSMV = $this->request->getPost('emailSMV');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -316,10 +330,19 @@ class AdminController extends BaseController
             return redirect('admin/schools')->with('error', 'Du darfst in dieser Region keine Schulen verwalten.');
         }
 
-        $group = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $regionId);
+        $school = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $emailSMV, $regionId);
 
         try {
-            saveSchool($group);
+            $id = saveSchool($school);
+
+            if ($logoFile->isValid()) {
+                $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'logo.png');
+            }
+
+            if ($imageFile->isValid()) {
+                $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'image.png');
+            }
+
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
         } catch (Exception $e) {
             return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
