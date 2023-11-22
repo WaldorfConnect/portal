@@ -200,6 +200,8 @@ class AdminController extends BaseController
         $self = getCurrentUser();
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -214,7 +216,11 @@ class AdminController extends BaseController
         $group = createGroup($name, $websiteUrl, $regionId);
 
         try {
-            saveGroup($group);
+            $id = saveGroup($group);
+
+            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'logo.png', true);
+            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'image.png', true);
+
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
             return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -237,6 +243,8 @@ class AdminController extends BaseController
 
         try {
             deleteGroup($groupId);
+            delete_files(ROOTPATH . 'public/assets/img/group/' . $groupId, true, false, true);
+            rmdir(ROOTPATH . 'public/assets/img/group/' . $groupId);
             return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
         } catch (Exception $e) {
             return redirect('admin/groups')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
@@ -273,10 +281,14 @@ class AdminController extends BaseController
 
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $group->setName($name);
         $group->setWebsiteUrl($websiteUrl);
+        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.png', true);
+        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.png', true);
         $group->setRegionId($regionId);
 
         try {
@@ -305,6 +317,9 @@ class AdminController extends BaseController
         $address = $this->request->getPost('address');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
+        $emailSMV = $this->request->getPost('emailSMV');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -316,10 +331,14 @@ class AdminController extends BaseController
             return redirect('admin/schools')->with('error', 'Du darfst in dieser Region keine Schulen verwalten.');
         }
 
-        $group = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $regionId);
+        $school = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $emailSMV, $regionId);
 
         try {
-            saveSchool($group);
+            $id = saveSchool($school);
+
+            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'logo.png', true);
+            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'image.png', true);
+
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
         } catch (Exception $e) {
             return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -342,6 +361,8 @@ class AdminController extends BaseController
 
         try {
             deleteSchool($schoolId);
+            delete_files(ROOTPATH . 'public/assets/img/school/' . $schoolId, true, false, true);
+            rmdir(ROOTPATH . 'public/assets/img/school/' . $schoolId);
             return redirect('admin/schools')->with('success', 'Schule gelöscht.');
         } catch (Exception $e) {
             return redirect('admin/schools')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
@@ -383,6 +404,8 @@ class AdminController extends BaseController
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $emailSMV = $this->request->getPost('emailSMV');
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $school->setName($name);
@@ -391,6 +414,8 @@ class AdminController extends BaseController
         $school->setWebsiteUrl($websiteUrl);
         $school->setEmailBureau($emailBureau);
         $school->setEmailSMV($emailSMV);
+        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.png', true);
+        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.png', true);
         $school->setRegionId($regionId);
 
         try {
