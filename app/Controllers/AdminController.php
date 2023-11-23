@@ -243,8 +243,11 @@ class AdminController extends BaseController
 
         try {
             deleteGroup($groupId);
-            delete_files(ROOTPATH . 'public/assets/img/group/' . $groupId, true, false, true);
-            rmdir(ROOTPATH . 'public/assets/img/group/' . $groupId);
+            $imagesFolder = ROOTPATH . 'public/assets/img/group/' . $groupId;
+            if (is_dir($imagesFolder)) {
+                delete_files($imagesFolder, true, false, true);
+                rmdir($imagesFolder);
+            }
             return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
         } catch (Exception $e) {
             return redirect('admin/groups')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
@@ -361,8 +364,11 @@ class AdminController extends BaseController
 
         try {
             deleteSchool($schoolId);
-            delete_files(ROOTPATH . 'public/assets/img/school/' . $schoolId, true, false, true);
-            rmdir(ROOTPATH . 'public/assets/img/school/' . $schoolId);
+            $imagesFolder = ROOTPATH . 'public/assets/img/school/' . $schoolId;
+            if (is_dir($imagesFolder)) {
+                delete_files($imagesFolder, true, false, true);
+                rmdir($imagesFolder);
+            }
             return redirect('admin/schools')->with('success', 'Schule gelöscht.');
         } catch (Exception $e) {
             return redirect('admin/schools')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
