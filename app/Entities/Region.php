@@ -52,6 +52,7 @@ class Region extends Entity
         $this->attributes['iso_code'] = $isoCode;
     }
 
+    # A region may only be managed by GLOBAL_ADMINs or its REGION_ADMINs
     public function mayManage(User $user): bool
     {
         if ($user->getRole() == UserRole::GLOBAL_ADMIN) {

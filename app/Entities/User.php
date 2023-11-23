@@ -196,20 +196,25 @@ class User extends Entity
         return getGroupMembership($this->getId(), $groupId);
     }
 
+    # The role hierarchy is as follows: GLOBAL_ADMIN > REGION_ADMIN > SCHOOL_ADMIN > USER
     public function mayManage(User $user): bool
     {
+        # Everyone may manage himself
         if ($this->getId() == $user->getId())
             return true;
 
+        # A GLOBAL_ADMIN may manage anybody
         if ($this->getRole() == UserRole::GLOBAL_ADMIN)
             return true;
 
+        # REGION_ADMINS may manage only users from their region with lower role
         if ($this->getRole() == UserRole::REGION_ADMIN
             && $user->getRole() != UserRole::REGION_ADMIN
             && $user->getRole() != UserRole::GLOBAL_ADMIN
             && $this->getSchool()->getRegionId() == $user->getSchool()->getRegionId())
             return true;
 
+        # SCHOOL_ADMINS may manage only users from their school with lower role
         if ($this->getRole() == UserRole::SCHOOL_ADMIN
             && $user->getRole() != UserRole::SCHOOL_ADMIN
             && $user->getRole() != UserRole::REGION_ADMIN
