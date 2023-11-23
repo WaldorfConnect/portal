@@ -8,6 +8,7 @@ use Exception;
 use Ramsey\Uuid\Uuid;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
+use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
 use function App\Helpers\getUserByUsernameAndPassword;
@@ -65,6 +66,18 @@ class UserController extends BaseController
         }
 
         return redirect('user/profile')->with('success', 1);
+    }
+
+    public function handleProfileResendConfirmationEmail(): RedirectResponse
+    {
+        $userId = $this->request->getPost('userId');
+        $user = getUserById($userId);
+        try {
+            queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+        } catch (Exception $e) {
+            return redirect('user/profile')->with('error', 'Fehler beim erneuten Versenden der E-Mail: ' . $e->getMessage());
+        }
+        return redirect('user/profile')->with('success', 1)->with('resendSuccess', 1);
     }
 
     public function resetPassword(): string

@@ -16,7 +16,7 @@ $self = getCurrentUser();
     </div>
 <?php endif; ?>
 
-<?php if (session('success')): ?>
+<?php if (session('success') && !session('resendSuccess')): ?>
     <div class="alert alert-success mb-3">
         Profil gespeichert.
     </div>
@@ -45,6 +45,13 @@ $self = getCurrentUser();
                    placeholder="E-Mail" value="<?= $self->getEmail() ?>" aria-describedby="emailHelp" required>
             <?php if ($self->getStatus() == UserStatus::PENDING_EMAIL): ?>
                 <span id="emailHelp" class="badge bg-warning">Warte auf Bestätigung</span>
+                <?php if (session('resendSuccess')): ?>
+                <span id="resentBadge" class="badge bg-success">Erneut versandt</span>
+                <?php endif; ?>
+                <button type="button" class="btn btn-link btn-sm text-dark"
+                        onclick="document.getElementById('resendEmailButton').click();">
+                        Nach ein paar Minuten noch keine E-Mail erhalten? Erneut anfordern!
+                </button>
             <?php else: ?>
                 <span id="emailHelp" class="badge bg-success">E-Mail bestätigt</span>
             <?php endif; ?>
@@ -72,4 +79,8 @@ $self = getCurrentUser();
     </div>
 
     <button class="btn btn-primary btn-block" type="submit">Speichern</button>
+<?= form_close() ?>
+
+<?= form_open('user/profile/resend', ['class' => 'd-none', 'id' => 'resendEmailForm'], ['userId' => $self->getId()]) ?>
+    <button id="resendEmailButton" type="submit">E-Mail erneut versenden</button>
 <?= form_close() ?>

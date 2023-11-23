@@ -26,6 +26,7 @@ $routes->post('/user/reset_password', 'UserController::handleResetPassword', ['f
 
 $routes->get('/user/profile', 'UserController::profile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile', 'UserController::handleProfile', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/profile/resend', 'UserController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/user/confirm', 'UserController::handleConfirm');
 
