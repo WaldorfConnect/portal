@@ -11,6 +11,7 @@ use function App\Helpers\createGroupMembershipRequest;
 use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
 use function App\Helpers\getUserByEmail;
+use function App\Helpers\getUserById;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\hashSSHA;
 use function App\Helpers\saveUser;
@@ -125,7 +126,19 @@ class AuthenticationController extends BaseController
             return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
-        return redirect('register')->with('success', 1);
+        return redirect('register')->with('success', 1)->with('userId', $id)->with('email', $email);
+    }
+
+    public function handleRegisterResendConfirmationEmail(): string|RedirectResponse
+    {
+        $userId = $this->request->getPost('userId');
+        $user = getUserById($userId);
+        try {
+            queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+        } catch (Exception $e) {
+            return redirect('register')->with('success', 1)->with('resend', 'failure')->with('userId', $userId)->with('email', $user->getEmail());
+        }
+        return redirect('register')->with('success', 1)->with('resend', 'success')->with('userId', $userId)->with('email', $user->getEmail());
     }
 
     public function logout(): RedirectResponse
