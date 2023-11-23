@@ -68,7 +68,7 @@ use function App\Helpers\getUsers;
                 <td><?= $user->getRole()->badge() ?></td>
                 <td><?= $user->getStatus()->badge() ?></td>
                 <td>
-                    <?php if ($user->getStatus() == UserStatus::PENDING_ACCEPT): ?>
+                    <?php if ($user->getStatus() == UserStatus::PENDING_ACCEPT || $user->getStatus() == UserStatus::PENDING_REGISTER): ?>
                         <?= form_open('admin/user/accept') ?>
                         <?= form_hidden('id', $user->getId()) ?>
                         <button type="submit" class="btn btn-success">

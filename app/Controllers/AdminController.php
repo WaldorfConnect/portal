@@ -50,9 +50,17 @@ class AdminController extends BaseController
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
 
+        $status = $user->getStatus();
+
         // User awaiting acceptance
-        if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
+        if ($status == UserStatus::PENDING_ACCEPT || $status == UserStatus::PENDING_REGISTER) {
+
+        } elseif ($status == UserStatus::OK) {
             return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
+        } elseif ($status == UserStatus::DENIED) {
+            return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits abgelehnt.');
+        } else {
+            redirect('admin/users')->with('error', "Dieser Nutzer hat den Status $status und kann nicht akzeptiert werden.");
         }
 
         $user->setStatus(UserStatus::OK);
@@ -72,9 +80,19 @@ class AdminController extends BaseController
         $user = getUserById($userId);
 
         // User awaiting acceptance
-        if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
+        $status = $user->getStatus();
+
+        // User awaiting acceptance
+        if ($status == UserStatus::PENDING_ACCEPT || $status == UserStatus::PENDING_REGISTER) {
+
+        } elseif ($status == UserStatus::OK) {
+            return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
+        } elseif ($status == UserStatus::DENIED) {
             return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits abgelehnt.');
+        } else {
+            redirect('admin/users')->with('error', "Dieser Nutzer hat den Status $status und kann nicht abgelehnt werden.");
         }
+
 
         $user->setStatus(UserStatus::DENIED);
         try {
