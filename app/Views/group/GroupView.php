@@ -52,11 +52,11 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                         <table>
                             <tr>
                                 <?php
-                                $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.png";
+                                $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.webp";
                                 if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath)) {
                                     $groupLogoSrc = base_url($groupLogoPath);
                                 } else {
-                                    $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.png');
+                                    $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.webp');
                                 }
                                 ?>
                                 <img class="img-thumbnail mb-3" src="<?= $groupLogoSrc ?>"
@@ -77,11 +77,11 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                     <div class="col-lg-6">
                         <figure>
                             <?php
-                            $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.png";
+                            $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.webp";
                             if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupImagePath)) {
                                 $groupImageSrc = base_url($groupImagePath);
                             } else {
-                                $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.png');
+                                $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.webp');
                             }
                             ?>
                             <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
