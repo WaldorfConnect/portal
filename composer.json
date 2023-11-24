@@ -13,7 +13,9 @@
     "directorytree/ldaprecord": "^3.0",
     "guzzlehttp/guzzle": "^7.8",
     "phpmailer/phpmailer": "^6.8",
-    "ramsey/uuid": "^4.7"
+    "ramsey/uuid": "^4.7",
+    "ext-exif": "*",
+    "ext-gd": "*"
   },
   "require-dev": {
     "fakerphp/faker": "^1.9",
