@@ -12,7 +12,7 @@ use CodeIgniter\Files\File;
  * Having omitted the 'uploaded[$inputName]' rule, it is optional that with the given input a file as been uploaded.
  * Size is limited to 2MB, which is also the `upload_max_filesize` of the Apache (see `/etc/php/8.2/apache2/php.ini`)
  */
-function createImageValidationRule(string $inputName): array
+function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000, int $maxWidth = 3840, int $maxHeight = 2160): array
 {
     return [
         $inputName => [
@@ -20,8 +20,8 @@ function createImageValidationRule(string $inputName): array
             'rules' => [
                 "is_image[$inputName]",
                 "mime_in[$inputName,image/png,image/jpg,image/jpeg,image/gif,image/webp]",
-                "max_size[$inputName,2000]",
-                "max_dims[$inputName,3840,2160]",
+                "max_size[$inputName,$maxFileSizeKb]",
+                "max_dims[$inputName,$maxWidth,$maxHeight]",
             ],
         ],
     ];
