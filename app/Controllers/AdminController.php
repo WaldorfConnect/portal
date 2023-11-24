@@ -231,10 +231,10 @@ class AdminController extends BaseController
 
             // 2. If a logo/image was uploaded, convert it to webp and save it
             if ($logoFile->isValid()) {
-                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $id . '/logo.webp');
+                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $id, 'logo.webp');
             }
             if ($imageFile->isValid()) {
-                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $id . '/image.webp');
+                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image.webp');
             }
 
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
@@ -316,10 +316,10 @@ class AdminController extends BaseController
 
         // 2. If a logo/image was uploaded, convert it to webp and save it
         if ($logoFile->isValid()) {
-            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId . '/logo.webp');
+            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.webp');
         }
         if ($imageFile->isValid()) {
-            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId . '/image.webp');
+            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.webp');
         }
 
         try {
@@ -378,10 +378,10 @@ class AdminController extends BaseController
 
             // 2. If a logo/image was uploaded, convert it to webp and save it
             if ($logoFile->isValid()) {
-                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $id . '/logo.webp');
+                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $id, 'logo.webp');
             }
             if ($imageFile->isValid()) {
-                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $id . '/image.webp');
+                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $id, 'image.webp');
             }
 
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
@@ -472,10 +472,10 @@ class AdminController extends BaseController
 
         // 2. If a logo/image was uploaded, convert it to webp and save it
         if ($logoFile->isValid()) {
-            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId . '/logo.webp');
+            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.webp');
         }
         if ($imageFile->isValid()) {
-            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId . '/image.webp');
+            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.webp');
         }
 
         try {

@@ -29,14 +29,15 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
 
 /**
  * @param File $file an image file of either one of the allowed formats (see above function)
- * @param string $outputPath
- * @param int $compressionQuality
+ * @param string $outputDir
+ * @param string $newName the new name of the file
+ * @param int $quality of the resulting image
  * @return void
  *
  * Convert the image to WEBP format and save it under the specified outputPath
  * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
  */
-function convertToWebp(File $file, string $outputPath, int $compressionQuality = 90): void
+function convertToWebp(File $file, string $outputDir, string $newName, int $quality = 100): void
 {
     $filePath = $file->getTempName();
     $fileType = exif_imagetype($filePath);
@@ -60,7 +61,8 @@ function convertToWebp(File $file, string $outputPath, int $compressionQuality =
     }
 
     // Convert the image to Webp and save (create/overwrite) it
-    imagewebp($image, $outputPath, $compressionQuality);
+    if (!file_exists($outputDir)) mkdir($outputDir);
+    imagewebp($image, $outputDir . '/' . $newName, $quality);
 
     // Free up memory
     imagedestroy($image);
