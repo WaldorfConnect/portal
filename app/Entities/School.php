@@ -175,6 +175,7 @@ class School extends Entity
         return getUsersBySchoolId($this->getId());
     }
 
+    # A school may only be managed by GLOBAL_ADMINs, REGIONAL_ADMINs of its region or its SCHOOL_ADMINs
     public function mayManage(User $user): bool
     {
         if ($user->getRole() == UserRole::GLOBAL_ADMIN) {

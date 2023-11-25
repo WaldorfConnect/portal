@@ -19,12 +19,14 @@ $routes->get('/logout', 'AuthenticationController::logout', ['filter' => LoggedI
 
 $routes->get('/register', 'AuthenticationController::register', ['filter' => LoggedOutFilter::class]);
 $routes->post('/register', 'AuthenticationController::handleRegister', ['filter' => LoggedOutFilter::class]);
+$routes->post('/register/resend', 'AuthenticationController::handleRegisterResendConfirmationEmail', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/user/reset_password', 'UserController::resetPassword', ['filter' => LoggedOutFilter::class]);
 $routes->post('/user/reset_password', 'UserController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/user/profile', 'UserController::profile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile', 'UserController::handleProfile', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/profile/resend', 'UserController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/user/confirm', 'UserController::handleConfirm');
 
