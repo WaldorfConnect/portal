@@ -128,6 +128,7 @@ class AdminController extends BaseController
         $email = $this->request->getPost('email');
         $schoolId = $this->request->getPost('school');
         $role = $this->request->getPost('role');
+        $status = $this->request->getPost('status');
         $password = $this->request->getPost('password');
         $confirmedPassword = $this->request->getPost('confirmedPassword');
 
@@ -145,6 +146,7 @@ class AdminController extends BaseController
 
         if ($self->getRole() == UserRole::GLOBAL_ADMIN) {
             $user->setRole(UserRole::from($role));
+            $user->setStatus(UserStatus::from($status));
         }
 
         // Check if user wants to change password
