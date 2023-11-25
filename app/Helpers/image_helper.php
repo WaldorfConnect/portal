@@ -58,6 +58,8 @@ function convertToWebp(File $file, string $outputDir, string $newName, int $qual
         case IMAGETYPE_WEBP:
             $image = imagecreatefromwebp($file);
             break;
+        default:
+            return;
     }
 
     // Convert the image to Webp and save (create/overwrite) it
