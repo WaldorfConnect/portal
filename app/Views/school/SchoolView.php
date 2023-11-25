@@ -25,11 +25,11 @@ use function App\Helpers\getUsersBySchoolId;
                         <table>
                             <tr>
                                 <?php
-                                $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.png";
+                                $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.webp";
                                 if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath)) {
                                     $schoolLogoSrc = base_url($schoolLogoPath);
                                 } else {
-                                    $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.png');
+                                    $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.webp');
                                 }
                                 ?>
                                 <img class="img-thumbnail mb-3" src="<?= $schoolLogoSrc ?>"
@@ -74,11 +74,11 @@ use function App\Helpers\getUsersBySchoolId;
                     <div class="col-lg-6">
                         <figure>
                             <?php
-                            $schoolImagePath = "/assets/img/school/" . $school->getId() . "/image.png";
+                            $schoolImagePath = "/assets/img/school/" . $school->getId() . "/image.webp";
                             if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolImagePath)) {
                                 $schoolImageSrc = base_url($schoolImagePath);
                             } else {
-                                $schoolImageSrc = base_url('/assets/img/placeholders/school-image_1920x1080.png');
+                                $schoolImageSrc = base_url('/assets/img/placeholders/school-image_1920x1080.webp');
                             }
                             ?>
                             <a href="<?= $schoolImageSrc ?>" data-toggle="lightbox">

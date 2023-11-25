@@ -21,10 +21,16 @@ use function App\Helpers\getGroups;
         Hier werden alle Gruppen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
 
-    <?php if ($success = session('error')): ?>
+    <?php $errors = session('error'); if ($errors): ?>
         <div class="col-md-12">
             <div class="alert alert-danger">
-                <?= $success ?>
+                <?php if (is_array($errors)): ?>
+                    <?php foreach ($errors as $error): ?>
+                        <?= esc($error) ?><br>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?= $errors ?>
+                <?php endif; ?>
             </div>
         </div>
     <?php endif; ?>

@@ -39,16 +39,16 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
-        <label for="inputLogo" class="col-form-label col-md-4 col-lg-3">Logo (z.B. 512x128)</label>
+        <label for="inputLogo" class="col-form-label col-md-4 col-lg-3">Logo (ca. 512x128 | max. 1MB)</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputLogo" name="logo" type="file" accept="image/png">
+            <input class="form-control" id="inputLogo" name="logo" type="file" accept="image/png, image/jpg, image/jpeg, image/gif, image/webp">
         </div>
     </div>
 
     <div class="form-group row mb-3">
-        <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Bild (z.B. 1920x1080)</label>
+        <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Bild (ca. 1920x1080 | max. 2MB)</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputImage" name="image" type="file" accept="image/png">
+            <input class="form-control" id="inputImage" name="image" type="file" accept="image/png, image/jpg, image/jpeg, image/gif, image/webp">
         </div>
     </div>
 
@@ -64,6 +64,8 @@ $currentUser = getCurrentUser();
         </div>
     </div>
 
-    <button class="btn btn-primary btn-block" type="submit">Erstellen</button>
+    <button id="submitButton" class="btn btn-primary btn-block" type="submit">Erstellen</button>
     <?= form_close() ?>
 </div>
+
+<script src="<?= base_url('/') ?>/assets/js/enforceFileUploadSizeLimits.js"></script>

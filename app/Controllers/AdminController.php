@@ -6,7 +6,9 @@ use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use function App\Helpers\convertToWebp;
 use function App\Helpers\createGroup;
+use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createRegion;
 use function App\Helpers\createSchool;
 use function App\Helpers\deleteGroup;
@@ -200,8 +202,6 @@ class AdminController extends BaseController
         $self = getCurrentUser();
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
-        $logoFile = $this->request->getFile('logo');
-        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -218,8 +218,24 @@ class AdminController extends BaseController
         try {
             $id = saveGroup($group);
 
-            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'logo.png', true);
-            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $id, 'image.png', true);
+            // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
+            if (!$this->validate(createImageValidationRule('logo', 1000))) {
+                return redirect('admin/groups')->with('error', $this->validator->getErrors());
+            }
+            if (!$this->validate(createImageValidationRule('image'))) {
+                return redirect('admin/groups')->with('error', $this->validator->getErrors());
+            }
+
+            $logoFile = $this->request->getFile('logo');
+            $imageFile = $this->request->getFile('image');
+
+            // 2. If a logo/image was uploaded, convert it to webp and save it
+            if ($logoFile->isValid()) {
+                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $id, 'logo.webp');
+            }
+            if ($imageFile->isValid()) {
+                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image.webp');
+            }
 
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
@@ -284,15 +300,30 @@ class AdminController extends BaseController
 
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
-        $logoFile = $this->request->getFile('logo');
-        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $group->setName($name);
         $group->setWebsiteUrl($websiteUrl);
-        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.png', true);
-        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.png', true);
         $group->setRegionId($regionId);
+
+        // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
+        if (!$this->validate(createImageValidationRule('logo', 1000))) {
+            return redirect('admin/groups')->with('error', $this->validator->getErrors());
+        }
+        if (!$this->validate(createImageValidationRule('image'))) {
+            return redirect('admin/groups')->with('error', $this->validator->getErrors());
+        }
+
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
+
+        // 2. If a logo/image was uploaded, convert it to webp and save it
+        if ($logoFile->isValid()) {
+            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.webp');
+        }
+        if ($imageFile->isValid()) {
+            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.webp');
+        }
 
         try {
             saveGroup($group);
@@ -321,8 +352,6 @@ class AdminController extends BaseController
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $emailSMV = $this->request->getPost('emailSMV');
-        $logoFile = $this->request->getFile('logo');
-        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
@@ -339,8 +368,24 @@ class AdminController extends BaseController
         try {
             $id = saveSchool($school);
 
-            if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'logo.png', true);
-            if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $id, 'image.png', true);
+            // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
+            if (!$this->validate(createImageValidationRule('logo', 1000))) {
+                return redirect('admin/schools')->with('error', $this->validator->getErrors());
+            }
+            if (!$this->validate(createImageValidationRule('image'))) {
+                return redirect('admin/schools')->with('error', $this->validator->getErrors());
+            }
+
+            $logoFile = $this->request->getFile('logo');
+            $imageFile = $this->request->getFile('image');
+
+            // 2. If a logo/image was uploaded, convert it to webp and save it
+            if ($logoFile->isValid()) {
+                convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $id, 'logo.webp');
+            }
+            if ($imageFile->isValid()) {
+                convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $id, 'image.webp');
+            }
 
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
         } catch (Exception $e) {
@@ -410,8 +455,6 @@ class AdminController extends BaseController
         $websiteUrl = $this->request->getPost('websiteUrl');
         $emailBureau = $this->request->getPost('emailBureau');
         $emailSMV = $this->request->getPost('emailSMV');
-        $logoFile = $this->request->getFile('logo');
-        $imageFile = $this->request->getFile('image');
         $regionId = $this->request->getPost('region');
 
         $school->setName($name);
@@ -420,9 +463,26 @@ class AdminController extends BaseController
         $school->setWebsiteUrl($websiteUrl);
         $school->setEmailBureau($emailBureau);
         $school->setEmailSMV($emailSMV);
-        if ($logoFile->isValid()) $logoFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.png', true);
-        if ($imageFile->isValid()) $imageFile->move(ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.png', true);
         $school->setRegionId($regionId);
+
+        // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
+        if (!$this->validate(createImageValidationRule('logo', 1000))) {
+            return redirect('admin/schools')->with('error', $this->validator->getErrors());
+        }
+        if (!$this->validate(createImageValidationRule('image'))) {
+            return redirect('admin/schools')->with('error', $this->validator->getErrors());
+        }
+
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
+
+        // 2. If a logo/image was uploaded, convert it to webp and save it
+        if ($logoFile->isValid()) {
+            convertToWebp($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.webp');
+        }
+        if ($imageFile->isValid()) {
+            convertToWebp($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.webp');
+        }
 
         try {
             saveSchool($school);
