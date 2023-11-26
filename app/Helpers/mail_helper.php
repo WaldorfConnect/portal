@@ -5,14 +5,11 @@ namespace App\Helpers;
 use App\Entities\Mail;
 use App\Models\MailModel;
 use CodeIgniter\CLI\CLI;
-use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use ReflectionException;
 
 /**
  * Retrieve, send and delete mails in queue.
- *
- * @throws Exception
  */
 function workMailQueue(): void
 {
@@ -24,7 +21,7 @@ function workMailQueue(): void
             CLI::error("Invalid user id {$mail->getRecipientId()}");
         }
 
-        $mailer->ClearAllRecipients();
+        $mailer->clearAddresses();
         $mailer->addAddress($recipient->getEmail());
         $mailer->Subject = $mail->getSubject();
         $mailer->Body = $mail->getBody();
@@ -99,9 +96,6 @@ function getMailModel(): MailModel
     return new MailModel();
 }
 
-/**
- * @throws Exception
- */
 function createMailer(): PHPMailer
 {
     $mailer = new PHPMailer();
@@ -117,5 +111,6 @@ function createMailer(): PHPMailer
     $mailer->setFrom(getenv('mail.from.address'), getenv('mail.from.name'));
     $mailer->isHTML();
     $mailer->CharSet = PHPMailer::CHARSET_UTF8;
+
     return $mailer;
 }
