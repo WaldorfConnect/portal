@@ -16,13 +16,15 @@ use ReflectionException;
  */
 function workMailQueue(): void
 {
+    $mailer = createMailer();
+
     foreach (getMails() as $mail) {
         $recipient = getUserById($mail->getRecipientId());
         if (!$recipient) {
             CLI::error("Invalid user id {$mail->getRecipientId()}");
         }
 
-        $mailer = createMailer();
+        $mailer->ClearAllRecipients();
         $mailer->addAddress($recipient->getEmail());
         $mailer->Subject = $mail->getSubject();
         $mailer->Body = $mail->getBody();
@@ -33,6 +35,8 @@ function workMailQueue(): void
         } else {
             CLI::error("Error sending mail {$mail->getId()} to {$recipient->getEmail()}: {$mailer->ErrorInfo}");
         }
+
+        usleep(100_000); // sleep for 100ms
     }
 }
 
