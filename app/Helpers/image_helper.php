@@ -37,11 +37,18 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
  * Convert the image to WEBP format and save it under the specified outputPath
  * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
  */
-function convertToWebp(File $file, string $outputDir, string $newName, int $quality = 100): void
+function saveImageAsWebpFile(File $file, string $outputDir, string $newName, int $quality = 100): void
 {
-    $filePath = $file->getTempName();
-    $fileType = exif_imagetype($filePath);
+    $inputFilePath = $file->getTempName();
+    $outputFilePath = $outputDir . '/' . $newName;
 
+    // Determine image format from Exif data
+    $fileType = exif_imagetype($inputFilePath);
+
+    // Create the output directory if it doesn't exist
+    if (!is_dir($outputDir)) mkdir($outputDir);
+
+    // Load the image - or if it's a WEBP already just move it to its destination and quit
     switch ($fileType) {
         case IMAGETYPE_GIF:
             $image = imagecreatefromgif($file);
@@ -56,15 +63,14 @@ function convertToWebp(File $file, string $outputDir, string $newName, int $qual
             imagesavealpha($image, true);
             break;
         case IMAGETYPE_WEBP:
-            $image = imagecreatefromwebp($file);
-            break;
+            rename($inputFilePath, $outputFilePath);
+            return;
         default:
             return;
     }
 
-    // Convert the image to Webp and save (create/overwrite) it
-    if (!file_exists($outputDir)) mkdir($outputDir);
-    imagewebp($image, $outputDir . '/' . $newName, $quality);
+    // Convert the image to WEBP and save (create/overwrite) it
+    imagewebp($image, $outputFilePath, $quality);
 
     // Free up memory
     imagedestroy($image);
