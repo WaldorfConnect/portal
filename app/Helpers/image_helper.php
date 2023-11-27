@@ -52,6 +52,9 @@ function saveImageAsWebpFile(File $file, string $outputDir, string $newName, int
     switch ($fileType) {
         case IMAGETYPE_GIF:
             $image = imagecreatefromgif($file);
+            imagepalettetotruecolor($image);
+            imagealphablending($image, true);
+            imagesavealpha($image, true);
             break;
         case IMAGETYPE_JPEG:
             $image = imagecreatefromjpeg($file);
