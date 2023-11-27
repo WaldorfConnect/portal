@@ -7,8 +7,7 @@
             <div class="col-md">
                 <p class="mb-2">Ein Dienst der</p>
                 <span>
-                    <b>Arbeitsgruppe Vernetzung</b><br>
-                    i. A. der WaldorfSV<br>
+                    <b>Arbeitsgruppe WaldorfConnect</b><br>
                 </span>
                 <p>&copy; 2023</p>
             </div>
@@ -21,19 +20,19 @@
                     <li>
                         <a href="//waldorfconnect.de/datenschutz" target="_blank">Datenschutz</a>
                     </li>
-                    <li>
-                        <a href="//github.com/WaldorfConnect/portal" target="_blank">Quellcode auf GitHub</a>
-                    </li>
                 </ul>
             </div>
             <div class="col-md">
                 <h1 class="h5">Partner & Unterstützung</h1>
                 <ul class="list-unstyled">
                     <li>
-                        <a href="//linus.bayern" target="_blank">linus.bayern</a>
+                        <a href="//waldorfschule.de" target="_blank">Bund der Freien Waldorfschulen</a>
                     </li>
                     <li>
                         <a href="//waldorfsv.de" target="_blank">WaldorfSV</a>
+                    </li>
+                    <li>
+                        <a href="//elektronisch.dev" target="_blank">elektronisch.dev</a>
                     </li>
                 </ul>
             </div>
