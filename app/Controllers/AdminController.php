@@ -439,16 +439,18 @@ class AdminController extends BaseController
 
     public function handleEditSchool(): RedirectResponse
     {
+        $returnUrl = $this->request->getPost('returnUrl');
+
         $self = getCurrentUser();
         $schoolId = $this->request->getPost('id');
         $school = getSchoolById($schoolId);
 
         if (!$school) {
-            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
+            return redirect()->to($returnUrl)->with('error', 'Unbekannte Schule.');
         }
 
         if (!$school->mayManage($self)) {
-            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht löschen.');
+            return redirect()->to($returnUrl)->with('error', 'Du darfst diese Schule nicht löschen.');
         }
 
         $name = $this->request->getPost('name');
@@ -469,10 +471,10 @@ class AdminController extends BaseController
 
         // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
         if (!$this->validate(createImageValidationRule('logo', 1000))) {
-            return redirect('admin/schools')->with('error', $this->validator->getErrors());
+            return redirect()->to($returnUrl)->with('error', $this->validator->getErrors());
         }
         if (!$this->validate(createImageValidationRule('image'))) {
-            return redirect('admin/schools')->with('error', $this->validator->getErrors());
+            return redirect()->to($returnUrl)->with('error', $this->validator->getErrors());
         }
 
         $logoFile = $this->request->getFile('logo');
@@ -488,9 +490,9 @@ class AdminController extends BaseController
 
         try {
             saveSchool($school);
-            return redirect('admin/schools')->with('success', 'Schule bearbeitet.');
+            return redirect()->to($returnUrl)->with('success', 'Schule bearbeitet.');
         } catch (Exception $e) {
-            return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect()->to($returnUrl)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
     }
 

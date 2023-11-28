@@ -24,6 +24,7 @@ $currentUser = getCurrentUser();
 <div class="row">
     <?= form_open_multipart('admin/school/edit') ?>
     <?= form_hidden('id', $school->getId()) ?>
+    <?= form_hidden('returnUrl', request()->getGet('return') ? request()->getGet('return') : 'admin/schools') ?>
 
     <div class="form-group row mb-3">
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Name</label>

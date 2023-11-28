@@ -1,5 +1,6 @@
 <?php
 
+use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUsersBySchoolId;
 
 ?>
@@ -14,6 +15,28 @@ use function App\Helpers\getUsersBySchoolId;
 </nav>
 
 <h1 class="header"><?= $school->getName() ?></h1>
+
+<?php $errors = session('error'); if ($errors): ?>
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <?php if (is_array($errors)): ?>
+                <?php foreach ($errors as $error): ?>
+                    <?= esc($error) ?><br>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <?= $errors ?>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($success = session('success')): ?>
+    <div class="col-md-12">
+        <div class="alert alert-success">
+            <?= $success ?>
+        </div>
+    </div>
+<?php endif; ?>
 
 <div class="row">
     <div class="col-lg-8">
@@ -50,7 +73,9 @@ use function App\Helpers\getUsersBySchoolId;
                             <?php if (!empty($school->getWebsiteUrl())): ?>
                                 <tr>
                                     <th>Website:&nbsp;</th>
-                                    <td><a href="<?= $school->getWebsiteUrl() ?>"><?= parse_url($school->getWebsiteUrl())['host'] ?></a></td>
+                                    <td>
+                                        <a href="<?= $school->getWebsiteUrl() ?>"><?= parse_url($school->getWebsiteUrl())['host'] ?></a>
+                                    </td>
                                 </tr>
                             <?php endif; ?>
                             <tr>
@@ -98,6 +123,12 @@ use function App\Helpers\getUsersBySchoolId;
         <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body text-center">
+                <?php if(getCurrentUser()->getRole()->isAdmin()): ?>
+                    <a class="btn btn-success"
+                       href="<?= base_url('admin/school/edit/' . $school->getId()) ?>?return=<?= uri_string() ?>">
+                        <i class="fas fa-edit"></i> Bearbeiten
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
