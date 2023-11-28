@@ -6,22 +6,23 @@ use CodeIgniter\Files\File;
 
 /**
  * @param $inputName string the name attribute value of the <input type="file" name="...">
+ * @param int $maxFileSizeKb int the maximum file size of the image
+ * @param bool $svgAllowed whether the svg format is allowed or not
  * @return array an image validation rule, ensuring it is a common image format
  * Docs: https://codeigniter.com/user_guide/libraries/validation.html?highlight=validation#rules-for-file-uploads
  *
  * Having omitted the 'uploaded[$inputName]' rule, it is optional that with the given input a file as been uploaded.
  * Size is limited to 2MB, which is also the `upload_max_filesize` of the Apache (see `/etc/php/8.2/apache2/php.ini`)
  */
-function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000, int $maxWidth = 3840, int $maxHeight = 2160): array
+function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000, bool $svgAllowed = false): array
 {
     return [
         $inputName => [
             'label' => 'Image File',
             'rules' => [
                 "is_image[$inputName]",
-                "mime_in[$inputName,image/png,image/jpg,image/jpeg,image/gif,image/webp]",
+                "mime_in[$inputName,image/png,image/jpg,image/jpeg,image/gif,image/webp" . ($svgAllowed ? ',image/svg+xml' : '') . "]",
                 "max_size[$inputName,$maxFileSizeKb]",
-                "max_dims[$inputName,$maxWidth,$maxHeight]",
             ],
         ],
     ];
@@ -30,23 +31,34 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
 /**
  * @param File $file an image file of either one of the allowed formats (see above function)
  * @param string $outputDir
- * @param string $newName the new name of the file
+ * @param string $newName the new name of the file without extension
  * @param int $quality of the resulting image
  * @return void
  *
  * Convert the image to WEBP format and save it under the specified outputPath
  * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
  */
-function saveImageAsWebpFile(File $file, string $outputDir, string $newName, int $quality = 100): void
+function saveImage(File $file, string $outputDir, string $newName, int $quality = 100): void
 {
     $inputFilePath = $file->getTempName();
-    $outputFilePath = $outputDir . '/' . $newName;
-
-    // Determine image format from Exif data
-    $fileType = exif_imagetype($inputFilePath);
 
     // Create the output directory if it doesn't exist
     if (!is_dir($outputDir)) mkdir($outputDir);
+
+    // If it's a logo file in SVG format, move it to its destination and quit
+    if (mime_content_type($inputFilePath) == 'image/svg+xml') {
+        rename($inputFilePath, $outputDir . '/' . $newName . '.svg');
+        return;
+    }
+
+    // If it's a logo file not in SVG format, delete the one in SVG, because else that still gets displayed
+    if ($newName == 'logo' && mime_content_type($inputFilePath) != 'image/svg+xml' && is_file($outputDir . '/logo.svg'))
+        unlink($outputDir . '/logo.svg');
+
+    $outputFilePath = $outputDir . '/' . $newName . '.webp';
+
+    // Determine image format from Exif data
+    $fileType = exif_imagetype($inputFilePath);
 
     // Load the image - or if it's a WEBP already just move it to its destination and quit
     switch ($fileType) {

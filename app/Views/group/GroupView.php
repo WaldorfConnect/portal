@@ -52,9 +52,11 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                         <table>
                             <tr>
                                 <?php
-                                $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo.webp";
-                                if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath)) {
-                                    $groupLogoSrc = base_url($groupLogoPath);
+                                $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo";
+                                if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.svg')) {
+                                    $groupLogoSrc = base_url($groupLogoPath . '.svg');
+                                } else if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.webp')) {
+                                    $groupLogoSrc = base_url($groupLogoPath . '.webp');
                                 } else {
                                     $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.webp');
                                 }

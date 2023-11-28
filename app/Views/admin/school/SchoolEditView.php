@@ -77,7 +77,7 @@ $currentUser = getCurrentUser();
     <div class="form-group row mb-3">
         <label for="inputLogo" class="col-form-label col-md-4 col-lg-3">Logo (ca. 512x128 | max. 1MB)</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputLogo" name="logo" type="file" accept="image/png, image/jpg, image/jpeg, image/gif, image/webp">
+            <input class="form-control" id="inputLogo" name="logo" type="file" accept="image/png, image/jpg, image/jpeg, image/gif, image/webp, image/svg+xml">
         </div>
     </div>
 

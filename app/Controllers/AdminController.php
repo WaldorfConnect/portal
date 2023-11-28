@@ -6,7 +6,7 @@ use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
-use function App\Helpers\saveImageAsWebpFile;
+use function App\Helpers\saveImage;
 use function App\Helpers\createGroup;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createRegion;
@@ -220,8 +220,8 @@ class AdminController extends BaseController
         try {
             $id = saveGroup($group);
 
-            // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
-            if (!$this->validate(createImageValidationRule('logo', 1000))) {
+            // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
+            if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
                 return redirect('admin/groups')->with('error', $this->validator->getErrors());
             }
             if (!$this->validate(createImageValidationRule('image'))) {
@@ -231,12 +231,12 @@ class AdminController extends BaseController
             $logoFile = $this->request->getFile('logo');
             $imageFile = $this->request->getFile('image');
 
-            // 2. If a logo/image was uploaded, convert it to webp and save it
+            // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
             if ($logoFile->isValid()) {
-                saveImageAsWebpFile($logoFile, ROOTPATH . 'public/assets/img/group/' . $id, 'logo.webp');
+                saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $id, 'logo');
             }
             if ($imageFile->isValid()) {
-                saveImageAsWebpFile($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image.webp');
+                saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image');
             }
 
             return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
@@ -308,8 +308,8 @@ class AdminController extends BaseController
         $group->setWebsiteUrl($websiteUrl);
         $group->setRegionId($regionId);
 
-        // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
-        if (!$this->validate(createImageValidationRule('logo', 1000))) {
+        // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
+        if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
             return redirect('admin/groups')->with('error', $this->validator->getErrors());
         }
         if (!$this->validate(createImageValidationRule('image'))) {
@@ -319,12 +319,12 @@ class AdminController extends BaseController
         $logoFile = $this->request->getFile('logo');
         $imageFile = $this->request->getFile('image');
 
-        // 2. If a logo/image was uploaded, convert it to webp and save it
+        // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
-            saveImageAsWebpFile($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo.webp');
+            saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo');
         }
         if ($imageFile->isValid()) {
-            saveImageAsWebpFile($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'image.webp');
+            saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'image');
         }
 
         try {
@@ -370,8 +370,8 @@ class AdminController extends BaseController
         try {
             $id = saveSchool($school);
 
-            // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
-            if (!$this->validate(createImageValidationRule('logo', 1000))) {
+            // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
+            if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
                 return redirect('admin/schools')->with('error', $this->validator->getErrors());
             }
             if (!$this->validate(createImageValidationRule('image'))) {
@@ -381,12 +381,12 @@ class AdminController extends BaseController
             $logoFile = $this->request->getFile('logo');
             $imageFile = $this->request->getFile('image');
 
-            // 2. If a logo/image was uploaded, convert it to webp and save it
+            // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
             if ($logoFile->isValid()) {
-                saveImageAsWebpFile($logoFile, ROOTPATH . 'public/assets/img/school/' . $id, 'logo.webp');
+                saveImage($logoFile, ROOTPATH . 'public/assets/img/school/' . $id, 'logo');
             }
             if ($imageFile->isValid()) {
-                saveImageAsWebpFile($imageFile, ROOTPATH . 'public/assets/img/school/' . $id, 'image.webp');
+                saveImage($imageFile, ROOTPATH . 'public/assets/img/school/' . $id, 'image');
             }
 
             return redirect('admin/schools')->with('success', 'Schule erstellt.');
@@ -469,8 +469,8 @@ class AdminController extends BaseController
         $school->setEmailSMV($emailSMV);
         $school->setRegionId($regionId);
 
-        // 1. Prevent a logo/image from being uploaded that is not image, bigger than 1/2MB or bigger than 3840x2160
-        if (!$this->validate(createImageValidationRule('logo', 1000))) {
+        // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
+        if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
             return redirect()->to($returnUrl)->with('error', $this->validator->getErrors());
         }
         if (!$this->validate(createImageValidationRule('image'))) {
@@ -480,12 +480,12 @@ class AdminController extends BaseController
         $logoFile = $this->request->getFile('logo');
         $imageFile = $this->request->getFile('image');
 
-        // 2. If a logo/image was uploaded, convert it to webp and save it
+        // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
-            saveImageAsWebpFile($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo.webp');
+            saveImage($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo');
         }
         if ($imageFile->isValid()) {
-            saveImageAsWebpFile($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image.webp');
+            saveImage($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image');
         }
 
         try {

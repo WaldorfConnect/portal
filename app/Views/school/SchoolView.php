@@ -48,9 +48,11 @@ use function App\Helpers\getUsersBySchoolId;
                         <table>
                             <tr>
                                 <?php
-                                $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo.webp";
-                                if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath)) {
-                                    $schoolLogoSrc = base_url($schoolLogoPath);
+                                $schoolLogoPath = "/assets/img/school/" . $school->getId() . "/logo";
+                                if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath . '.svg')) {
+                                    $schoolLogoSrc = base_url($schoolLogoPath . '.svg');
+                                } else if (is_file($_SERVER['DOCUMENT_ROOT'] . $schoolLogoPath . '.webp')) {
+                                    $schoolLogoSrc = base_url($schoolLogoPath . '.webp');
                                 } else {
                                     $schoolLogoSrc = base_url('/assets/img/placeholders/school-logo_512x128.webp');
                                 }
