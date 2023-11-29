@@ -5,7 +5,6 @@ namespace App\Entities;
 use CodeIgniter\Entity\Entity;
 use function App\Helpers\getGroupMembership;
 use function App\Helpers\getGroupMembershipsByUserId;
-use function App\Helpers\getGroupsByUserId;
 use function App\Helpers\getSchoolById;
 
 class User extends Entity
@@ -17,7 +16,7 @@ class User extends Entity
         'email' => null,
         'password' => null,
         'school_id' => null,
-        'role' => null,
+        'global_admin' => null,
         'status' => null,
         'token' => null,
     ];
@@ -29,7 +28,7 @@ class User extends Entity
         'email' => 'string',
         'password' => 'string',
         'school_id' => 'integer',
-        'role' => 'string',
+        'global_admin' => 'boolean',
         'status' => 'string',
         'token' => 'string',
     ];
@@ -136,16 +135,16 @@ class User extends Entity
     }
 
     /**
-     * @return UserRole
+     * @return bool
      */
-    public function getRole(): UserRole
+    public function isGlobalAdmin(): bool
     {
-        return UserRole::from($this->attributes['role']);
+        return $this->attributes['global_admin'];
     }
 
-    public function setRole(UserRole $status): void
+    public function setGlobalAdmin(bool $globalAdmin): void
     {
-        $this->attributes['role'] = $status->value;
+        $this->attributes['global_admin'] = $globalAdmin;
     }
 
     /**
