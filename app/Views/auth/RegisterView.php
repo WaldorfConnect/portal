@@ -36,9 +36,9 @@ use function App\Helpers\getSchoolsByRegionId;
 
                     <?php else: ?>
                         <div class="alert alert-success">
-                            <b>Registrierung erfolgreich!</b> Dein Account wurde angelegt. Wir haben dir nun eine E-Mail mit
-                            einem Bestätigungslink an <?= session('email') ?> gesendet. Bitte klicke auf diesen Link, um mit
-                            der Registrierung fortzufahren!
+                            <b>Registrierung erfolgreich!</b> Dein Account wurde angelegt. Wir haben dir nun eine <b>E-Mail mit
+                                einem Bestätigungslink</b> an <?= session('email') ?> gesendet. Bitte klicke auf diesen Link, um mit
+                            der Registrierung fortzufahren!<br>Dein Benutzername lautet: <b><?= session('username') ?></b>.
                         </div>
                     <?php endif; ?>
 
