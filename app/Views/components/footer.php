@@ -7,7 +7,7 @@
             <div class="col-md">
                 <p class="mb-2">Ein Dienst der</p>
                 <span>
-                    <b>Arbeitsgruppe WaldorfConnect</b><br>
+                    <b>Arbeitsgruppe<br>WaldorfConnect</b><br>
                 </span>
                 <p>&copy; 2023</p>
             </div>
