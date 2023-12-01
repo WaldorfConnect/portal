@@ -3,9 +3,9 @@
 namespace App\Helpers;
 
 use App\Entities\Group;
-use App\Entities\GroupMembership;
+use App\Entities\Membership;
 use App\Entities\MembershipStatus;
-use App\Models\GroupMembershipModel;
+use App\Models\MembershipModel;
 use App\Models\GroupModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;
@@ -76,48 +76,48 @@ function deleteGroup(int $id): void
 }
 
 /**
- * Returns the group membership (or join request) for a given user in a given group.
+ * Returns the membership (or join request) for a given user in a given group.
  *
  * @param int $userId
  * @param int $groupId
- * @return ?GroupMembership
+ * @return ?Membership
  */
-function getGroupMembership(int $userId, int $groupId): ?object
+function getMembership(int $userId, int $groupId): ?object
 {
-    return getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->first();
+    return getMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->first();
 }
 
 /**
- * Returns the group memberships (or join requests) for a given user.
+ * Returns the memberships (or join requests) for a given user.
  *
  * @param int $userId
- * @return GroupMembership[]
+ * @return Membership[]
  */
-function getGroupMembershipsByUserId(int $userId): array
+function getMembershipsByUserId(int $userId): array
 {
-    return getGroupMembershipModel()->where('user_id', $userId)->findAll();
+    return getMembershipModel()->where('user_id', $userId)->findAll();
 }
 
 /**
- * Returns the group memberships (or join requests) for a given group.
+ * Returns the memberships (or join requests) for a given group.
  *
  * @param int $groupId
- * @return GroupMembership[]
+ * @return Membership[]
  */
-function getGroupMembershipsByGroupId(int $groupId): array
+function getMembershipsByGroupId(int $groupId): array
 {
-    return getGroupMembershipModel()->where('group_id', $groupId)->findAll();
+    return getMembershipModel()->where('group_id', $groupId)->findAll();
 }
 
 /**
  * Returns the members (join requests excluded) for a given group.
  *
  * @param int $groupId
- * @return GroupMembership[]
+ * @return Membership[]
  */
-function getGroupMembers(int $groupId): array
+function getMembers(int $groupId): array
 {
-    return getGroupMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->findAll();
+    return getMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->findAll();
 }
 
 /**
@@ -126,20 +126,20 @@ function getGroupMembers(int $groupId): array
  * @param int $groupId
  * @return int
  */
-function countGroupMembers(int $groupId): int
+function countMembers(int $groupId): int
 {
-    return getGroupMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->countAllResults();
+    return getMembershipModel()->where('group_id', $groupId)->whereNotIn('status', [MembershipStatus::PENDING->value])->countAllResults();
 }
 
 /**
  * Returns the join requests (members excluded) for a given group.
  *
  * @param int $groupId
- * @return GroupMembership[]
+ * @return Membership[]
  */
-function getGroupJoinRequests(int $groupId): array
+function getJoinRequests(int $groupId): array
 {
-    return getGroupMembershipModel()->where('group_id', $groupId)->where('status', MembershipStatus::PENDING->value)->findAll();
+    return getMembershipModel()->where('group_id', $groupId)->where('status', MembershipStatus::PENDING->value)->findAll();
 }
 
 /**
@@ -163,30 +163,43 @@ function getGroupsByRegionId(int $regionId): array
  * @throws DatabaseException
  * @throws ReflectionException
  */
-function createGroupMembershipRequest(int $userId, int $groupId): void
+function createMembershipRequest(int $userId, int $groupId): void
 {
-    $membership = new GroupMembership();
+    $membership = new Membership();
     $membership->setUserId($userId);
     $membership->setGroupId($groupId);
     $membership->setStatus(MembershipStatus::PENDING);
     saveMembership($membership);
 }
 
-function deleteGroupMembership(int $userId, int $groupId): void
+function deleteMembership(int $userId, int $groupId): void
 {
-    getGroupMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->delete();
+    getMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->delete();
 }
 
 /**
  * Saves given membership model.
  *
- * @param GroupMembership $membership
+ * @param Membership $membership
  * @return void
  * @throws ReflectionException
  */
-function saveMembership(GroupMembership $membership): void
+function saveMembership(Membership $membership): void
 {
-    getGroupMembershipModel()->save($membership);
+    getMembershipModel()->save($membership);
+}
+
+/**
+ * Returns whether a given user has administrative permissions for the given group.
+ *
+ * @param int $userId
+ * @param int $groupId
+ * @return bool
+ */
+function isGroupAdmin(int $userId, int $groupId): bool
+{
+    $membership = getMembership($userId, $groupId);
+    return $membership && $membership->getStatus() == MembershipStatus::ADMIN;
 }
 
 /**
@@ -202,9 +215,9 @@ function getGroupModel(): GroupModel
 /**
  * Returns the group membership table wrapper and query builder.
  *
- * @return GroupMembershipModel
+ * @return MembershipModel
  */
-function getGroupMembershipModel(): GroupMembershipModel
+function getMembershipModel(): MembershipModel
 {
-    return new GroupMembershipModel();
+    return new MembershipModel();
 }

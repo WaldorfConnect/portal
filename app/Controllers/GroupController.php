@@ -5,11 +5,11 @@ namespace App\Controllers;
 use App\Entities\MembershipStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
-use function App\Helpers\createGroupMembershipRequest;
-use function App\Helpers\deleteGroupMembership;
+use function App\Helpers\createMembershipRequest;
+use function App\Helpers\deleteMembership;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getGroupById;
-use function App\Helpers\getGroupMembership;
+use function App\Helpers\getMembership;
 use function App\Helpers\getUserById;
 use function App\Helpers\saveMembership;
 
@@ -39,13 +39,13 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        $membership = getGroupMembership($currentUser->getId(), $groupId);
+        $membership = getMembership($currentUser->getId(), $groupId);
         if ($membership) {
             return redirect('groups')->with('error', 'Du bist bereits Mitglied dieser Gruppe.');
         }
 
         try {
-            createGroupMembershipRequest($currentUser->getId(), $groupId);
+            createMembershipRequest($currentUser->getId(), $groupId);
             // TODO send email / notification
         } catch (Exception $e) {
             return redirect('groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -74,7 +74,7 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getGroupMembership($user->getId(), $groupId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership || $membership->getStatus() != MembershipStatus::PENDING) {
             return redirect('groups')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
         }
@@ -111,13 +111,13 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getGroupMembership($user->getId(), $groupId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership || $membership->getStatus() != MembershipStatus::PENDING) {
             return redirect('groups')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
         }
 
         try {
-            deleteGroupMembership($userId, $groupId);
+            deleteMembership($userId, $groupId);
             // TODO send email / notification
         } catch (Exception $e) {
             return redirect('groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -147,7 +147,7 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getGroupMembership($user->getId(), $groupId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership) {
             return redirect('groups')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Gruppe.');
         }
@@ -183,13 +183,13 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getGroupMembership($user->getId(), $groupId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership) {
             return redirect('groups')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Gruppe.');
         }
 
         try {
-            deleteGroupMembership($userId, $groupId);
+            deleteMembership($userId, $groupId);
         } catch (Exception $e) {
             return redirect('groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }

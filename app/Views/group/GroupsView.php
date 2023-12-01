@@ -25,7 +25,7 @@
     </div>
 <?php endif; ?>
 
-<?php use function App\Helpers\countGroupMembers;
+<?php use function App\Helpers\countMembers;
 use function App\Helpers\getGroupsByRegionId;
 use function App\Helpers\getRegions;
 
@@ -54,7 +54,7 @@ foreach (getRegions() as $region): ?>
                             <a class="me-2" href="<?= base_url('group/' . $group->getId()) ?>">
                                 <?= $group->getName() ?>
                             </a>
-                            <?php if (($count = countGroupMembers($group->getId())) == 0): ?>
+                            <?php if (($count = countMembers($group->getId())) == 0): ?>
                                 <span class="badge bg-danger">
                                 Keine Mitglieder
                             </span>

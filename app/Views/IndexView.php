@@ -32,7 +32,7 @@ use function App\Helpers\getGroupsByUserId;
             </div>
             <div class="card-body">
                 <ul class="list-group">
-                    <?php foreach ($user->getGroupMemberships() as $membership): ?>
+                    <?php foreach ($user->getMemberships() as $membership): ?>
                         <li class="list-group-item">
                             <div class="flex-container">
                                 <div class="flex-main">

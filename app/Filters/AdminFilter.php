@@ -2,7 +2,6 @@
 
 namespace App\Filters;
 
-use App\Entities\UserRole;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;

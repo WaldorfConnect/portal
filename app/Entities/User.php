@@ -3,9 +3,10 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getGroupMembership;
-use function App\Helpers\getGroupMembershipsByUserId;
-use function App\Helpers\getSchoolById;
+use function App\Helpers\getMembership;
+use function App\Helpers\getMembershipsByUserId;
+use function App\Helpers\isGroupAdmin;
+use function App\Helpers\isRegionAdmin;
 
 class User extends Entity
 {
@@ -15,7 +16,6 @@ class User extends Entity
         'name' => null,
         'email' => null,
         'password' => null,
-        'school_id' => null,
         'global_admin' => null,
         'status' => null,
         'token' => null,
@@ -27,7 +27,6 @@ class User extends Entity
         'name' => 'string',
         'email' => 'string',
         'password' => 'string',
-        'school_id' => 'integer',
         'global_admin' => 'boolean',
         'status' => 'string',
         'token' => 'string',
@@ -122,19 +121,6 @@ class User extends Entity
     }
 
     /**
-     * @return School
-     */
-    public function getSchool(): School
-    {
-        return getSchoolById($this->getSchoolId());
-    }
-
-    public function setSchoolId(int $schoolId): void
-    {
-        $this->attributes['school_id'] = $schoolId;
-    }
-
-    /**
      * @return bool
      */
     public function isGlobalAdmin(): bool
@@ -179,47 +165,43 @@ class User extends Entity
     }
 
     /**
-     * @return GroupMembership[]
+     * @return Membership[]
      */
-    public function getGroupMemberships(): array
+    public function getMemberships(): array
     {
-        return getGroupMembershipsByUserId($this->getId());
-    }
-
-    /**
-     * @param int $group
-     * @return ?GroupMembership
-     */
-    public function getGroupMembership(int $groupId): ?object
-    {
-        return getGroupMembership($this->getId(), $groupId);
+        return getMembershipsByUserId($this->getId());
     }
 
     # The role hierarchy is as follows: GLOBAL_ADMIN > REGION_ADMIN > SCHOOL_ADMIN > USER
-    public function mayManage(User $user): bool
+    public function mayManage(User $target): bool
     {
         # Everyone may manage himself
-        if ($this->getId() == $user->getId())
+        if ($this->getId() == $target->getId()) {
             return true;
+        }
 
-        # A GLOBAL_ADMIN may manage anybody
-        if ($this->getRole() == UserRole::GLOBAL_ADMIN)
+        # A global admin may manage anybody
+        if ($this->isGlobalAdmin()) {
             return true;
+        }
 
-        # REGION_ADMINS may manage only users from their region with lower role
-        if ($this->getRole() == UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::GLOBAL_ADMIN
-            && $this->getSchool()->getRegionId() == $user->getSchool()->getRegionId())
-            return true;
+        foreach ($target->getMemberships() as $membership) {
+            # We may NOT manage if target user is admin himself
+            if ($membership->getStatus() == MembershipStatus::ADMIN) {
+                continue;
+            }
 
-        # SCHOOL_ADMINS may manage only users from their school with lower role
-        if ($this->getRole() == UserRole::SCHOOL_ADMIN
-            && $user->getRole() != UserRole::SCHOOL_ADMIN
-            && $user->getRole() != UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::GLOBAL_ADMIN
-            && $this->getSchoolId() == $user->getSchoolId())
-            return true;
+            # We may manage if we're admin of the group
+            $ownMembership = getMembership($this->getId(), $membership->getGroupId());
+            if ($ownMembership && $ownMembership->getStatus() == MembershipStatus::ADMIN) {
+                return true;
+            }
+
+            # We may manage if we're admin of the group's region
+            if (isRegionAdmin($this->getId(), $membership->getGroup()->getRegionId())) {
+                return true;
+            }
+        }
 
         return false;
     }

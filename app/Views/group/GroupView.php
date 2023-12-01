@@ -3,11 +3,11 @@
 use App\Entities\MembershipStatus;
 use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getGroupMembershipsByGroupId;
-use function App\Helpers\getGroupMembership;
+use function App\Helpers\getMembershipsByGroupId;
+use function App\Helpers\getMembership;
 
 $currentUser = getCurrentUser();
-$ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
+$ownMembership = getMembership($currentUser->getId(), $group->getId());
 ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -21,7 +21,7 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
 
 <h1 class="header">
     <?= $group->getName() ?>
-    <?php if (($membership = getGroupMembership(getCurrentUser()->getId(), $group->getId()))): ?>
+    <?php if (($membership = getMembership(getCurrentUser()->getId(), $group->getId()))): ?>
         <?= $membership->getStatus()->badge() ?>
     <?php endif; ?>
 </h1>
@@ -140,7 +140,7 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach (getGroupMembershipsByGroupId($group->getId()) as $membership): ?>
+                    <?php foreach (getMembershipsByGroupId($group->getId()) as $membership): ?>
                         <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
                             <?php if (!$group->mayManage($currentUser)): continue; endif; ?>
 

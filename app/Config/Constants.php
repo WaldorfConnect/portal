@@ -97,7 +97,6 @@ const PREFIX = "portal_";
 const GROUPS = PREFIX . "groups";
 const MEMBERSHIPS = PREFIX . "memberships";
 const REGIONS = PREFIX . "regions";
-const SCHOOLS = PREFIX . "schools";
 const USERS = PREFIX . "users";
 const MAILS = PREFIX . "mails";
 

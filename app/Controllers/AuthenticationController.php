@@ -7,7 +7,7 @@ use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use InvalidArgumentException;
 use function App\Helpers\checkSSHA;
-use function App\Helpers\createGroupMembershipRequest;
+use function App\Helpers\createMembershipRequest;
 use function App\Helpers\createUser;
 use function App\Helpers\generateUsername;
 use function App\Helpers\getUserByEmail;
@@ -80,7 +80,6 @@ class AuthenticationController extends BaseController
         $email = trim($this->request->getPost('email'));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
-        $schoolId = trim($this->request->getPost('school'));
         $groupIds = $this->request->getPost('groups');
 
         try {
@@ -114,12 +113,12 @@ class AuthenticationController extends BaseController
         }
 
         $hashedPassword = hashSSHA($password);
-        $user = createUser($username, $name, $email, $hashedPassword, $schoolId);
+        $user = createUser($username, $name, $email, $hashedPassword);
 
         try {
             $id = saveUser($user);
             foreach ($groupIds as $groupId) {
-                createGroupMembershipRequest($id, $groupId);
+                createMembershipRequest($id, $groupId);
             }
             queueMail($id, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {

@@ -6,7 +6,7 @@ use CodeIgniter\Entity\Entity;
 use function App\Helpers\getGroupById;
 use function App\Helpers\getUserById;
 
-class GroupMembership extends Entity
+class Membership extends Entity
 {
     protected $attributes = [
         'id' => null,

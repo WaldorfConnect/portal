@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Entities\Group;
-use App\Entities\GroupMembership;
+use App\Entities\Membership;
 use App\Entities\Region;
 use CodeIgniter\Model;
 

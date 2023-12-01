@@ -3,28 +3,41 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getGroupMembership;
-use function App\Helpers\getGroupMembershipsByGroupId;
+use function App\Helpers\getGroupById;
+use function App\Helpers\getMembership;
+use function App\Helpers\getMembershipsByGroupId;
 use function App\Helpers\getRegionById;
+use function App\Helpers\isGroupAdmin;
+use function App\Helpers\isRegionAdmin;
 
 class Group extends Entity
 {
     protected $attributes = [
         'id' => null,
-        'region_id' => null,
+        'parent_group_id' => null,
         'name' => null,
+        'short_name' => null,
+        'region_id' => null,
+        'address' => null,
         'description' => null,
-        'image_author' => null,
         'website_url' => null,
+        'email_office' => null,
+        'email_students' => null,
+        'image_author' => null,
     ];
 
     protected $casts = [
         'id' => 'integer',
-        'region_id' => 'integer',
+        'parent_group_id' => 'integer',
         'name' => 'string',
+        'short_name' => 'string',
+        'region_id' => 'integer',
+        'address' => 'string',
         'description' => 'string',
+        'website_url' => 'string',
+        'email_office' => 'string',
+        'email_students' => 'string',
         'image_author' => 'string',
-        'website_url' => 'string'
     ];
 
     /**
@@ -33,6 +46,53 @@ class Group extends Entity
     public function getId(): ?int
     {
         return $this->attributes['id'];
+    }
+
+    /**
+     * @return ?int
+     */
+    public function getParentGroupId(): ?int
+    {
+        return $this->attributes['parent_group_id'];
+    }
+
+    public function setParentGroupId(int $parentGroupId): void
+    {
+        $this->attributes['parent_group_id'] = $parentGroupId;
+    }
+
+    /**
+     * @return Group
+     */
+    public function getParentGroup(): Group
+    {
+        return getGroupById($this->getParentGroupId());
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->attributes['name'];
+    }
+
+    public function setName(string $name): void
+    {
+        $this->attributes['name'] = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShortName(): string
+    {
+        return $this->attributes['short_name'];
+    }
+
+    public function setShortName(string $shortName): void
+    {
+        $this->attributes['short_name'] = $shortName;
     }
 
     /**
@@ -57,16 +117,16 @@ class Group extends Entity
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getName(): string
+    public function getAddress(): ?string
     {
-        return $this->attributes['name'];
+        return $this->attributes['address'];
     }
 
-    public function setName(string $name): void
+    public function setAddress(string $address): void
     {
-        $this->attributes['name'] = $name;
+        $this->attributes['address'] = $address;
     }
 
     /**
@@ -85,19 +145,6 @@ class Group extends Entity
     /**
      * @return ?string
      */
-    public function getImageAuthor(): ?string
-    {
-        return $this->attributes['image_author'];
-    }
-
-    public function setImageAuthor(string $imageAuthor): void
-    {
-        $this->attributes['image_author'] = $imageAuthor;
-    }
-
-    /**
-     * @return ?string
-     */
     public function getWebsiteUrl(): ?string
     {
         return $this->attributes['website_url'];
@@ -109,29 +156,54 @@ class Group extends Entity
     }
 
     /**
-     * @return GroupMembership[]
+     * @return ?string
+     */
+    public function getEmailOffice(): ?string
+    {
+        return $this->attributes['email_office'];
+    }
+
+    public function setEmailOffice(string $emailOffice): void
+    {
+        $this->attributes['email_office'] = $emailOffice;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getEmailStudents(): ?string
+    {
+        return $this->attributes['email_students'];
+    }
+
+    public function setEmailStudents(string $emailStudents): void
+    {
+        $this->attributes['email_students'] = $emailStudents;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getImageAuthor(): ?string
+    {
+        return $this->attributes['image_author'];
+    }
+
+    public function setImageAuthor(string $imageAuthor): void
+    {
+        $this->attributes['image_author'] = $imageAuthor;
+    }
+
+    /**
+     * @return Membership[]
      */
     public function getMemberships(): array
     {
-        return getGroupMembershipsByGroupId($this->getId());
+        return getMembershipsByGroupId($this->getId());
     }
 
-    # A group may only be managed by GLOBAL_ADMINs, REGIONAL_ADMINs of its region or its members with ADMIN status
     public function mayManage(User $user): bool
     {
-        if ($user->getRole() == UserRole::GLOBAL_ADMIN) {
-            return true;
-        }
-
-        if ($user->getRole() == UserRole::REGION_ADMIN && $this->getRegionId() == $user->getSchool()->getRegionId()) {
-            return true;
-        }
-
-        $membership = getGroupMembership($user->getId(), $this->getId());
-        if ($membership && $membership->getStatus() == MembershipStatus::ADMIN) {
-            return true;
-        }
-
-        return false;
+        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getRegionId()) || isGroupAdmin($user->getId(), $this->getId());
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Entities\User;
-use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use App\Models\UserModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
@@ -143,10 +142,9 @@ function saveUser(User $user): string|int
  * @param string $email
  * @param string $name
  * @param string $password
- * @param int $schoolId
  * @return User
  */
-function createUser(string $username, string $name, string $email, string $password, int $schoolId): User
+function createUser(string $username, string $name, string $email, string $password): User
 {
     $user = new User();
     $user->setToken(Uuid::uuid4()->toString());
@@ -154,8 +152,6 @@ function createUser(string $username, string $name, string $email, string $passw
     $user->setName($name);
     $user->setEmail($email);
     $user->setPassword($password);
-    $user->setSchoolId($schoolId);
-    $user->setRole(UserRole::USER);
     $user->setStatus(UserStatus::PENDING_REGISTER);
     return $user;
 }
