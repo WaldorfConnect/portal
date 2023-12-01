@@ -172,7 +172,22 @@ class User extends Entity
         return getMembershipsByUserId($this->getId());
     }
 
-    # The role hierarchy is as follows: GLOBAL_ADMIN > REGION_ADMIN > SCHOOL_ADMIN > USER
+    /**
+     * Returns whether the user has any administrative powers.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->isGlobalAdmin() || isRegionAdmin($this->getId()) || isGroupAdmin($this->getId());
+    }
+
+    /**
+     * Returns if the current user may manage the given target.
+     *
+     * @param User $target
+     * @return bool
+     */
     public function mayManage(User $target): bool
     {
         # Everyone may manage himself

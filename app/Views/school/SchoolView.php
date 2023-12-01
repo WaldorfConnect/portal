@@ -2,6 +2,7 @@
 
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUsersBySchoolId;
+use function App\Helpers\isGroupAdmin;
 
 ?>
 <nav aria-label="breadcrumb">
@@ -125,7 +126,7 @@ use function App\Helpers\getUsersBySchoolId;
         <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body text-center">
-                <?php if(getCurrentUser()->getRole()->isAdmin()): ?>
+                <?php if(isGroupAdmin(getCurrentUser()->getId(), $school->getId())): ?>
                     <a class="btn btn-success"
                        href="<?= base_url('admin/school/edit/' . $school->getId()) ?>?return=<?= uri_string() ?>">
                         <i class="fas fa-edit"></i> Bearbeiten

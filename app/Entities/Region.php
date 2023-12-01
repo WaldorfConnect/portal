@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\isRegionAdmin;
 
 class Region extends Entity
 {
@@ -52,17 +53,8 @@ class Region extends Entity
         $this->attributes['iso_code'] = $isoCode;
     }
 
-    # A region may only be managed by GLOBAL_ADMINs or its REGION_ADMINs
     public function mayManage(User $user): bool
     {
-        if ($user->getRole() == UserRole::GLOBAL_ADMIN) {
-            return true;
-        }
-
-        if ($user->getRole() == UserRole::REGION_ADMIN && $this->getId() == $user->getSchool()->getRegionId()) {
-            return true;
-        }
-
-        return false;
+        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getId());
     }
 }

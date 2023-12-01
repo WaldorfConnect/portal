@@ -190,6 +190,17 @@ function saveMembership(Membership $membership): void
 }
 
 /**
+ * Returns whether a given user has administrative permissions for any group.
+ *
+ * @param int $userId
+ * @return bool
+ */
+function isGroupAdmin(int $userId): bool
+{
+
+}
+
+/**
  * Returns whether a given user has administrative permissions for the given group.
  *
  * @param int $userId

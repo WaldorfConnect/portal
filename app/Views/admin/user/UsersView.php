@@ -51,7 +51,7 @@ use function App\Helpers\getUsers;
             <th data-field="username" data-sortable="true" scope="col">Benutzername</th>
             <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
             <th data-field="school" data-sortable="true" scope="col">Schule</th>
-            <th data-field="role" data-sortable="true" scope="col">Rolle</th>
+            <th data-field="role" data-sortable="true" scope="col">Globaler Admin</th>
             <th data-field="status" data-sortable="true" scope="col">Status</th>
             <th data-field="action" scope="col">Aktion</th>
         </tr>
@@ -64,8 +64,7 @@ use function App\Helpers\getUsers;
                 <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"
                     data-title="<?= $user->getUsername() ?>"><?= $user->getUsername() ?></td>
                 <td><?= $user->getName() ?></td>
-                <td><?= $user->getSchool()->getName() ?></td>
-                <td><?= $user->getRole()->badge() ?></td>
+                <td><?= $user->isGlobalAdmin() ? 'Ja' : 'Nein' ?></td>
                 <td><?= $user->getStatus()->badge() ?></td>
                 <td>
                     <?php if ($user->getStatus() == UserStatus::PENDING_ACCEPT): ?>

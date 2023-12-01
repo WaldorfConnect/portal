@@ -17,7 +17,7 @@ class AdminFilter implements FilterInterface
             return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}");
         }
 
-        if (!$user->getRole()->isAdmin()) {
+        if (!$user->isAdmin()) {
             return redirect()->to(site_url('/'));
         }
     }

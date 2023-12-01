@@ -172,9 +172,9 @@ class UserController extends BaseController
                 queueMail($user->getId(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
 
                 // Send announcement to all admins
-                foreach (getUsers() as $admin) {
-                    if ($admin->getRole()->isAdmin() && $admin->mayManage($user)) {
-                        queueMail($admin->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $admin, 'target' => $user]));
+                foreach (getUsers() as $target) {
+                    if ($target->mayManage($user)) {
+                        queueMail($target->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $target, 'target' => $user]));
                     }
                 }
             } catch (Exception $e) {

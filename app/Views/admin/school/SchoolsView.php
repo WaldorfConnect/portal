@@ -3,6 +3,7 @@
 use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getSchools;
+use function App\Helpers\isRegionAdmin;
 
 $currentUser = getCurrentUser();
 ?>
@@ -21,7 +22,8 @@ $currentUser = getCurrentUser();
         Hier werden alle Schulen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
 
-    <?php $errors = session('error'); if ($errors): ?>
+    <?php $errors = session('error');
+    if ($errors): ?>
         <div class="col-md-12">
             <div class="alert alert-danger">
                 <?php if (is_array($errors)): ?>
@@ -46,7 +48,7 @@ $currentUser = getCurrentUser();
 
 <div class="row">
     <div class="col-md-5 w-auto ms-auto">
-        <?php if ($currentUser->getRole() == UserRole::REGION_ADMIN || $currentUser->getRole() == UserRole::GLOBAL_ADMIN): ?>
+        <?php if ($currentUser->isGlobalAdmin() || isRegionAdmin($currentUser->getId())): ?>
             <a class="btn btn-primary"
                href="<?= base_url('admin/school/create') ?>">
                 <i class="fas fa-plus-square"></i> Schule erstellen
