@@ -5,7 +5,7 @@ namespace App\Entities;
 use CodeIgniter\Entity\Entity;
 use function App\Helpers\getMembership;
 use function App\Helpers\getMembershipsByUserId;
-use function App\Helpers\isGroupAdmin;
+use function App\Helpers\isOrganisationAdmin;
 use function App\Helpers\isRegionAdmin;
 
 class User extends Entity
@@ -179,7 +179,7 @@ class User extends Entity
      */
     public function isAdmin(): bool
     {
-        return $this->isGlobalAdmin() || isRegionAdmin($this->getId()) || isGroupAdmin($this->getId());
+        return $this->isGlobalAdmin() || isRegionAdmin($this->getId(), null) || isOrganisationAdmin($this->getId(), null);
     }
 
     /**
@@ -207,13 +207,13 @@ class User extends Entity
             }
 
             # We may manage if we're admin of the group
-            $ownMembership = getMembership($this->getId(), $membership->getGroupId());
+            $ownMembership = getMembership($this->getId(), $membership->getOrganisationId());
             if ($ownMembership && $ownMembership->getStatus() == MembershipStatus::ADMIN) {
                 return true;
             }
 
             # We may manage if we're admin of the group's region
-            if (isRegionAdmin($this->getId(), $membership->getGroup()->getRegionId())) {
+            if (isRegionAdmin($this->getId(), $membership->getOrganisation()->getRegionId())) {
                 return true;
             }
         }

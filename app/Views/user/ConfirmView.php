@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getOrganisationsByRegionId;
 use function App\Helpers\getRegions;
 use function App\Helpers\getSchoolsByRegionId;
 

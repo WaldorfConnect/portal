@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getOrganisationsByRegionId;
 use function App\Helpers\getRegions;
 use function App\Helpers\getSchoolsByRegionId;
 
@@ -103,7 +103,7 @@ use function App\Helpers\getSchoolsByRegionId;
                                 required>
                             <?php foreach (getRegions() as $region): ?>
                                 <optgroup label="<?= $region->getName() ?>">
-                                    <?php foreach (getGroupsByRegionId($region->getId()) as $group): ?>
+                                    <?php foreach (getOrganisationsByRegionId($region->getId()) as $group): ?>
                                         <option <?= !is_null(old('groups')) && in_array($group->getId(), old('groups')) ? 'selected' : '' ?>
                                                 value="<?= $group->getId() ?>"><?= $group->name ?></option>
                                     <?php endforeach; ?>

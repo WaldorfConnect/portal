@@ -24,7 +24,7 @@ $user = getCurrentUser() ?>
         <div class="card mb-3">
             <div class="card-header text-center">Globaler Admin</div>
             <div class="card-body text-center">
-                <span class="card-title display-6"><?= $user->isGlobalAdmin() ? 'Ja' : 'Nein' ?></span>
+                <span class="card-title display-2"><?= $user->isGlobalAdmin() ? 'Ja' : 'Nein' ?></span>
             </div>
         </div>
     </div>
@@ -54,15 +54,10 @@ $user = getCurrentUser() ?>
             <i class="fas fa-users fa-2x mb-2"></i><br>
             Benutzer
         </a>
-        <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId())): ?>
-            <a href="<?= base_url('admin/groups') ?>" class="btn btn-primary btn-lg">
+        <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId(), null)): ?>
+            <a href="<?= base_url('admin/organisations') ?>" class="btn btn-primary btn-lg">
                 <i class="fas fa-people-group fa-2x mb-2"></i><br>
-                Gruppen
-            </a>
-            <a href="<?= base_url('admin/schools') ?>"
-               class="btn btn-primary btn-lg <?= !$user->isGlobalAdmin() && !isRegionAdmin($user->getId()) ? "disabled" : "" ?>">
-                <i class="fas fa-school fa-2x mb-2"></i><br>
-                Schulen
+                Organisationen
             </a>
         <?php endif; ?>
         <?php if ($user->isGlobalAdmin()): ?>

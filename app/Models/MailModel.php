@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Entities\Group;
+use App\Entities\Organisation;
 use App\Entities\Mail;
 use CodeIgniter\Model;
 

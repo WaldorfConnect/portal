@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Entities\CustomGroup;
-use App\Entities\Group;
+use App\Entities\Organisation;
 use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
 use Composer\CaBundle\CaBundle;
@@ -14,8 +14,8 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use LdapRecord\LdapRecordException;
 use LdapRecord\Models\OpenLDAP\User;
-use function App\Helpers\getGroupById;
-use function App\Helpers\getGroups;
+use function App\Helpers\getOrganisationById;
+use function App\Helpers\getOrganisations;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\getUsers;
 use function App\Helpers\openLDAPConnection;
@@ -113,7 +113,7 @@ class CronController extends BaseController
 
     private function syncGroupsLDAP(): void
     {
-        foreach (getGroups() as $group) {
+        foreach (getOrganisations() as $group) {
             try {
                 $this->updateOrCreateLDAPGroups($group);
             } catch (LdapRecordException $e) {
@@ -123,7 +123,7 @@ class CronController extends BaseController
 
         $ldapGroups = CustomGroup::query()->in(getenv('ldap.groupsDN'))->paginate();
         foreach ($ldapGroups as $ldapGroup) {
-            if (is_null(getGroupById($ldapGroup->uid[0]))) {
+            if (is_null(getOrganisationById($ldapGroup->uid[0]))) {
                 $ldapGroup->delete();
                 CLI::write('Deleted group ' . $ldapGroup->cn[0]);
             }
@@ -133,7 +133,7 @@ class CronController extends BaseController
     /**
      * @throws LdapRecordException
      */
-    private function updateOrCreateLDAPGroups(Group $group): void
+    private function updateOrCreateLDAPGroups(Organisation $group): void
     {
         $memberships = $group->getMemberships();
         if (count($memberships) == 0) {
@@ -204,7 +204,7 @@ class CronController extends BaseController
         ]);
 
         $folders = $this->getGroupFolders($client);
-        $groups = getGroups();
+        $groups = getOrganisations();
 
         // Check if folder for group exists
         foreach ($groups as $group) {
@@ -217,7 +217,7 @@ class CronController extends BaseController
         }
     }
 
-    private function updateOrCreateGroupFolder(Client $client, array $folders, Group $group): void
+    private function updateOrCreateGroupFolder(Client $client, array $folders, Organisation $group): void
     {
 
     }

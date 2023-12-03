@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Entities\Group;
+use App\Entities\Organisation;
 use App\Entities\Membership;
 use CodeIgniter\Model;
 
@@ -13,7 +13,7 @@ class MembershipModel extends Model
     protected $returnType = Membership::class;
 
     protected $allowedFields = [
-        'user_id', 'group_id', 'status'
+        'user_id', 'organisation_id', 'status'
     ];
 }
 

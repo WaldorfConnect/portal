@@ -3,18 +3,18 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getGroupById;
+use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembership;
-use function App\Helpers\getMembershipsByGroupId;
+use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getRegionById;
-use function App\Helpers\isGroupAdmin;
+use function App\Helpers\isOrganisationAdmin;
 use function App\Helpers\isRegionAdmin;
 
-class Group extends Entity
+class Organisation extends Entity
 {
     protected $attributes = [
         'id' => null,
-        'parent_group_id' => null,
+        'parent_id' => null,
         'name' => null,
         'short_name' => null,
         'region_id' => null,
@@ -28,7 +28,7 @@ class Group extends Entity
 
     protected $casts = [
         'id' => 'integer',
-        'parent_group_id' => 'integer',
+        'parent_id' => 'integer',
         'name' => 'string',
         'short_name' => 'string',
         'region_id' => 'integer',
@@ -51,22 +51,22 @@ class Group extends Entity
     /**
      * @return ?int
      */
-    public function getParentGroupId(): ?int
+    public function getParentId(): ?int
     {
-        return $this->attributes['parent_group_id'];
+        return $this->attributes['parent_id'];
     }
 
-    public function setParentGroupId(int $parentGroupId): void
+    public function setParentId(int $parentOrganisationId): void
     {
-        $this->attributes['parent_group_id'] = $parentGroupId;
+        $this->attributes['parent_id'] = $parentOrganisationId;
     }
 
     /**
-     * @return Group
+     * @return Organisation
      */
-    public function getParentGroup(): Group
+    public function getParent(): Organisation
     {
-        return getGroupById($this->getParentGroupId());
+        return getOrganisationById($this->getParentId());
     }
 
     /**
@@ -199,11 +199,11 @@ class Group extends Entity
      */
     public function getMemberships(): array
     {
-        return getMembershipsByGroupId($this->getId());
+        return getMembershipsByOrganisationId($this->getId());
     }
 
-    public function mayManage(User $user): bool
+    public function isManageableBy(User $user): bool
     {
-        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getRegionId()) || isGroupAdmin($user->getId(), $this->getId());
+        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getRegionId()) || isOrganisationAdmin($user->getId(), $this->getId());
     }
 }

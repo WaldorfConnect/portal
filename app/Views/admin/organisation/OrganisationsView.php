@@ -1,7 +1,7 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getGroups;
+use function App\Helpers\getOrganisations;
 
 ?>
 <div class="row">
@@ -12,16 +12,17 @@ use function App\Helpers\getGroups;
             <li class="breadcrumb-item"><a href="/">Startseite</a></li>
             <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-                Gruppenadministration
+                Organisationsadministration
             </li>
         </ol>
     </nav>
-    <h1 class="header">Gruppenadministration</h1>
+    <h1 class="header">Organisationsadministration</h1>
     <p>
-        Hier werden alle Gruppen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
+        Hier werden alle Organisationen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
 
-    <?php $errors = session('error'); if ($errors): ?>
+    <?php $errors = session('error');
+    if ($errors): ?>
         <div class="col-md-12">
             <div class="alert alert-danger">
                 <?php if (is_array($errors)): ?>
@@ -48,7 +49,7 @@ use function App\Helpers\getGroups;
     <div class="col-md-5 w-auto ms-auto">
         <a class="btn btn-primary"
            href="<?= base_url('admin/group/create') ?>">
-            <i class="fas fa-plus-square"></i> Gruppe erstellen
+            <i class="fas fa-plus-square"></i> Organisation erstellen
         </a>
     </div>
 </div>
@@ -67,26 +68,26 @@ use function App\Helpers\getGroups;
         </thead>
         <tbody>
         <?php $currentUser = getCurrentUser() ?>
-        <?php foreach (getGroups() as $group): ?>
-            <?php if (!$group->mayManage($currentUser)): continue; endif; ?>
+        <?php foreach (getOrganisations() as $organisation): ?>
+            <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
 
             <tr>
-                <td id="td-id-<?= $group->getId() ?>" class="td-class-<?= $group->getId() ?>"
-                    data-title="<?= $group->getName() ?>"><?= $group->getName() ?></td>
-                <td><?= $group->getRegion()->getName() ?></td>
+                <td id="td-id-<?= $organisation->getId() ?>" class="td-class-<?= $organisation->getId() ?>"
+                    data-title="<?= $organisation->getName() ?>"><?= $organisation->getName() ?></td>
+                <td><?= $organisation->getRegion()->getName() ?></td>
                 <td>
                     <div class="btn-group gap-2" role="group">
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('group') . '/' . $group->getId() ?>">
+                           href="<?= base_url('organisation') . '/' . $organisation->getId() ?>">
                             <i class="fas fa-info-circle"></i>
                         </a>
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('admin/group/edit') . '/' . $group->getId() ?>">
+                           href="<?= base_url('admin/organisation/edit') . '/' . $organisation->getId() ?>">
                             <i class="fas fa-pen"></i>
                         </a>
                         <div>
-                            <?= form_open('admin/group/delete', ['onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich löschen?');"]) ?>
-                            <?= form_hidden('id', $group->getId()) ?>
+                            <?= form_open('admin/organisation/delete', ['onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich löschen?');"]) ?>
+                            <?= form_hidden('id', $organisation->getId()) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i>
                             </button>

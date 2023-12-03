@@ -53,7 +53,7 @@ class Region extends Entity
         $this->attributes['iso_code'] = $isoCode;
     }
 
-    public function mayManage(User $user): bool
+    public function isManageableBy(User $user): bool
     {
         return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getId());
     }

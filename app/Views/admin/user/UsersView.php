@@ -50,7 +50,6 @@ use function App\Helpers\getUsers;
         <tr>
             <th data-field="username" data-sortable="true" scope="col">Benutzername</th>
             <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
-            <th data-field="school" data-sortable="true" scope="col">Schule</th>
             <th data-field="role" data-sortable="true" scope="col">Globaler Admin</th>
             <th data-field="status" data-sortable="true" scope="col">Status</th>
             <th data-field="action" scope="col">Aktion</th>

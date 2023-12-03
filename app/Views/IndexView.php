@@ -1,7 +1,6 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getGroupsByUserId;
 
 ?>
 <h1 class="header">Willkommen <?= ($user = getCurrentUser())->getName() ?></h1>
@@ -17,10 +16,10 @@ use function App\Helpers\getGroupsByUserId;
                     <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/" target="_blank">
                         <i class="fas fa-cloud fa-3x"></i><br>Cloud
                     </a>
-                    <!--<a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/apps/spreed/"
+                    <a class="btn btn-primary btn-lg" href="https://cloud.waldorfconnect.de/apps/spreed/"
                        target="_blank">
                         <i class="fas fa-message fa-3x"></i><br>Chat
-                    </a>-->
+                    </a>
                 </div>
             </div>
         </div>
@@ -28,7 +27,7 @@ use function App\Helpers\getGroupsByUserId;
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                Gruppen
+                Mitgliedschaften
             </div>
             <div class="card-body">
                 <ul class="list-group">
@@ -36,12 +35,12 @@ use function App\Helpers\getGroupsByUserId;
                         <li class="list-group-item">
                             <div class="flex-container">
                                 <div class="flex-main">
-                                    <?= ($group = $membership->getGroup())->getName() ?>
+                                    <?= ($organisation = $membership->getOrganisation())->getName() ?>
                                     <?= $membership->getStatus()->badge() ?>
                                 </div>
                                 <div class="flex-actions">
                                     <a class="btn btn-sm btn-outline-primary"
-                                       href="<?= base_url('group') ?>/<?= $group->getId() ?>">
+                                       href="<?= base_url('organisation') ?>/<?= $organisation->getId() ?>">
                                         Öffnen
                                     </a>
                                 </div>
@@ -52,8 +51,8 @@ use function App\Helpers\getGroupsByUserId;
             </div>
             <div class="card-footer footer-plain">
                 <div class="text-center">
-                    <a class="btn btn-block btn-outline-primary" href="/groups">
-                        Alle Gruppen anzeigen
+                    <a class="btn btn-block btn-outline-primary" href="/organisations">
+                        Alle Organisationen anzeigen
                     </a>
                 </div>
             </div>
@@ -62,22 +61,12 @@ use function App\Helpers\getGroupsByUserId;
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                Schule
+                Benachrichtigungen
             </div>
-            <div class="card-body text-center">
-                <div class="d-grid gap-2 mx-auto">
-                    <a class="btn btn-primary btn-lg"
-                       href="<?= base_url('school') ?>/<?= ($school = $user->getSchool())->getId() ?>">
-                        <i class="fas fa-school fa-3x"></i><br><?= $school->getName() ?>
-                    </a>
-                </div>
+            <div class="card-body">
+                <p class="text-center">Diese Funktion folgt demnächst!</p>
             </div>
             <div class="card-footer footer-plain">
-                <div class="text-center">
-                    <a class="btn btn-block btn-outline-primary" href="/schools">
-                        Alle Schulen anzeigen
-                    </a>
-                </div>
             </div>
         </div>
     </div>

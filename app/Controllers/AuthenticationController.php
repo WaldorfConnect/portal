@@ -80,7 +80,7 @@ class AuthenticationController extends BaseController
         $email = trim($this->request->getPost('email'));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
-        $groupIds = $this->request->getPost('groups');
+        $organisationIds = $this->request->getPost('organisations');
 
         try {
             $username = generateUsername($name);
@@ -117,8 +117,8 @@ class AuthenticationController extends BaseController
 
         try {
             $id = saveUser($user);
-            foreach ($groupIds as $groupId) {
-                createMembershipRequest($id, $groupId);
+            foreach ($organisationIds as $organisationId) {
+                createMembershipRequest($id, $organisationId);
             }
             queueMail($id, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {

@@ -7,16 +7,16 @@ use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use function App\Helpers\saveImage;
-use function App\Helpers\createGroup;
+use function App\Helpers\createOrganisation;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createRegion;
 use function App\Helpers\createSchool;
-use function App\Helpers\deleteGroup;
+use function App\Helpers\deleteOrganisation;
 use function App\Helpers\deleteRegion;
 use function App\Helpers\deleteSchool;
 use function App\Helpers\deleteUser;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getGroupById;
+use function App\Helpers\getOrganisationById;
 use function App\Helpers\getRegionById;
 use function App\Helpers\getSchoolById;
 use function App\Helpers\getUserById;
@@ -24,7 +24,7 @@ use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\hashSSHA;
 use function App\Helpers\login;
 use function App\Helpers\logout;
-use function App\Helpers\saveGroup;
+use function App\Helpers\saveOrganisation;
 use function App\Helpers\saveRegion;
 use function App\Helpers\saveSchool;
 use function App\Helpers\saveUser;
@@ -126,8 +126,6 @@ class AdminController extends BaseController
 
         $name = $this->request->getPost('name');
         $email = $this->request->getPost('email');
-        $schoolId = $this->request->getPost('school');
-        $role = $this->request->getPost('role');
         $status = $this->request->getPost('status');
         $password = $this->request->getPost('password');
         $confirmedPassword = $this->request->getPost('confirmedPassword');
@@ -135,17 +133,7 @@ class AdminController extends BaseController
         $user->setName($name);
         $user->setEmail($email);
 
-        $school = getSchoolById($schoolId);
-        if (!$school) {
-            return redirect()->to('admin/user/edit/' . $userId)->with('error', 'Unbekannte Schule.');
-        }
-
-        if ($school->mayManage($self)) {
-            $user->setSchoolId($schoolId);
-        }
-
-        if ($self->getRole() == UserRole::GLOBAL_ADMIN) {
-            $user->setRole(UserRole::from($role));
+        if ($self->isGlobalAdmin()) {
             $user->setStatus(UserStatus::from($status));
         }
 
@@ -189,43 +177,44 @@ class AdminController extends BaseController
         }
     }
 
-    public function groups(): string
+    public function organisations(): string
     {
-        return $this->render('admin/group/GroupsView');
+        return $this->render('admin/organisation/OrganisationsView');
     }
 
-    public function createGroup(): string
+    public function createOrganisation(): string
     {
-        return $this->render('admin/group/GroupCreateView');
+        return $this->render('admin/organisation/OrganisationCreateView');
     }
 
-    public function handleCreateGroup(): RedirectResponse
+    public function handleCreateOrganisation(): RedirectResponse
     {
         $self = getCurrentUser();
+
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
         if (!$region) {
-            return redirect('admin/groups')->with('error', 'Unbekannte Region.');
+            return redirect('admin/organisations')->with('error', 'Unbekannte Region.');
         }
 
-        if (!$region->mayManage($self)) {
-            return redirect('admin/groups')->with('error', 'Du darfst in dieser Region keine Gruppen verwalten.');
+        if (!$region->isManageableBy($self)) {
+            return redirect('admin/organisations')->with('error', 'Du darfst in dieser Region keine Organisationen verwalten.');
         }
 
-        $group = createGroup($name, $websiteUrl, $regionId);
+        $organisation = createOrganisation($name, $websiteUrl, $regionId);
 
         try {
-            $id = saveGroup($group);
+            $id = saveOrganisation($organisation);
 
             // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
             if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-                return redirect('admin/groups')->with('error', $this->validator->getErrors());
+                return redirect('admin/organisations')->with('error', $this->validator->getErrors());
             }
             if (!$this->validate(createImageValidationRule('image'))) {
-                return redirect('admin/groups')->with('error', $this->validator->getErrors());
+                return redirect('admin/organisations')->with('error', $this->validator->getErrors());
             }
 
             $logoFile = $this->request->getFile('logo');
@@ -239,81 +228,82 @@ class AdminController extends BaseController
                 saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image');
             }
 
-            return redirect('admin/groups')->with('success', 'Gruppe erstellt.');
+            return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
-            return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
     }
 
-    public function handleDeleteGroup(): RedirectResponse
+    public function handleDeleteOrganisation(): RedirectResponse
     {
         $self = getCurrentUser();
-        $groupId = $this->request->getPost('id');
-        $group = getGroupById($groupId);
+        $organisationId = $this->request->getPost('id');
+        $organisation = getOrganisationById($organisationId);
 
-        if (!$group) {
-            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        if (!$organisation) {
+            return redirect('admin/organisations')->with('error', 'Unbekannte Organisation.');
         }
 
-        if (!$group->mayManage($self)) {
-            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht löschen.');
+        if (!$organisation->isManageableBy($self)) {
+            return redirect('admin/organisations')->with('error', 'Du darfst diese Organisation nicht löschen.');
         }
 
         try {
-            deleteGroup($groupId);
-            $imagesFolder = ROOTPATH . 'public/assets/img/group/' . $groupId;
+            deleteOrganisation($organisationId);
+            $imagesFolder = ROOTPATH . 'public/assets/img/group/' . $organisationId;
             if (is_dir($imagesFolder)) {
                 delete_files($imagesFolder, true, false, true);
                 rmdir($imagesFolder);
             }
-            return redirect('admin/groups')->with('success', 'Gruppe gelöscht.');
+            return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');
         } catch (Exception $e) {
-            return redirect('admin/groups')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            return redirect('admin/organisations')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
         }
     }
 
-    public function editGroup(int $groupId): RedirectResponse|string
+    public function editGroup(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $group = getGroupById($groupId);
-        if (!$group) {
-            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        $organisation = getOrganisationById($organisationId);
+        if (!$organisation) {
+            return redirect('admin/organisations')->with('error', 'Unbekannte Organisation.');
         }
 
-        if (!$group->mayManage($self)) {
-            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
+        if (!$organisation->isManageableBy($self)) {
+            return redirect('admin/organisations')->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
         }
 
-        return $this->render('admin/group/GroupEditView', ['group' => $group]);
+        return $this->render('admin/organisation/OrganisationEditView', ['organisation' => $organisation]);
     }
 
-    public function handleEditGroup(): RedirectResponse
+    public function handleEditOrganisation(): RedirectResponse
     {
         $self = getCurrentUser();
-        $groupId = $this->request->getPost('id');
-        $group = getGroupById($groupId);
-        if (!$group) {
-            return redirect('admin/groups')->with('error', 'Unbekannte Gruppe.');
+        $organisationId = $this->request->getPost('id');
+        $organisation = getOrganisationById($organisationId);
+
+        if (!$organisation) {
+            return redirect('admin/organisations')->with('error', 'Unbekannte Organisation.');
         }
 
-        if (!$group->mayManage($self)) {
-            return redirect('admin/groups')->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
+        if (!$organisation->isManageableBy($self)) {
+            return redirect('admin/organisations')->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
         }
 
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
 
-        $group->setName($name);
-        $group->setWebsiteUrl($websiteUrl);
-        $group->setRegionId($regionId);
+        $organisation->setName($name);
+        $organisation->setWebsiteUrl($websiteUrl);
+        $organisation->setRegionId($regionId);
 
         // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
         if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-            return redirect('admin/groups')->with('error', $this->validator->getErrors());
+            return redirect('admin/organisations')->with('error', $this->validator->getErrors());
         }
         if (!$this->validate(createImageValidationRule('image'))) {
-            return redirect('admin/groups')->with('error', $this->validator->getErrors());
+            return redirect('admin/organisations')->with('error', $this->validator->getErrors());
         }
 
         $logoFile = $this->request->getFile('logo');
@@ -321,178 +311,17 @@ class AdminController extends BaseController
 
         // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
-            saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'logo');
+            saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $organisationId, 'logo');
         }
         if ($imageFile->isValid()) {
-            saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $groupId, 'image');
+            saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $organisationId, 'image');
         }
 
         try {
-            saveGroup($group);
-            return redirect('admin/groups')->with('success', 'Gruppe bearbeitet.');
+            saveOrganisation($organisation);
+            return redirect('admin/organisations')->with('success', 'Organisation bearbeitet.');
         } catch (Exception $e) {
-            return redirect('admin/groups')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
-        }
-    }
-
-    public function schools(): string
-    {
-        return $this->render('admin/school/SchoolsView');
-    }
-
-    public function createSchool(): string
-    {
-        return $this->render('admin/school/SchoolCreateView');
-    }
-
-    public function handleCreateSchool(): RedirectResponse
-    {
-        $self = getCurrentUser();
-        $name = $this->request->getPost('name');
-        $shortName = $this->request->getPost('shortName');
-        $address = $this->request->getPost('address');
-        $websiteUrl = $this->request->getPost('websiteUrl');
-        $emailBureau = $this->request->getPost('emailBureau');
-        $emailSMV = $this->request->getPost('emailSMV');
-        $regionId = $this->request->getPost('region');
-        $region = getRegionById($regionId);
-
-        if (!$region) {
-            return redirect('admin/schools')->with('error', 'Unbekannte Region.');
-        }
-
-        if (!$region->mayManage($self)) {
-            return redirect('admin/schools')->with('error', 'Du darfst in dieser Region keine Schulen verwalten.');
-        }
-
-        $school = createSchool($name, $shortName, $address, $websiteUrl, $emailBureau, $emailSMV, $regionId);
-
-        try {
-            $id = saveSchool($school);
-
-            // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
-            if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-                return redirect('admin/schools')->with('error', $this->validator->getErrors());
-            }
-            if (!$this->validate(createImageValidationRule('image'))) {
-                return redirect('admin/schools')->with('error', $this->validator->getErrors());
-            }
-
-            $logoFile = $this->request->getFile('logo');
-            $imageFile = $this->request->getFile('image');
-
-            // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
-            if ($logoFile->isValid()) {
-                saveImage($logoFile, ROOTPATH . 'public/assets/img/school/' . $id, 'logo');
-            }
-            if ($imageFile->isValid()) {
-                saveImage($imageFile, ROOTPATH . 'public/assets/img/school/' . $id, 'image');
-            }
-
-            return redirect('admin/schools')->with('success', 'Schule erstellt.');
-        } catch (Exception $e) {
-            return redirect('admin/schools')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
-        }
-    }
-
-    public function handleDeleteSchool(): RedirectResponse
-    {
-        $self = getCurrentUser();
-        $schoolId = $this->request->getPost('id');
-        $school = getSchoolById($schoolId);
-
-        if (!$school) {
-            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
-        }
-
-        if (!$school->mayManage($self)) {
-            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht löschen.');
-        }
-
-        try {
-            deleteSchool($schoolId);
-            $imagesFolder = ROOTPATH . 'public/assets/img/school/' . $schoolId;
-            if (is_dir($imagesFolder)) {
-                delete_files($imagesFolder, true, false, true);
-                rmdir($imagesFolder);
-            }
-            return redirect('admin/schools')->with('success', 'Schule gelöscht.');
-        } catch (Exception $e) {
-            return redirect('admin/schools')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
-        }
-    }
-
-    public function editSchool(int $schoolId): RedirectResponse|string
-    {
-        $self = getCurrentUser();
-        $school = getSchoolById($schoolId);
-        if (!$school) {
-            return redirect('admin/schools')->with('error', 'Unbekannte Schule.');
-        }
-
-        if (!$school->mayManage($self)) {
-            return redirect('admin/schools')->with('error', 'Du darfst diese Schule nicht bearbeiten.');
-        }
-
-        return $this->render('admin/school/SchoolEditView', ['school' => $school]);
-    }
-
-    public function handleEditSchool(): RedirectResponse
-    {
-        $returnUrl = $this->request->getPost('returnUrl');
-
-        $self = getCurrentUser();
-        $schoolId = $this->request->getPost('id');
-        $school = getSchoolById($schoolId);
-
-        if (!$school) {
-            return redirect()->to($returnUrl)->with('error', 'Unbekannte Schule.');
-        }
-
-        if (!$school->mayManage($self)) {
-            return redirect()->to($returnUrl)->with('error', 'Du darfst diese Schule nicht löschen.');
-        }
-
-        $name = $this->request->getPost('name');
-        $shortName = $this->request->getPost('shortName');
-        $address = $this->request->getPost('address');
-        $websiteUrl = $this->request->getPost('websiteUrl');
-        $emailBureau = $this->request->getPost('emailBureau');
-        $emailSMV = $this->request->getPost('emailSMV');
-        $regionId = $this->request->getPost('region');
-
-        $school->setName($name);
-        $school->setShortName($shortName);
-        $school->setAddress($address);
-        $school->setWebsiteUrl($websiteUrl);
-        $school->setEmailBureau($emailBureau);
-        $school->setEmailSMV($emailSMV);
-        $school->setRegionId($regionId);
-
-        // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
-        if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-            return redirect()->to($returnUrl)->with('error', $this->validator->getErrors());
-        }
-        if (!$this->validate(createImageValidationRule('image'))) {
-            return redirect()->to($returnUrl)->with('error', $this->validator->getErrors());
-        }
-
-        $logoFile = $this->request->getFile('logo');
-        $imageFile = $this->request->getFile('image');
-
-        // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
-        if ($logoFile->isValid()) {
-            saveImage($logoFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'logo');
-        }
-        if ($imageFile->isValid()) {
-            saveImage($imageFile, ROOTPATH . 'public/assets/img/school/' . $schoolId, 'image');
-        }
-
-        try {
-            saveSchool($school);
-            return redirect()->to($returnUrl)->with('success', 'Schule bearbeitet.');
-        } catch (Exception $e) {
-            return redirect()->to($returnUrl)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
     }
 

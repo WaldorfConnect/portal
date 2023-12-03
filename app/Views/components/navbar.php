@@ -37,12 +37,9 @@ use function App\Helpers\isRegionAdmin;
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer
                             </a>
-                            <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId())): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
-                                    Gruppen
-                                </a>
-                                <a class="dropdown-item" href="<?= base_url('/admin/schools') ?>">
-                                    Schulen
+                            <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId(), null)): ?>
+                                <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
+                                    Organisationen
                                 </a>
                             <?php endif; ?>
                             <?php if ($user->isGlobalAdmin()): ?>
