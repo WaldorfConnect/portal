@@ -48,7 +48,7 @@ use function App\Helpers\getOrganisations;
 <div class="row">
     <div class="col-md-5 w-auto ms-auto">
         <a class="btn btn-primary"
-           href="<?= base_url('admin/group/create') ?>">
+           href="<?= base_url('admin/organisation/create') ?>">
             <i class="fas fa-plus-square"></i> Organisation erstellen
         </a>
     </div>

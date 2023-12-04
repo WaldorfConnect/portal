@@ -222,10 +222,10 @@ class AdminController extends BaseController
 
             // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
             if ($logoFile->isValid()) {
-                saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $id, 'logo');
+                saveImage($logoFile, ROOTPATH . 'public/assets/img/organisation/' . $id, 'logo');
             }
             if ($imageFile->isValid()) {
-                saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $id, 'image');
+                saveImage($imageFile, ROOTPATH . 'public/assets/img/organisation/' . $id, 'image');
             }
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
@@ -250,7 +250,7 @@ class AdminController extends BaseController
 
         try {
             deleteOrganisation($organisationId);
-            $imagesFolder = ROOTPATH . 'public/assets/img/group/' . $organisationId;
+            $imagesFolder = ROOTPATH . 'public/assets/img/organisation/' . $organisationId;
             if (is_dir($imagesFolder)) {
                 delete_files($imagesFolder, true, false, true);
                 rmdir($imagesFolder);
@@ -311,10 +311,10 @@ class AdminController extends BaseController
 
         // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
-            saveImage($logoFile, ROOTPATH . 'public/assets/img/group/' . $organisationId, 'logo');
+            saveImage($logoFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'logo');
         }
         if ($imageFile->isValid()) {
-            saveImage($imageFile, ROOTPATH . 'public/assets/img/group/' . $organisationId, 'image');
+            saveImage($imageFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'image');
         }
 
         try {
