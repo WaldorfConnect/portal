@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Entities\Organisation;
 use App\Entities\Membership;
 use CodeIgniter\Model;
 

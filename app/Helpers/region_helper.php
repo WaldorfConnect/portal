@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Entities\Region;
-use App\Entities\User;
 use App\Models\RegionModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;

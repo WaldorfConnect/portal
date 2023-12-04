@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Entities\UserRole;
 use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
@@ -10,23 +9,16 @@ use function App\Helpers\saveImage;
 use function App\Helpers\createOrganisation;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createRegion;
-use function App\Helpers\createSchool;
 use function App\Helpers\deleteOrganisation;
 use function App\Helpers\deleteRegion;
-use function App\Helpers\deleteSchool;
 use function App\Helpers\deleteUser;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getRegionById;
-use function App\Helpers\getSchoolById;
 use function App\Helpers\getUserById;
-use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 use function App\Helpers\saveOrganisation;
 use function App\Helpers\saveRegion;
-use function App\Helpers\saveSchool;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 

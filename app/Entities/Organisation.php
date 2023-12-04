@@ -4,7 +4,6 @@ namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
 use function App\Helpers\getOrganisationById;
-use function App\Helpers\getMembership;
 use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getRegionById;
 use function App\Helpers\isOrganisationAdmin;

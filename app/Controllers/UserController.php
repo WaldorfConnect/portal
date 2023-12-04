@@ -11,11 +11,8 @@ use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
-use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\getUsers;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 
