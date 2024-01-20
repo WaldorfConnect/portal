@@ -17,7 +17,7 @@ class GlobalAdminFilter implements FilterInterface
             return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}");
         }
 
-        if (getCurrentUser()->isGlobalAdmin()) {
+        if (!getCurrentUser()->isGlobalAdmin()) {
             return redirect()->to(site_url('/'));
         }
     }
