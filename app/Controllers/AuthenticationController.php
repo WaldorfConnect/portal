@@ -89,12 +89,11 @@ class AuthenticationController extends BaseController
             // If name is already taken add a number
             if ($user) {
                 $id = 2;
-                $newUsername = $username;
+                $newUsername = $username . $id;
 
                 // Increment number till name is no longer taken
                 while (getUserByUsername($newUsername)) {
-                    $newUsername = $username . $id;
-                    $id++;
+                    $newUsername = $username . ++$id;
                 }
 
                 $username = $newUsername;
@@ -125,7 +124,7 @@ class AuthenticationController extends BaseController
             return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
-        return redirect('register')->with('success', 1)->with('userId', $id)->with('email', $email);
+        return redirect('register')->with('success', 1)->with('userId', $id)->with('email', $email)->with('username', $username);
     }
 
     public function handleRegisterResendConfirmationEmail(): string|RedirectResponse
