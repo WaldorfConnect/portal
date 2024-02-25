@@ -11,36 +11,26 @@
 
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getManageableUsers;
+use function App\Helpers\getOrganisations;
 use function App\Helpers\getUsers;
-use function App\Helpers\isRegionAdmin;
 
 $user = getCurrentUser() ?>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-2">
     <div class="col-md-4">
         <div class="card mb-3">
-            <div class="card-header text-center">Admin</div>
+            <div class="card-header text-center">Organisationen</div>
             <div class="card-body text-center">
-                <span class="card-title display-2"><?= $user->isAdmin() ? 'Ja' : 'Nein' ?></span>
+                <span class="card-title display-2"><?= count(getOrganisations()) ?></span>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card mb-3">
-            <div class="card-header text-center">Nutzer gesamt</div>
+            <div class="card-header text-center">Nutzer</div>
             <div class="card-body text-center">
                 <span class="card-title display-2"><?= count(getUsers()) ?></span>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header text-center">Nutzer im Zuständigkeitsbereich</div>
-            <div class="card-body text-center">
-                <span class="card-title display-2"><?= count(getManageableUsers()) ?></span>
             </div>
         </div>
     </div>
