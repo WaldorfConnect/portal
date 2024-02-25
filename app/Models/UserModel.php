@@ -12,7 +12,7 @@ class UserModel extends Model
     protected $returnType = User::class;
 
     protected $allowedFields = [
-        'username', 'name', 'email', 'password', 'global_admin', 'status', 'token'
+        'username', 'name', 'email', 'password', 'admin', 'active', 'email_confirmed', 'password_reset', 'token', 'registration_date', 'last_login_date'
     ];
 }
 

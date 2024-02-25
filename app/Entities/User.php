@@ -3,9 +3,10 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use Ramsey\Uuid\Uuid;
 use function App\Helpers\getMembership;
 use function App\Helpers\getMembershipsByUserId;
-use function App\Helpers\isOrganisationAdmin;
+use function App\Helpers\hashSSHA;
 use function App\Helpers\isRegionAdmin;
 
 class User extends Entity
@@ -13,26 +14,38 @@ class User extends Entity
     protected $attributes = [
         'id' => null,
         'username' => null,
-        'name' => null,
+        'first_name' => null,
+        'last_name' => null,
         'email' => null,
         'password' => null,
-        'global_admin' => null,
-        'status' => null,
+        'admin' => null,
+        'active' => null,
+        'email_confirmed' => null,
+        'password_reset' => null,
         'token' => null,
+        'registration_date' => null,
+        'last_login_date' => null,
     ];
 
     protected $casts = [
         'id' => 'integer',
         'username' => 'string',
-        'name' => 'string',
+        'first_name' => 'string',
+        'last_name' => 'string',
         'email' => 'string',
         'password' => 'string',
-        'global_admin' => 'boolean',
-        'status' => 'string',
+        'admin' => 'boolean',
+        'active' => null,
+        'email_confirmed' => null,
+        'password_reset' => null,
         'token' => 'string',
+        'registration_date' => null,
+        'last_login_date' => null,
     ];
 
     /**
+     * Returns the consecutive user identifier used as primary database key.
+     *
      * @return ?int
      */
     public function getId(): ?int
@@ -41,6 +54,8 @@ class User extends Entity
     }
 
     /**
+     * Returns the unique non-changeable username.
+     *
      * @return string
      */
     public function getUsername(): string
@@ -48,45 +63,61 @@ class User extends Entity
         return $this->attributes['username'];
     }
 
-    public function setUsername(string $username): void
-    {
-        $this->attributes['username'] = $username;
-    }
-
     /**
+     * Returns the full name as a concatenated product of the first and last names.
+     *
      * @return string
      */
     public function getName(): string
     {
-        return $this->attributes['name'];
+        return $this->getFirstName() . ' ' . $this->getLastName();
     }
 
     /**
+     * Returns the first name(s).
+     *
      * @return string
      */
     public function getFirstName(): string
     {
-        $fullName = $this->getName();
-        $position = strripos($fullName, ' ');
-        return substr($fullName, 0, $position);
+        return $this->attributes['first_name'];
     }
 
     /**
+     * Sets the first name(s).
+     *
+     * @param string $firstName
+     * @return void
+     */
+    public function setFirstName(string $firstName): void
+    {
+        $this->attributes['first_name'] = $firstName;
+    }
+
+    /**
+     * Returns the last (family) name.
+     *
      * @return string
      */
     public function getLastName(): string
     {
-        $fullName = $this->getName();
-        $position = strripos($fullName, ' ');
-        return substr($fullName, $position + 1);
-    }
-
-    public function setName(string $name): void
-    {
-        $this->attributes['name'] = $name;
+        return $this->attributes['last_name'];
     }
 
     /**
+     * Sets the last (family) name.
+     *
+     * @param string $lastName
+     * @return void
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->attributes['last_name'] = $lastName;
+    }
+
+    /**
+     * Returns the email.
+     *
      * @return string
      */
     public function getEmail(): string
@@ -94,12 +125,20 @@ class User extends Entity
         return $this->attributes['email'];
     }
 
+    /**
+     * Sets the email.
+     *
+     * @param string $email
+     * @return void
+     */
     public function setEmail(string $email): void
     {
         $this->attributes['email'] = $email;
     }
 
     /**
+     * Returns the SSHA-hashed password.
+     *
      * @return string
      */
     public function getPassword(): string
@@ -107,51 +146,126 @@ class User extends Entity
         return $this->attributes['password'];
     }
 
+    /**
+     * Sets a SSHA hash as the new password, or hashes given cleartext password and sets it.
+     *
+     * @param string $password
+     * @return void
+     */
     public function setPassword(string $password): void
     {
+        // Ensure password is stored as hash
+        if (!str_starts_with($password, '{SSHA}')) {
+            $password = hashSSHA($password);
+        }
+
         $this->attributes['password'] = $password;
     }
 
     /**
-     * @return int?
-     */
-    public function getSchoolId(): int
-    {
-        return $this->attributes['school_id'];
-    }
-
-    /**
+     * Returns whether user is a system-wide administrator.
+     *
      * @return bool
      */
-    public function isGlobalAdmin(): bool
+    public function isAdmin(): bool
     {
         return $this->attributes['global_admin'];
     }
 
-    public function setGlobalAdmin(bool $globalAdmin): void
+    /**
+     * Sets user as system-wide administrator.
+     *
+     * @param bool $admin
+     * @return void
+     */
+    public function setAdmin(bool $admin): void
     {
-        $this->attributes['global_admin'] = $globalAdmin;
+        $this->attributes['admin'] = $admin;
     }
 
     /**
-     * @return UserStatus
+     * Returns whether user is active.
+     *
+     * @return bool
      */
-    public function getStatus(): UserStatus
+    public function isActive(): bool
     {
-        return UserStatus::from($this->attributes['status']);
+        return $this->attributes['active'];
     }
 
-    public function setStatus(UserStatus $status): void
+    /**
+     * Sets user's active state.
+     *
+     * @param bool $active
+     * @return void
+     */
+    public function setActive(bool $active): void
     {
-        $this->attributes['status'] = $status->value;
+        $this->attributes['active'] = $active;
+    }
 
-        // Remove token if target state isn't tokenized
-        if (!$status->isTokenized()) {
-            $this->setToken(null);
+    /**
+     * Returns whether user's email is confirmed.
+     *
+     * @return bool
+     */
+    public function isEmailConfirmed(): bool
+    {
+        return $this->attributes['email_confirmed'];
+    }
+
+    /**
+     * Sets email confirmation status and returns token.
+     * Returns null if token was removed.
+     *
+     * @param bool $confirmed
+     * @return string|null
+     */
+    public function setEmailConfirmed(bool $confirmed): ?string
+    {
+        $this->attributes['email_confirmed'] = $confirmed;
+
+        if ($confirmed) {
+            $this->removeToken();
+            return null;
+        } else {
+            return $this->generateAndSetToken();
         }
     }
 
     /**
+     * Returns whether user's password was requested to be reset.
+     *
+     * @return bool
+     */
+    public function isPasswordReset(): bool
+    {
+        return $this->attributes['password_reset'];
+    }
+
+    /**
+     * Sets password reset status and returns token.
+     * Returns null if token was removed.
+     *
+     * @param bool $reset
+     * @return string|null
+     */
+    public function setPasswordReset(bool $reset): ?string
+    {
+        $this->attributes['password_reset'] = $reset;
+
+        if ($reset) {
+            return $this->generateAndSetToken();
+        } else {
+            $this->removeToken();
+            return null;
+        }
+    }
+
+    /**
+     * Returns current non-consecutive token used for password resets or email confirmation.
+     * Returns null if no token is set.
+     *
      * @return ?string
      */
     public function getToken(): ?string
@@ -159,9 +273,39 @@ class User extends Entity
         return $this->attributes['token'];
     }
 
-    public function setToken(?string $token): void
+    /**
+     * Generates, sets and returns new token if no token is already set.
+     * Returns null if a token is already set.
+     *
+     * @return ?string
+     */
+    public function generateAndSetToken(): ?string
     {
+        // Check if current token is obsolete
+        if (!$this->removeToken()) {
+            return $this->getToken();
+        }
+
+        $token = Uuid::uuid4()->toString();
         $this->attributes['token'] = $token;
+        return $token;
+    }
+
+    /**
+     * Removes current token if obsolete.
+     * Returns true if the token was removed; returns false if the token is still necessary for a transaction and thus non-obsolete.
+     *
+     * @return bool
+     */
+    public function removeToken(): bool
+    {
+        // Check if token is necessary
+        if (!$this->isEmailConfirmed() || $this->isPasswordReset()) {
+            return false;
+        }
+
+        $this->attributes['token'] = null;
+        return true;
     }
 
     /**
@@ -170,16 +314,6 @@ class User extends Entity
     public function getMemberships(): array
     {
         return getMembershipsByUserId($this->getId());
-    }
-
-    /**
-     * Returns whether the user has any administrative powers.
-     *
-     * @return bool
-     */
-    public function isAdmin(): bool
-    {
-        return $this->isGlobalAdmin() || isRegionAdmin($this->getId(), null) || isOrganisationAdmin($this->getId(), null);
     }
 
     /**
@@ -196,7 +330,7 @@ class User extends Entity
         }
 
         # A global admin may manage anybody
-        if ($this->isGlobalAdmin()) {
+        if ($this->isAdmin()) {
             return true;
         }
 
