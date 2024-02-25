@@ -1,8 +1,6 @@
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getSchools;
 
 $currentUser = getCurrentUser();
 ?>

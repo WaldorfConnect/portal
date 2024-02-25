@@ -56,11 +56,8 @@ class CronController extends BaseController
 
     private function syncUsersLDAP(): void
     {
-        // TODO check if synchronizable
         foreach (getUsers() as $user) {
-            // Skip users in a non-synchronizable state
-            if (!$user->getStatus()->isSynchronizable())
-                continue;
+            if (!$user->isAccepted()) continue;
 
             try {
                 $this->updateOrCreateLDAPUser($user);
@@ -98,7 +95,8 @@ class CronController extends BaseController
         $ldapUser->givenName = $user->getFirstName();
         // TODO $ldapUser->jpegPhoto
         $ldapUser->mail = $user->getEmail();
-        $ldapUser->o = $user->getSchool()->getName();
+        // TODO what to show?
+        //$ldapUser->o = $user->getSchool()->getName();
         $ldapUser->save();
         CLI::write('Successfully synced user ' . $user->getUsername());
     }

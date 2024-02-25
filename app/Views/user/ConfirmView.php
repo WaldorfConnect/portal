@@ -1,10 +1,3 @@
-<?php
-
-use function App\Helpers\getOrganisationsByRegionId;
-use function App\Helpers\getRegions;
-use function App\Helpers\getSchoolsByRegionId;
-
-?>
 <main>
     <div class="container login">
         <div class="card register">
