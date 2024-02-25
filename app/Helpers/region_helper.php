@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Entities\Region;
-use App\Entities\User;
 use App\Models\RegionModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;
@@ -42,7 +41,6 @@ function createRegion(string $name, string $iso): Region
 {
     $region = new Region();
     $region->setName($name);
-    $region->setIsoCode($iso);
     return $region;
 }
 

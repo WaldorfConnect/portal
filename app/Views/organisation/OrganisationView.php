@@ -1,27 +1,26 @@
 <?php
 
 use App\Entities\MembershipStatus;
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getGroupMembershipsByGroupId;
-use function App\Helpers\getGroupMembership;
+use function App\Helpers\getMembershipsByOrganisationId;
+use function App\Helpers\getMembership;
 
 $currentUser = getCurrentUser();
-$ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
+$ownMembership = getMembership($currentUser->getId(), $organisation->getId());
 ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-        <li class="breadcrumb-item"><a href="<?= base_url('/groups') ?>">Gruppen</a></li>
+        <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Organisationen</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            <?= $group->getName() ?>
+            <?= $organisation->getName() ?>
         </li>
     </ol>
 </nav>
 
 <h1 class="header">
-    <?= $group->getName() ?>
-    <?php if (($membership = getGroupMembership(getCurrentUser()->getId(), $group->getId()))): ?>
+    <?= $organisation->getName() ?>
+    <?php if (($membership = getMembership(getCurrentUser()->getId(), $organisation->getId()))): ?>
         <?= $membership->getStatus()->badge() ?>
     <?php endif; ?>
 </h1>
@@ -52,26 +51,28 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                         <table>
                             <tr>
                                 <?php
-                                $groupLogoPath = "/assets/img/group/" . $group->getId() . "/logo";
+                                $groupLogoPath = "/assets/img/organisation/" . $organisation->getId() . "/logo";
                                 if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.svg')) {
                                     $groupLogoSrc = base_url($groupLogoPath . '.svg');
                                 } else if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.webp')) {
                                     $groupLogoSrc = base_url($groupLogoPath . '.webp');
                                 } else {
-                                    $groupLogoSrc = base_url('/assets/img/placeholders/group-logo_512x128.webp');
+                                    $groupLogoSrc = base_url('/assets/img/placeholders/organisation-logo_512x128.webp');
                                 }
                                 ?>
                                 <img class="img-thumbnail mb-3" src="<?= $groupLogoSrc ?>"
-                                     alt="Logo <?= $group->getName() ?>">
+                                     alt="Logo <?= $organisation->getName() ?>">
                             </tr>
                             <tr>
                                 <th>Name:&nbsp;</th>
-                                <td><?= $group->getName() ?></td>
+                                <td><?= $organisation->getName() ?></td>
                             </tr>
-                            <?php if (!empty($group->getWebsiteUrl())): ?>
+                            <?php if (!empty($organisation->getWebsiteUrl())): ?>
                                 <tr>
                                     <th>Website:&nbsp;</th>
-                                    <td><a href="<?= $group->getWebsiteUrl() ?>"><?= parse_url($group->getWebsiteUrl())['host'] ?></a></td>
+                                    <td>
+                                        <a href="<?= $organisation->getWebsiteUrl() ?>"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
+                                    </td>
                                 </tr>
                             <?php endif; ?>
                         </table>
@@ -79,19 +80,19 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                     <div class="col-lg-6">
                         <figure>
                             <?php
-                            $groupImagePath = "/assets/img/group/" . $group->getId() . "/image.webp";
+                            $groupImagePath = "/assets/img/organisation/" . $organisation->getId() . "/image.webp";
                             if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupImagePath)) {
                                 $groupImageSrc = base_url($groupImagePath);
                             } else {
-                                $groupImageSrc = base_url('/assets/img/placeholders/group-image_1920x1080.webp');
+                                $groupImageSrc = base_url('/assets/img/placeholders/organisation-image_1920x1080.webp');
                             }
                             ?>
                             <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
                                 <img class="img-thumbnail mt-3" src="<?= $groupImageSrc ?>"
-                                     alt="Logo <?= $group->getName() ?>">
+                                     alt="Logo <?= $organisation->getName() ?>">
                             </a>
                             <figcaption>
-                                <small><?= !is_null($group->getImageAuthor()) ? '&copy;&nbsp;' . $group->getImageAuthor() : '' ?></small>
+                                <small><?= !is_null($organisation->getImageAuthor()) ? '&copy;&nbsp;' . $organisation->getImageAuthor() : '' ?></small>
                             </figcaption>
                         </figure>
                     </div>
@@ -99,7 +100,7 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                 <hr>
                 <div class="row">
                     <div class="col-lg-12">
-                        <?= $group->getDescription() ?>
+                        <?= $organisation->getDescription() ?>
                     </div>
                 </div>
             </div>
@@ -109,8 +110,8 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
         <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body">
-                <?= form_open('group/join', ['onsubmit' => "return confirm('Möchtest du der Gruppe {$group->getName()} wirklich beitreten?');"]) ?>
-                <?= form_hidden('id', $group->getId()) ?>
+                <?= form_open('organisation/join', ['onsubmit' => "return confirm('Möchtest du der Gruppe {$organisation->getName()} wirklich beitreten?');"]) ?>
+                <?= form_hidden('id', $organisation->getId()) ?>
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-sign-in"></i> Beitrittsanfrage senden
                 </button>
@@ -132,35 +133,33 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                     <thead>
                     <tr>
                         <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
-                        <th data-field="userRole" data-sortable="true" scope="col">Nutzerrolle</th>
                         <th data-field="groupRole" data-sortable="true" scope="col">Gruppenrolle</th>
-                        <?php if ($group->mayManage($currentUser)): ?>
+                        <?php if ($organisation->isManageableBy($currentUser)): ?>
                             <th data-field="actions" data-sortable="true" scope="col">Aktionen</th>
                         <?php endif; ?>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach (getGroupMembershipsByGroupId($group->getId()) as $membership): ?>
+                    <?php foreach (getMembershipsByOrganisationId($organisation->getId()) as $membership): ?>
                         <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
-                            <?php if (!$group->mayManage($currentUser)): continue; endif; ?>
+                            <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
 
                             <tr>
                                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
                                     class="td-class-<?= $user->getId() ?>"
                                     data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
-                                <td><?= $user->getRole()->badge() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
                                 <td>
-                                    <?= form_open('group/accept') ?>
-                                    <?= form_hidden('groupId', $group->getId()) ?>
+                                    <?= form_open('organisation/accept') ?>
+                                    <?= form_hidden('organisationId', $organisation->getId()) ?>
                                     <?= form_hidden('userId', $user->getId()) ?>
                                     <button type="submit" class="btn btn-success btn-sm">
                                         <i class="fas fa-check-circle"></i> Akzeptieren
                                     </button>
                                     <?= form_close() ?>
 
-                                    <?= form_open('group/deny') ?>
-                                    <?= form_hidden('groupId', $group->getId()) ?>
+                                    <?= form_open('organisation/deny') ?>
+                                    <?= form_hidden('organisationId', $organisation->getId()) ?>
                                     <?= form_hidden('userId', $user->getId()) ?>
                                     <button type="submit" class="btn btn-danger btn-sm mt-1">
                                         <i class="fas fa-x"></i> Ablehnen
@@ -173,13 +172,12 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
                                     class="td-class-<?= $user->getId() ?>"
                                     data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
-                                <td><?= $user->getRole()->badge() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
-                                <?php if ($group->mayManage($currentUser)): ?>
+                                <?php if ($organisation->isManageableBy($currentUser)): ?>
                                     <td>
                                         <?php if ($membership->getStatus() == MembershipStatus::ADMIN): ?>
-                                            <?= form_open('group/change_user_status') ?>
-                                            <?= form_hidden('groupId', $group->getId()) ?>
+                                            <?= form_open('organisation/change_membership_status') ?>
+                                            <?= form_hidden('organisationId', $organisation->getId()) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::USER->value) ?>
                                             <button type="submit" class="btn btn-primary btn-sm mt-1">
@@ -187,8 +185,8 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                                             </button>
                                             <?= form_close() ?>
                                         <?php else: ?>
-                                            <?= form_open('group/change_user_status') ?>
-                                            <?= form_hidden('groupId', $group->getId()) ?>
+                                            <?= form_open('organisation/change_membership_status') ?>
+                                            <?= form_hidden('organisationId', $organisation->getId()) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::ADMIN->value) ?>
                                             <button type="submit" class="btn btn-danger btn-sm mt-1">
@@ -197,8 +195,8 @@ $ownMembership = getGroupMembership($currentUser->getId(), $group->getId());
                                             <?= form_close() ?>
                                         <?php endif; ?>
 
-                                        <?= form_open('group/kick_user') ?>
-                                        <?= form_hidden('groupId', $group->getId()) ?>
+                                        <?= form_open('organisation/kick_user') ?>
+                                        <?= form_hidden('organisationId', $organisation->getId()) ?>
                                         <?= form_hidden('userId', $user->getId()) ?>
                                         <button type="submit" class="btn btn-danger btn-sm mt-1">
                                             <i class="fas fa-trash"></i> Entfernen

@@ -1,6 +1,5 @@
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
 
 ?>
@@ -17,7 +16,7 @@ use function App\Helpers\getCurrentUser;
         <div class="collapse navbar-collapse" id="navbarMobileToggle">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
             <ul class="navbar-nav">
-                <?php if (($user = getCurrentUser())->getRole()->isAdmin()): ?>
+                <?php if (($user = getCurrentUser())->isAdmin()): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -27,7 +26,7 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
-                            <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
+                            <?php if ($user->isAdmin()): ?>
                                 <a class="dropdown-item" href="<?= base_url('/admin/debug') ?>">
                                     Debug
                                 </a>
@@ -36,17 +35,14 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer
                             </a>
-                            <a class="dropdown-item" href="<?= base_url('/admin/schools') ?>">
-                                Schulen
-                            </a>
-                            <?php if ($user->getRole() == UserRole::GLOBAL_ADMIN): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
-                                    Regionen
+                            <?php if ($user->isAdmin()): ?>
+                                <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
+                                    Organisationen
                                 </a>
                             <?php endif; ?>
-                            <?php if ($user->getRole() == UserRole::REGION_ADMIN || $user->getRole() == UserRole::GLOBAL_ADMIN): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
-                                    Gruppen
+                            <?php if ($user->isAdmin()): ?>
+                                <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
+                                    Regionen
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -58,7 +54,6 @@ use function App\Helpers\getCurrentUser;
                         <?= $user->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item disabled"><?= $user->getRole()->displayName() ?></a>
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
                             Profil bearbeiten
                         </a>

@@ -1,6 +1,5 @@
 <?php
 
-use App\Entities\UserStatus;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUsers;
 
@@ -49,55 +48,71 @@ use function App\Helpers\getUsers;
         <thead>
         <tr>
             <th data-field="username" data-sortable="true" scope="col">Benutzername</th>
-            <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
-            <th data-field="school" data-sortable="true" scope="col">Schule</th>
-            <th data-field="role" data-sortable="true" scope="col">Rolle</th>
-            <th data-field="status" data-sortable="true" scope="col">Status</th>
+            <th data-field="firstName" data-sortable="true" scope="col">Vorname(n)</th>
+            <th data-field="lastName" data-sortable="true" scope="col">Nachname</th>
+            <th data-field="admin" data-sortable="true" scope="col">Admin</th>
+            <th data-field="emailConfirmed" data-sortable="true" scope="col">E-Mail bestätigt</th>
+            <th data-field="passwordReset" data-sortable="true" scope="col">Passwort zurückgesetzt</th>
             <th data-field="action" scope="col">Aktion</th>
         </tr>
         </thead>
         <tbody>
         <?php $currentUser = getCurrentUser() ?>
         <?php foreach (getUsers() as $user): ?>
-            <?php if (!$currentUser->mayManage($user)): continue; endif; ?>
             <tr>
                 <td id="td-id-<?= $user->getId() ?>" class="td-class-<?= $user->getId() ?>"
                     data-title="<?= $user->getUsername() ?>"><?= $user->getUsername() ?></td>
-                <td><?= $user->getName() ?></td>
-                <td><?= $user->getSchool()->getName() ?></td>
-                <td><?= $user->getRole()->badge() ?></td>
-                <td><?= $user->getStatus()->badge() ?></td>
+                <td><?= $user->getFirstName() ?></td>
+                <td><?= $user->getLastName() ?></td>
+                <td><?= $user->isAdmin() ? 'Ja' : 'Nein' ?></td>
+                <td><?= $user->isEmailConfirmed() ? 'Ja' : 'Nein' ?></td>
+                <td><?= $user->isPasswordReset() ? 'Ja' : 'Nein' ?></td>
                 <td>
-                    <?php if ($user->getStatus() == UserStatus::PENDING_ACCEPT): ?>
-                        <?= form_open('admin/user/accept') ?>
+                    <div class="btn-group">
+                        <a class="btn btn-primary btn-sm"
+                           href="<?= base_url('admin/user/edit') . '/' . $user->getId() ?>"><i
+                                    class="fas fa-pen"></i>
+                        </a>
+                    </div>
+
+                    <?= form_open('admin/user/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du den Benutzer {$user->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $user->getId()) ?>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <?= form_close() ?>
+
+                    <?php if ($user->isAccepted()): ?>
+                        <?php if ($user->isActive()): ?>
+                            <?= form_open('admin/user/deactivate', ['class' => 'btn-group inline']) ?>
+                            <?= form_hidden('id', $user->getId()) ?>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-lock"></i>
+                            </button>
+                            <?= form_close() ?>
+                        <?php else: ?>
+                            <?= form_open('admin/user/activate', ['class' => 'btn-group inline']) ?>
+                            <?= form_hidden('id', $user->getId()) ?>
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-lock-open"></i>
+                            </button>
+                            <?= form_close() ?>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <?= form_open('admin/user/accept', ['class' => 'btn-group inline']) ?>
                         <?= form_hidden('id', $user->getId()) ?>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-check-circle"></i> Akzeptieren
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-thumbs-up"></i>
                         </button>
                         <?= form_close() ?>
 
-                        <?= form_open('admin/user/deny') ?>
+                        <?= form_open('admin/user/deny', ['class' => 'btn-group inline']) ?>
                         <?= form_hidden('id', $user->getId()) ?>
-                        <button type="submit" class="btn btn-danger mt-1">
-                            <i class="fas fa-x"></i> Ablehnen
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fas fa-thumbs-down"></i>
                         </button>
                         <?= form_close() ?>
-                    <?php else: ?>
-                        <div class="btn-group gap-2" role="group">
-                            <a class="btn btn-primary btn-sm"
-                               href="<?= base_url('admin/user/edit') . '/' . $user->getId() ?>"><i
-                                        class="fas fa-pen"></i>
-                            </a>
-                            <div>
-                                <?= form_open('admin/user/delete', ['onsubmit' => "return confirm('Möchtest du den Benutzer {$user->getName()} wirklich löschen?');"]) ?>
-                                <?= form_hidden('id', $user->getId()) ?>
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <?= form_close() ?>
-                            </div>
-                        </div>
-                    <?php endif ?>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

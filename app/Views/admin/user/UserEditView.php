@@ -1,11 +1,6 @@
 <?php
 
-use App\Entities\UserRole;
-use App\Entities\UserStatus;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getRegions;
-use function App\Helpers\getSchools;
-use function App\Helpers\getSchoolsByRegionId;
 
 $currentUser = getCurrentUser();
 ?>
@@ -50,10 +45,18 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
-        <label for="inputName" class="col-form-label col-md-4 col-lg-3">Vor- und Nachname</label>
+        <label for="inputFirstName" class="col-form-label col-md-4 col-lg-3">Vorname(n)</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputName" name="name" autocomplete="name"
-                   placeholder="Vor- und Nachname" value="<?= $user->getName() ?>" required>
+            <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
+                   placeholder="Vorname" value="<?= $user->getFirstName() ?>" required>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="inputLastName" class="col-form-label col-md-4 col-lg-3">Nachname</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
+                   placeholder="Nachname" value="<?= $user->getLastName() ?>" required>
         </div>
     </div>
 
@@ -64,51 +67,6 @@ $currentUser = getCurrentUser();
                    placeholder="E-Mail" value="<?= $user->getEmail() ?>" aria-describedby="emailHelp" required>
         </div>
     </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputSchool" class="col-form-label col-md-4 col-lg-3">Schule</label>
-        <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputSchool" name="school" required>
-                <?php foreach (getRegions() as $region): ?>
-                    <?php if (!$region->mayManage($currentUser)): continue; endif; ?>
-
-                    <optgroup label="<?= $region->getName() ?>">
-                        <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
-                            <option <?= $user->getSchoolId() == $school->getId() ? 'selected' : '' ?>
-                                    value="<?= $school->getId() ?>"><?= $school->name ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputRole" class="col-form-label col-md-4 col-lg-3">Rolle</label>
-        <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputRole" name="role"
-                    required <?= $currentUser->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
-                <?php foreach (UserRole::cases() as $role): ?>
-                    <option <?= $role == $user->getRole() ? 'selected' : '' ?>
-                            value="<?= $role->value ?>"><?= $role->displayName() ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputStatus" class="col-form-label col-md-4 col-lg-3">Status</label>
-        <div class="col-md-8 col-lg-9">
-            <select class="form-select" id="inputStatus" name="status"
-                    required <?= $currentUser->getRole() != UserRole::GLOBAL_ADMIN ? "disabled" : "" ?>>
-                <?php foreach (UserStatus::cases() as $status): ?>
-                    <option <?= $status == $user->getStatus() ? 'selected' : '' ?>
-                            value="<?= $status->value ?>"><?= $status->displayName() ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
 
     <div class="form-group row mb-3">
         <label for="inputPassword" class="col-form-label col-md-4 col-lg-3">Passwort</label>

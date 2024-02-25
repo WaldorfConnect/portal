@@ -1,27 +1,28 @@
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getSchools;
+use function App\Helpers\getOrganisations;
 
-$currentUser = getCurrentUser();
 ?>
 <div class="row">
+
+
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Startseite</a></li>
             <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-                Schuladministration
+                Organisationsadministration
             </li>
         </ol>
     </nav>
-    <h1 class="header">Schuladministration</h1>
+    <h1 class="header">Organisationsadministration</h1>
     <p>
-        Hier werden alle Schulen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
+        Hier werden alle Organisationen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
 
-    <?php $errors = session('error'); if ($errors): ?>
+    <?php $errors = session('error');
+    if ($errors): ?>
         <div class="col-md-12">
             <div class="alert alert-danger">
                 <?php if (is_array($errors)): ?>
@@ -46,12 +47,10 @@ $currentUser = getCurrentUser();
 
 <div class="row">
     <div class="col-md-5 w-auto ms-auto">
-        <?php if ($currentUser->getRole() == UserRole::REGION_ADMIN || $currentUser->getRole() == UserRole::GLOBAL_ADMIN): ?>
-            <a class="btn btn-primary"
-               href="<?= base_url('admin/school/create') ?>">
-                <i class="fas fa-plus-square"></i> Schule erstellen
-            </a>
-        <?php endif; ?>
+        <a class="btn btn-primary"
+           href="<?= base_url('admin/organisation/create') ?>">
+            <i class="fas fa-plus-square"></i> Organisation erstellen
+        </a>
     </div>
 </div>
 
@@ -63,37 +62,37 @@ $currentUser = getCurrentUser();
         <thead>
         <tr>
             <th data-field="id" data-sortable="true" scope="col">Name</th>
-            <th data-field="description" data-sortable="true" scope="col">Region</th>
+            <th data-field="name" data-sortable="true" scope="col">Region</th>
             <th data-field="action" scope="col">Aktion</th>
         </tr>
         </thead>
         <tbody>
-        <?php foreach (getSchools() as $school): ?>
-            <?php if (!$school->mayManage($currentUser)): continue; endif; ?>
+        <?php $currentUser = getCurrentUser() ?>
+        <?php foreach (getOrganisations() as $organisation): ?>
+            <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
 
             <tr>
-                <td id="td-id-<?= $school->getId() ?>" class="td-class-<?= $school->getId() ?>"
-                    data-title="<?= $school->getName() ?>"><?= $school->getName() ?></td>
-                <td><?= $school->getRegion()->getName() ?></td>
+                <td id="td-id-<?= $organisation->getId() ?>" class="td-class-<?= $organisation->getId() ?>"
+                    data-title="<?= $organisation->getName() ?>"><?= $organisation->getName() ?></td>
+                <td><?= $organisation->getRegion()->getName() ?></td>
                 <td>
-                    <div class="btn-group gap-2" role="group">
+                    <div class="btn-group">
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('school') . '/' . $school->getId() ?>">
+                           href="<?= base_url('organisation') . '/' . $organisation->getId() ?>">
                             <i class="fas fa-info-circle"></i>
                         </a>
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('admin/school/edit') . '/' . $school->getId() ?>"><i
-                                    class="fas fa-pen"></i>
+                           href="<?= base_url('admin/organisation/edit') . '/' . $organisation->getId() ?>">
+                            <i class="fas fa-pen"></i>
                         </a>
-                        <div>
-                            <?= form_open('admin/school/delete', ['onsubmit' => "return confirm('Möchtest du die Schule {$school->getName()} wirklich löschen?');"]) ?>
-                            <?= form_hidden('id', $school->getId()) ?>
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <?= form_close() ?>
-                        </div>
                     </div>
+
+                    <?= form_open('admin/organisation/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $organisation->getId()) ?>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <?= form_close() ?>
                 </td>
             </tr>
         <?php endforeach; ?>

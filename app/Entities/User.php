@@ -3,38 +3,51 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getGroupMembership;
-use function App\Helpers\getGroupMembershipsByUserId;
-use function App\Helpers\getGroupsByUserId;
-use function App\Helpers\getSchoolById;
+use DateTime;
+use Ramsey\Uuid\Uuid;
+use function App\Helpers\getMembership;
+use function App\Helpers\getMembershipsByUserId;
+use function App\Helpers\hashSSHA;
 
 class User extends Entity
 {
     protected $attributes = [
         'id' => null,
         'username' => null,
-        'name' => null,
+        'first_name' => null,
+        'last_name' => null,
         'email' => null,
         'password' => null,
-        'school_id' => null,
-        'role' => null,
-        'status' => null,
+        'admin' => null,
+        'active' => null,
+        'email_confirmed' => null,
+        'password_reset' => null,
         'token' => null,
+        'registration_date' => null,
+        'accept_date' => null,
+        'last_login_date' => null,
     ];
 
     protected $casts = [
         'id' => 'integer',
         'username' => 'string',
-        'name' => 'string',
+        'first_name' => 'string',
+        'last_name' => 'string',
         'email' => 'string',
         'password' => 'string',
-        'school_id' => 'integer',
-        'role' => 'string',
-        'status' => 'string',
+        'admin' => 'boolean',
+        'active' => 'boolean',
+        'email_confirmed' => 'boolean',
+        'password_reset' => 'boolean',
         'token' => 'string',
+        'registration_date' => 'timestamp',
+        'accept_date' => 'timestamp',
+        'last_login_date' => 'timestamp',
     ];
 
     /**
+     * Returns the consecutive user identifier used as primary database key.
+     *
      * @return ?int
      */
     public function getId(): ?int
@@ -43,6 +56,8 @@ class User extends Entity
     }
 
     /**
+     * Returns the unique non-changeable username.
+     *
      * @return string
      */
     public function getUsername(): string
@@ -56,39 +71,60 @@ class User extends Entity
     }
 
     /**
+     * Returns the full name as a concatenated product of the first and last names.
+     *
      * @return string
      */
     public function getName(): string
     {
-        return $this->attributes['name'];
+        return $this->getFirstName() . ' ' . $this->getLastName();
     }
 
     /**
+     * Returns the first name(s).
+     *
      * @return string
      */
     public function getFirstName(): string
     {
-        $fullName = $this->getName();
-        $position = strripos($fullName, ' ');
-        return substr($fullName, 0, $position);
+        return $this->attributes['first_name'];
     }
 
     /**
+     * Sets the first name(s).
+     *
+     * @param string $firstName
+     * @return void
+     */
+    public function setFirstName(string $firstName): void
+    {
+        $this->attributes['first_name'] = $firstName;
+    }
+
+    /**
+     * Returns the last (family) name.
+     *
      * @return string
      */
     public function getLastName(): string
     {
-        $fullName = $this->getName();
-        $position = strripos($fullName, ' ');
-        return substr($fullName, $position + 1);
-    }
-
-    public function setName(string $name): void
-    {
-        $this->attributes['name'] = $name;
+        return $this->attributes['last_name'];
     }
 
     /**
+     * Sets the last (family) name.
+     *
+     * @param string $lastName
+     * @return void
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->attributes['last_name'] = $lastName;
+    }
+
+    /**
+     * Returns the email.
+     *
      * @return string
      */
     public function getEmail(): string
@@ -96,12 +132,20 @@ class User extends Entity
         return $this->attributes['email'];
     }
 
+    /**
+     * Sets the email.
+     *
+     * @param string $email
+     * @return void
+     */
     public function setEmail(string $email): void
     {
         $this->attributes['email'] = $email;
     }
 
     /**
+     * Returns the SSHA-hashed password.
+     *
      * @return string
      */
     public function getPassword(): string
@@ -109,64 +153,126 @@ class User extends Entity
         return $this->attributes['password'];
     }
 
+    /**
+     * Sets a SSHA hash as the new password, or hashes given cleartext password and sets it.
+     *
+     * @param string $password
+     * @return void
+     */
     public function setPassword(string $password): void
     {
+        // Ensure password is stored as hash
+        if (!str_starts_with($password, '{SSHA}')) {
+            $password = hashSSHA($password);
+        }
+
         $this->attributes['password'] = $password;
     }
 
     /**
-     * @return int?
+     * Returns whether user is a system-wide administrator.
+     *
+     * @return bool
      */
-    public function getSchoolId(): int
+    public function isAdmin(): bool
     {
-        return $this->attributes['school_id'];
+        return $this->attributes['admin'];
     }
 
     /**
-     * @return School
+     * Sets user as system-wide administrator.
+     *
+     * @param bool $admin
+     * @return void
      */
-    public function getSchool(): School
+    public function setAdmin(bool $admin): void
     {
-        return getSchoolById($this->getSchoolId());
-    }
-
-    public function setSchoolId(int $schoolId): void
-    {
-        $this->attributes['school_id'] = $schoolId;
+        $this->attributes['admin'] = $admin;
     }
 
     /**
-     * @return UserRole
+     * Returns whether user is active.
+     *
+     * @return bool
      */
-    public function getRole(): UserRole
+    public function isActive(): bool
     {
-        return UserRole::from($this->attributes['role']);
-    }
-
-    public function setRole(UserRole $status): void
-    {
-        $this->attributes['role'] = $status->value;
+        return $this->attributes['active'];
     }
 
     /**
-     * @return UserStatus
+     * Sets user's active state.
+     *
+     * @param bool $active
+     * @return void
      */
-    public function getStatus(): UserStatus
+    public function setActive(bool $active): void
     {
-        return UserStatus::from($this->attributes['status']);
+        $this->attributes['active'] = $active;
     }
 
-    public function setStatus(UserStatus $status): void
+    /**
+     * Returns whether user's email is confirmed.
+     *
+     * @return bool
+     */
+    public function isEmailConfirmed(): bool
     {
-        $this->attributes['status'] = $status->value;
+        return $this->attributes['email_confirmed'];
+    }
 
-        // Remove token if target state isn't tokenized
-        if (!$status->isTokenized()) {
-            $this->setToken(null);
+    /**
+     * Sets email confirmation status and returns token.
+     * Returns null if token was removed.
+     *
+     * @param bool $confirmed
+     * @return string|null
+     */
+    public function setEmailConfirmed(bool $confirmed): ?string
+    {
+        $this->attributes['email_confirmed'] = $confirmed;
+
+        if ($confirmed) {
+            $this->removeToken();
+            return null;
+        } else {
+            return $this->generateAndSetToken();
         }
     }
 
     /**
+     * Returns whether user's password was requested to be reset.
+     *
+     * @return bool
+     */
+    public function isPasswordReset(): bool
+    {
+        return $this->attributes['password_reset'];
+    }
+
+    /**
+     * Sets password reset status and returns token.
+     * Returns null if token was removed.
+     *
+     * @param bool $reset
+     * @return string|null
+     */
+    public function setPasswordReset(bool $reset): ?string
+    {
+        $this->attributes['password_reset'] = $reset;
+
+        if ($reset) {
+            return $this->generateAndSetToken();
+        } else {
+            $this->removeToken();
+            return null;
+        }
+    }
+
+    /**
+     * Returns current non-consecutive token used for password resets or email confirmation.
+     * Returns null if no token is set.
+     *
      * @return ?string
      */
     public function getToken(): ?string
@@ -174,53 +280,105 @@ class User extends Entity
         return $this->attributes['token'];
     }
 
-    public function setToken(?string $token): void
+    /**
+     * Generates, sets and returns new token if no token is already set.
+     * Returns null if a token is already set.
+     *
+     * @return ?string
+     */
+    public function generateAndSetToken(): ?string
     {
+        // Check if current token is obsolete
+        if (!$this->removeToken()) {
+            return $this->getToken();
+        }
+
+        $token = Uuid::uuid4()->toString();
         $this->attributes['token'] = $token;
+        return $token;
     }
 
     /**
-     * @return GroupMembership[]
+     * Removes current token if obsolete.
+     * Returns true if the token was removed; returns false if the token is still necessary for a transaction and thus non-obsolete.
+     *
+     * @return bool
      */
-    public function getGroupMemberships(): array
+    public function removeToken(): bool
     {
-        return getGroupMembershipsByUserId($this->getId());
+        // Check if token is necessary
+        if (!$this->isEmailConfirmed() || $this->isPasswordReset()) {
+            return false;
+        }
+
+        $this->attributes['token'] = null;
+        return true;
+    }
+
+    public function getRegistrationDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['registration_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setRegistrationDate(DateTime $time): void
+    {
+        $this->attributes['registration_date'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function getAcceptDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['accept_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setAcceptDate(DateTime $time): void
+    {
+        $this->attributes['accept_date'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function isAccepted(): bool
+    {
+        return !is_null($this->getAcceptDate());
+    }
+
+    public function getLastLoginDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['last_login_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setLastLoginDate(DateTime $time): void
+    {
+        $this->attributes['last_login_date'] = $time->format('Y-m-d H:i:s');
     }
 
     /**
-     * @param int $group
-     * @return ?GroupMembership
+     * @return Membership[]
      */
-    public function getGroupMembership(int $groupId): ?object
+    public function getMemberships(): array
     {
-        return getGroupMembership($this->getId(), $groupId);
+        return getMembershipsByUserId($this->getId());
     }
 
-    # The role hierarchy is as follows: GLOBAL_ADMIN > REGION_ADMIN > SCHOOL_ADMIN > USER
-    public function mayManage(User $user): bool
+    public function mayAccept(User $target): bool
     {
-        # Everyone may manage himself
-        if ($this->getId() == $user->getId())
+        if ($this->isAdmin()) {
             return true;
+        }
 
-        # A GLOBAL_ADMIN may manage anybody
-        if ($this->getRole() == UserRole::GLOBAL_ADMIN)
-            return true;
-
-        # REGION_ADMINS may manage only users from their region with lower role
-        if ($this->getRole() == UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::GLOBAL_ADMIN
-            && $this->getSchool()->getRegionId() == $user->getSchool()->getRegionId())
-            return true;
-
-        # SCHOOL_ADMINS may manage only users from their school with lower role
-        if ($this->getRole() == UserRole::SCHOOL_ADMIN
-            && $user->getRole() != UserRole::SCHOOL_ADMIN
-            && $user->getRole() != UserRole::REGION_ADMIN
-            && $user->getRole() != UserRole::GLOBAL_ADMIN
-            && $this->getSchoolId() == $user->getSchoolId())
-            return true;
+        foreach ($target->getMemberships() as $membership) {
+            $ownMembership = getMembership($this->getId(), $membership->getOrganisationId());
+            if ($ownMembership && $ownMembership->getStatus() == MembershipStatus::ADMIN) {
+                return true;
+            }
+        }
 
         return false;
     }

@@ -19,23 +19,8 @@ $currentUser = getCurrentUser();
     </nav>
     <h1 class="header">Regionsadministration</h1>
     <p>
-        Hier werden alle Regionen angezeigt, in denen sich Gruppen bzw. Schulen befinden können.<br><br>
-        <b>Achtung!</b> Die Angabe des Kürzels <u>muss</u> nach ISO 3166-1/ISO 3166-2 erfolgen.
-        Es ist <u>keine Mehrfachnennung</u>
-        möglich, d. h. bei Landesverbänden, die mehrere Bundesländer
-        einschließen muss <u>ein</u> Bundesland ausgewählt werden.
-        Hier bietet es sich z. B. an das Bundesland der Geschäftsstelle der ortsansässigen W-LSV zu wählen.<br>
-        Die ISO 3166-2 Codes für alle deutschsprachigen Ländern finden sich hier:<br>
+        Hier werden alle Regionen angezeigt, in denen sich Gruppen bzw. Schulen befinden können.
     </p>
-
-    <div>
-        <ul>
-            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:DE">Deutschland</a></li>
-            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:AT">Österreich</a></li>
-            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:CH">Schweiz</a></li>
-            <li><a href="https://de.wikipedia.org/wiki/ISO_3166-2:LU">Luxemburg</a></li>
-        </ul>
-    </div>
 
     <?php if ($success = session('error')): ?>
         <br><br>
@@ -73,7 +58,6 @@ $currentUser = getCurrentUser();
         <thead>
         <tr>
             <th data-field="id" data-sortable="true" scope="col">Name</th>
-            <th data-field="description" data-sortable="true" scope="col">ISO 3166-2</th>
             <th data-field="action" scope="col">Aktion</th>
         </tr>
         </thead>
@@ -82,22 +66,20 @@ $currentUser = getCurrentUser();
             <tr>
                 <td id="td-id-<?= $region->getId() ?>" class="td-class-<?= $region->getId() ?>"
                     data-title="<?= $region->getName() ?>"><?= $region->getName() ?></td>
-                <td><?= $region->getIsoCode() ?></td>
                 <td>
-                    <div class="btn-group gap-2" role="group">
+                    <div class="btn-group">
                         <a class="btn btn-primary btn-sm"
                            href="<?= base_url('admin/region/edit') . '/' . $region->getId() ?>"><i
                                     class="fas fa-pen"></i>
                         </a>
-                        <div>
-                            <?= form_open('admin/region/delete', ['onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
-                            <?= form_hidden('id', $region->getId()) ?>
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <?= form_close() ?>
-                        </div>
                     </div>
+
+                    <?= form_open('admin/region/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $region->getId()) ?>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <?= form_close() ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -2,12 +2,12 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            Gruppen
+            Organisationen
         </li>
     </ol>
 </nav>
 
-<h1 class="header">Alle Gruppen</h1>
+<h1 class="header">Alle Organisationen</h1>
 
 <?php if ($success = session('error')): ?>
     <div class="col-md-12">
@@ -25,12 +25,12 @@
     </div>
 <?php endif; ?>
 
-<?php use function App\Helpers\countGroupMembers;
-use function App\Helpers\getGroupsByRegionId;
+<?php use function App\Helpers\countMembers;
+use function App\Helpers\getOrganisationsByRegionId;
 use function App\Helpers\getRegions;
 
 foreach (getRegions() as $region): ?>
-    <?php $groups = getGroupsByRegionId($region->getId()) ?>
+    <?php $groups = getOrganisationsByRegionId($region->getId()) ?>
     <?php if (empty($groups)): continue; endif; ?>
 
 <div class="accordion accordion-flush" id="region<?= $region->getId() ?>">
@@ -46,15 +46,13 @@ foreach (getRegions() as $region): ?>
              aria-labelledby="regionhead<?= $region->getId() ?>"
              data-bs-parent="#region<?= $region->getId() ?>">
             <div class="accordion-body">
-
-
                 <ul>
                     <?php foreach ($groups as $group): ?>
                         <li>
-                            <a class="me-2" href="<?= base_url('group/' . $group->getId()) ?>">
+                            <a class="me-2" href="<?= base_url('organisation/' . $group->getId()) ?>">
                                 <?= $group->getName() ?>
                             </a>
-                            <?php if (($count = countGroupMembers($group->getId())) == 0): ?>
+                            <?php if (($count = countMembers($group->getId())) == 0): ?>
                                 <span class="badge bg-danger">
                                 Keine Mitglieder
                             </span>

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Ramsey\Uuid\Uuid;
@@ -11,11 +10,8 @@ use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
-use function App\Helpers\getUserByUsernameAndPassword;
 use function App\Helpers\getUsers;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\login;
-use function App\Helpers\logout;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 
@@ -29,7 +25,8 @@ class UserController extends BaseController
     public function handleProfile(): RedirectResponse
     {
         $user = getCurrentUser();
-        $name = trim($this->request->getPost('name'));
+        $firstName = trim($this->request->getPost('firstName'));
+        $lastName = trim($this->request->getPost('lastName'));
         $email = mb_strtolower(trim($this->request->getPost('email')));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
@@ -41,13 +38,12 @@ class UserController extends BaseController
                     return redirect('user/profile')->with('error', 'Diese E-Mail wird bereits verwendet.');
                 }
 
-                $token = Uuid::uuid4()->toString();
-                $user->setToken($token);
-                $user->setStatus(UserStatus::PENDING_EMAIL);
+                $user->setEmailConfirmed(false);
                 queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
             }
 
-            $user->setName($name);
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
             $user->setEmail($email);
 
             // Check if user wants to change password
@@ -88,7 +84,7 @@ class UserController extends BaseController
             $user = getUserByToken($token);
 
             // Does password still need resetting
-            if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
+            if ($user->isPasswordReset()) {
                 return $this->render('user/PasswordSetView', ['user' => $user], false);
             }
         }
@@ -110,9 +106,9 @@ class UserController extends BaseController
                 return $this->render('user/PasswordSetView', ['user' => $user], false);
             }
 
-            if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
+            if ($user->isPasswordReset()) {
                 $user->setPassword(hashSSHA($password));
-                $user->setStatus(UserStatus::OK);
+                $user->setPasswordReset(false);
 
                 try {
                     saveUser($user);
@@ -129,10 +125,7 @@ class UserController extends BaseController
         $email = mb_strtolower(trim($this->request->getPost('email')));
         $user = getUserByUsernameAndEmail($username, $email);
         if ($user) {
-            $token = Uuid::uuid4()->toString();
-
-            $user->setToken($token);
-            $user->setStatus(UserStatus::PENDING_PWRESET);
+            $user->setPasswordReset(true);
 
             try {
                 saveUser($user);
@@ -154,12 +147,12 @@ class UserController extends BaseController
         }
 
         // Needs user verify their email
-        if ($user->getStatus() != UserStatus::PENDING_REGISTER && $user->getStatus() != UserStatus::PENDING_EMAIL) {
+        if ($user->isEmailConfirmed()) {
             return redirect('login')->with('error', 'Dein E-Mail-Adresse ist bereits verifiziert!');
         }
 
         // Is user a newbie or just changed his email
-        $user->setStatus($user->getStatus() == UserStatus::PENDING_REGISTER ? UserStatus::PENDING_ACCEPT : UserStatus::OK);
+        $user->setEmailConfirmed(true);
         try {
             saveUser($user);
         } catch (Exception $e) {
@@ -167,14 +160,14 @@ class UserController extends BaseController
         }
 
         // If newbie show accept information
-        if ($user->getStatus() == UserStatus::PENDING_ACCEPT) {
+        if (!$user->isAccepted()) {
             try {
                 queueMail($user->getId(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
 
-                // Send announcement to all admins
-                foreach (getUsers() as $admin) {
-                    if ($admin->getRole()->isAdmin() && $admin->mayManage($user)) {
-                        queueMail($admin->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $admin, 'target' => $user]));
+                // Send announcement to responsible admins
+                foreach (getUsers() as $target) {
+                    if ($target->mayAccept($user)) {
+                        queueMail($target->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $target, 'target' => $user]));
                     }
                 }
             } catch (Exception $e) {

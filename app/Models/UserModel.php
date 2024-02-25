@@ -2,10 +2,6 @@
 
 namespace App\Models;
 
-use App\Entities\Group;
-use App\Entities\GroupMembership;
-use App\Entities\Region;
-use App\Entities\School;
 use App\Entities\User;
 use CodeIgniter\Model;
 
@@ -16,7 +12,7 @@ class UserModel extends Model
     protected $returnType = User::class;
 
     protected $allowedFields = [
-        'token', 'username', 'name', 'email', 'password', 'school_id', 'role', 'status'
+        'username', 'first_name', 'last_name', 'email', 'email_confirmed', 'password', 'password_reset', 'admin', 'active', 'token', 'registration_date', 'accept_date', 'last_login_date'
     ];
 }
 

@@ -134,3 +134,7 @@ textarea.log {
     align-items: center !important;
     display: inline-flex !important;
 }
+
+.btn-group+.btn-group {
+    margin-left: -5px !important;
+}

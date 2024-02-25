@@ -3,12 +3,9 @@
 namespace App\Helpers;
 
 use App\Entities\User;
-use App\Entities\UserRole;
-use App\Entities\UserStatus;
 use App\Models\UserModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use InvalidArgumentException;
-use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -40,25 +37,6 @@ function getCurrentUser(): ?User
 function getUsers(): array
 {
     return getUserModel()->findAll();
-}
-
-/**
- * @return User[]
- * @throws DatabaseException
- */
-function getManageableUsers(): array
-{
-    $self = getCurrentUser();
-    $manageableUsers = [];
-
-    $allUsers = getUsers();
-    foreach ($allUsers as $user) {
-        if ($self->mayManage($user)) {
-            $manageableUsers[] = $user;
-        }
-    }
-
-    return $manageableUsers;
 }
 
 /**
@@ -113,20 +91,6 @@ function getUserByToken(string $token): ?object
 }
 
 /**
- * @param int $schoolId
- * @return User[]
- */
-function getUsersBySchoolId(int $schoolId): array
-{
-    return getUserModel()->where('school_id', $schoolId)->findAll();
-}
-
-function countUsersBySchoolId(int $schoolId): int
-{
-    return getUserModel()->where('school_id', $schoolId)->countAllResults();
-}
-
-/**
  * @param User $user
  * @return string|int
  * @throws DatabaseException|ReflectionException
@@ -141,22 +105,19 @@ function saveUser(User $user): string|int
 /**
  * @param string $username
  * @param string $email
- * @param string $name
+ * @param string $firstName
+ * @param string $lastName
  * @param string $password
- * @param int $schoolId
  * @return User
  */
-function createUser(string $username, string $name, string $email, string $password, int $schoolId): User
+function createUser(string $username, string $firstName, string $lastName, string $email, string $password): User
 {
     $user = new User();
-    $user->setToken(Uuid::uuid4()->toString());
     $user->setUsername($username);
-    $user->setName($name);
+    $user->setFirstName($firstName);
+    $user->setLastName($lastName);
     $user->setEmail($email);
     $user->setPassword($password);
-    $user->setSchoolId($schoolId);
-    $user->setRole(UserRole::USER);
-    $user->setStatus(UserStatus::PENDING_REGISTER);
     return $user;
 }
 
@@ -174,19 +135,15 @@ function getUserModel(): UserModel
 }
 
 /**
- * @param $name
+ * @param $firstName
+ * @param $lastName
+ *
  * @return string
  * @throws InvalidArgumentException
  */
-function generateUsername($name): string
+function generateUsername($firstName, $lastName): string
 {
-    $firstLetterFirstName = substr($name, 0, 1);
-    $splitName = explode(' ', $name);
-    if (count($splitName) < 2) {
-        throw new InvalidArgumentException();
-    }
-
-    $lastName = end($splitName);
+    $firstLetterFirstName = substr($firstName, 0, 1);
     $username = mb_strtolower($firstLetterFirstName . $lastName);
     $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
     return preg_replace("/[^\p{L}]+/", '', $username);
