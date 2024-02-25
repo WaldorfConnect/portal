@@ -3,11 +3,11 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use DateTime;
 use Ramsey\Uuid\Uuid;
 use function App\Helpers\getMembership;
 use function App\Helpers\getMembershipsByUserId;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\isRegionAdmin;
 
 class User extends Entity
 {
@@ -24,6 +24,7 @@ class User extends Entity
         'password_reset' => null,
         'token' => null,
         'registration_date' => null,
+        'accept_date' => null,
         'last_login_date' => null,
     ];
 
@@ -35,12 +36,13 @@ class User extends Entity
         'email' => 'string',
         'password' => 'string',
         'admin' => 'boolean',
-        'active' => null,
-        'email_confirmed' => null,
-        'password_reset' => null,
+        'active' => 'boolean',
+        'email_confirmed' => 'boolean',
+        'password_reset' => 'boolean',
         'token' => 'string',
-        'registration_date' => null,
-        'last_login_date' => null,
+        'registration_date' => 'timestamp',
+        'accept_date' => 'timestamp',
+        'last_login_date' => 'timestamp',
     ];
 
     /**
@@ -61,6 +63,11 @@ class User extends Entity
     public function getUsername(): string
     {
         return $this->attributes['username'];
+    }
+
+    public function setUsername(string $username): void
+    {
+        $this->attributes['username'] = $username;
     }
 
     /**
@@ -169,7 +176,7 @@ class User extends Entity
      */
     public function isAdmin(): bool
     {
-        return $this->attributes['global_admin'];
+        return $this->attributes['admin'];
     }
 
     /**
@@ -308,6 +315,50 @@ class User extends Entity
         return true;
     }
 
+    public function getRegistrationDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['registration_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setRegistrationDate(DateTime $time): void
+    {
+        $this->attributes['registration_date'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function getAcceptDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['accept_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setAcceptDate(DateTime $time): void
+    {
+        $this->attributes['accept_date'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function isAccepted(): bool
+    {
+        return !is_null($this->getAcceptDate());
+    }
+
+    public function getLastLoginDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['last_login_date'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setLastLoginDate(DateTime $time): void
+    {
+        $this->attributes['last_login_date'] = $time->format('Y-m-d H:i:s');
+    }
+
     /**
      * @return Membership[]
      */
@@ -316,38 +367,15 @@ class User extends Entity
         return getMembershipsByUserId($this->getId());
     }
 
-    /**
-     * Returns if the current user may manage the given target.
-     *
-     * @param User $target
-     * @return bool
-     */
-    public function mayManage(User $target): bool
+    public function mayAccept(User $target): bool
     {
-        # Everyone may manage himself
-        if ($this->getId() == $target->getId()) {
-            return true;
-        }
-
-        # A global admin may manage anybody
         if ($this->isAdmin()) {
             return true;
         }
 
         foreach ($target->getMemberships() as $membership) {
-            # We may NOT manage if target user is admin himself
-            if ($membership->getStatus() == MembershipStatus::ADMIN) {
-                continue;
-            }
-
-            # We may manage if we're admin of the group
             $ownMembership = getMembership($this->getId(), $membership->getOrganisationId());
             if ($ownMembership && $ownMembership->getStatus() == MembershipStatus::ADMIN) {
-                return true;
-            }
-
-            # We may manage if we're admin of the group's region
-            if (isRegionAdmin($this->getId(), $membership->getOrganisation()->getRegionId())) {
                 return true;
             }
         }

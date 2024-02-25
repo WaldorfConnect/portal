@@ -54,11 +54,6 @@ function deleteRegion(int $id): void
     getRegionModel()->delete($id);
 }
 
-function isRegionAdmin(int $userId, ?int $regionId): bool
-{
-
-}
-
 /**
  * @return RegionModel
  */

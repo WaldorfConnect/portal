@@ -5,17 +5,17 @@ use function App\Helpers\getRegions;
 use function App\Helpers\getSchoolsByRegionId;
 
 ?>
-    <main>
+<main>
     <div class="container login">
 
-    <div class="card register">
-        <div class="card-header header-plain">
-            <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
-                 alt="WaldorfConnect Logo">
-            <h1 class="h2">Registrieren</h1>
-        </div>
-        <?php if (session('success')): ?>
-            <?= form_open('register/resend', '', ['userId' => session('userId')]) ?>
+        <div class="card register">
+            <div class="card-header header-plain">
+                <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
+                     alt="WaldorfConnect Logo">
+                <h1 class="h2">Registrieren</h1>
+            </div>
+            <?php if (session('success')): ?>
+                <?= form_open('register/resend', '', ['userId' => session('userId')]) ?>
                 <div class="card-body">
 
                     <?php if (session('resend')): ?>
@@ -36,17 +36,22 @@ use function App\Helpers\getSchoolsByRegionId;
 
                     <?php else: ?>
                         <div class="alert alert-success">
-                            <b>Registrierung erfolgreich!</b> Dein Account wurde angelegt. Wir haben dir nun eine <b>E-Mail mit
-                                einem Bestätigungslink</b> an <?= session('email') ?> gesendet. Bitte klicke auf diesen Link, um mit
-                            der Registrierung fortzufahren!<br>Dein Benutzername lautet: <b><?= session('username') ?></b>.
+                            <b>Registrierung erfolgreich!</b> Dein Account wurde angelegt. Wir haben dir nun eine <b>E-Mail
+                                mit
+                                einem Bestätigungslink</b> an <?= session('email') ?> gesendet. Bitte klicke auf diesen
+                            Link, um mit
+                            der Registrierung fortzufahren!<br>Dein Benutzername lautet:
+                            <b><?= session('username') ?></b>.
                         </div>
                     <?php endif; ?>
 
-                    <button class="btn btn-link text-dark" type="submit">Nach ein paar Minuten noch keine E-Mail erhalten? Erneut anfordern!</button>
+                    <button class="btn btn-link text-dark" type="submit">Nach ein paar Minuten noch keine E-Mail
+                        erhalten? Erneut anfordern!
+                    </button>
                 </div>
-            <?= form_close(); ?>
-        <?php else: ?>
-            <?= form_open('register') ?>
+                <?= form_close(); ?>
+            <?php else: ?>
+                <?= form_open('register') ?>
                 <div class="card-body">
                     <?php if ($error = session('error')): ?>
                         <div class="alert alert-danger">
@@ -57,9 +62,15 @@ use function App\Helpers\getSchoolsByRegionId;
                     <h3>Persönliche Angaben</h3>
 
                     <div class="mb-3">
-                        <label for="inputName" class="sr-only">Vorname(n)</label>
-                        <input class="form-control" id="inputName" name="name" autocomplete="name"
-                               placeholder="Vor- und Nachname" value="<?= old('name') ?>" required>
+                        <label for="inputFirstName" class="sr-only">Vorname(n)</label>
+                        <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
+                               placeholder="Vorname" value="<?= old('firstName') ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputLastName" class="sr-only">Nachname</label>
+                        <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
+                               placeholder="Nachname" value="<?= old('lastName') ?>" required>
                     </div>
 
                     <div class="mb-3">
@@ -84,22 +95,9 @@ use function App\Helpers\getSchoolsByRegionId;
                     <h3 class="mt-5">Organisationsangaben</h3>
 
                     <div class="mb-3">
-                        <label for="inputSchool" class="form-label">Schule</label>
-                        <select class="form-select" id="inputSchool" name="school" required>
-                            <?php foreach (getRegions() as $region): ?>
-                                <optgroup label="<?= $region->getName() ?>">
-                                    <?php foreach (getSchoolsByRegionId($region->getId()) as $school): ?>
-                                        <option <?= $school->getId() == old('school') ? 'selected' : '' ?>
-                                                value="<?= $school->getId() ?>"><?= $school->name ?></option>
-                                    <?php endforeach; ?>
-                                </optgroup>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
                         <label for="inputGroups" class="form-label">Organisationen/Gruppen</label>
-                        <select class="form-select" id="inputGroups" name="groups[]" aria-describedby="groupsHelp" multiple
+                        <select class="form-select" id="inputGroups" name="groups[]" aria-describedby="groupsHelp"
+                                multiple
                                 required>
                             <?php foreach (getRegions() as $region): ?>
                                 <optgroup label="<?= $region->getName() ?>">
@@ -120,6 +118,6 @@ use function App\Helpers\getSchoolsByRegionId;
                     <a class="btn btn-link text-dark"
                        href="<?= base_url('/login') ?>">Bereits registriert? Jetzt anmelden!</a>
                 </div>
-            <?= form_close(); ?>
-        <?php endif; ?>
-    </div>
+                <?= form_close(); ?>
+            <?php endif; ?>
+        </div>

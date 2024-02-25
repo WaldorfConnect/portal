@@ -203,6 +203,6 @@ class Organisation extends Entity
 
     public function isManageableBy(User $user): bool
     {
-        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getRegionId()) || isOrganisationAdmin($user->getId(), $this->getId());
+        return $user->isAdmin() || isOrganisationAdmin($user->getId(), $this->getId());
     }
 }

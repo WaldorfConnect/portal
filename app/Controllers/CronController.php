@@ -56,6 +56,7 @@ class CronController extends BaseController
 
     private function syncUsersLDAP(): void
     {
+        // TODO check if synchronizable
         foreach (getUsers() as $user) {
             // Skip users in a non-synchronizable state
             if (!$user->getStatus()->isSynchronizable())

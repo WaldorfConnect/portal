@@ -60,7 +60,6 @@ $currentUser = getCurrentUser();
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputRegion" name="region" required>
                 <?php foreach (getRegions() as $region): ?>
-                    <?php if (!$region->isManageableBy($currentUser)): continue; endif; ?>
                     <option value="<?= $region->getId() ?>" <?= $region->getId() == $organisation->getRegionId() ? "selected" : "" ?>>
                         <?= $region->getName() ?>
                     </option>

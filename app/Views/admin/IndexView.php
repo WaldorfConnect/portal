@@ -22,9 +22,9 @@ $user = getCurrentUser() ?>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
     <div class="col-md-4">
         <div class="card mb-3">
-            <div class="card-header text-center">Globaler Admin</div>
+            <div class="card-header text-center">Admin</div>
             <div class="card-body text-center">
-                <span class="card-title display-2"><?= $user->isGlobalAdmin() ? 'Ja' : 'Nein' ?></span>
+                <span class="card-title display-2"><?= $user->isAdmin() ? 'Ja' : 'Nein' ?></span>
             </div>
         </div>
     </div>
@@ -54,15 +54,15 @@ $user = getCurrentUser() ?>
             <i class="fas fa-users fa-2x mb-2"></i><br>
             Benutzer
         </a>
-        <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId(), null)): ?>
+        <?php if ($user->isAdmin()): ?>
             <a href="<?= base_url('admin/organisations') ?>" class="btn btn-primary btn-lg">
                 <i class="fas fa-people-group fa-2x mb-2"></i><br>
                 Organisationen
             </a>
         <?php endif; ?>
-        <?php if ($user->isGlobalAdmin()): ?>
+        <?php if ($user->isAdmin()): ?>
             <a href="<?= base_url('admin/regions') ?>"
-               class="btn btn-primary btn-lg <?= !$user->isGlobalAdmin() ? "disabled" : "" ?>">
+               class="btn btn-primary btn-lg <?= !$user->isAdmin() ? "disabled" : "" ?>">
                 <i class="fas fa-landmark fa-2x mb-2"></i><br>
                 Regionen
             </a>

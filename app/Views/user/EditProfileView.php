@@ -1,6 +1,5 @@
 <?php
 
-use App\Entities\UserStatus;
 use function App\Helpers\getCurrentUser;
 
 $self = getCurrentUser();
@@ -43,7 +42,7 @@ $self = getCurrentUser();
         <div class="col-md-8 col-lg-9">
             <input type="email" class="form-control" id="inputEmail" name="email" autocomplete="email"
                    placeholder="E-Mail" value="<?= $self->getEmail() ?>" aria-describedby="emailHelp" required>
-            <?php if ($self->getStatus() == UserStatus::PENDING_EMAIL): ?>
+            <?php if (!$self->isEmailConfirmed()): ?>
                 <span id="emailHelp" class="badge bg-warning">Warte auf Bestätigung</span>
                 <?php if (session('resendSuccess')): ?>
                 <span id="resentBadge" class="badge bg-success">Erneut versandt</span>

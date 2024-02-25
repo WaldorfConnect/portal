@@ -3,7 +3,6 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\isRegionAdmin;
 
 class Region extends Entity
 {
@@ -36,10 +35,5 @@ class Region extends Entity
     public function setName(string $name): void
     {
         $this->attributes['name'] = $name;
-    }
-
-    public function isManageableBy(User $user): bool
-    {
-        return $user->isGlobalAdmin() || isRegionAdmin($user->getId(), $this->getId());
     }
 }

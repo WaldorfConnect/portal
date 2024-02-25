@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Entities\UserStatus;
 use CodeIgniter\HTTP\RedirectResponse;
+use DateTime;
 use Exception;
 use function App\Helpers\saveImage;
 use function App\Helpers\createOrganisation;
@@ -44,12 +44,13 @@ class AdminController extends BaseController
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
 
-        // User awaiting acceptance
-        if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
+        if ($user->isAccepted()) {
             return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
         }
 
-        $user->setStatus(UserStatus::OK);
+        $user->setAcceptDate(new DateTime());
+        $user->setActive(true);
+
         try {
             saveUser($user);
             queueMail($user->getId(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
@@ -60,25 +61,30 @@ class AdminController extends BaseController
         return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich freigegeben!');
     }
 
-    public function denyUser(): RedirectResponse
+    public function activateUser(): RedirectResponse
     {
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
 
-        // User awaiting acceptance
-        if ($user->getStatus() != UserStatus::PENDING_ACCEPT) {
-            return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits abgelehnt.');
+        if ($user->isActive()) {
+            return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits aktiv.');
         }
 
-        $user->setStatus(UserStatus::DENIED);
-        try {
-            saveUser($user);
-            queueMail($user->getId(), 'Kontoerstellung abgelehnt', view('mail/AccountDenied', ['user' => $user]));
-        } catch (Exception $e) {
-            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        $user->setActive(true);
+        return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich aktiviert!');
+    }
+
+    public function deactivateUser(): RedirectResponse
+    {
+        $userId = $this->request->getPost('id');
+        $user = getUserById($userId);
+
+        if (!$user->isActive()) {
+            return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits deaktiviert.');
         }
 
-        return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich abgelehnt!');
+        $user->setActive(false);
+        return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich deaktiviert!');
     }
 
     public function users(): string
@@ -95,10 +101,6 @@ class AdminController extends BaseController
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
-        if (!$self->mayManage($user)) {
-            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
-        }
-
         return $this->render('admin/user/UserEditView', ['user' => $user]);
     }
 
@@ -112,22 +114,15 @@ class AdminController extends BaseController
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
-        if (!$self->mayManage($user)) {
-            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht bearbeiten.');
-        }
-
-        $name = $this->request->getPost('name');
+        $firstName = $this->request->getPost('firstName');
+        $lastName = $this->request->getPost('lastName');
         $email = $this->request->getPost('email');
-        $status = $this->request->getPost('status');
         $password = $this->request->getPost('password');
         $confirmedPassword = $this->request->getPost('confirmedPassword');
 
-        $user->setName($name);
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
         $user->setEmail($email);
-
-        if ($self->isGlobalAdmin()) {
-            $user->setStatus(UserStatus::from($status));
-        }
 
         // Check if user wants to change password
         if (strlen($password) > 0) {
@@ -155,10 +150,6 @@ class AdminController extends BaseController
 
         if (!$user) {
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
-        }
-
-        if (!$self->mayManage($user)) {
-            return redirect('admin/users')->with('error', 'Du darfst diesen Benutzer nicht löschen.');
         }
 
         try {
@@ -190,10 +181,6 @@ class AdminController extends BaseController
 
         if (!$region) {
             return redirect('admin/organisations')->with('error', 'Unbekannte Region.');
-        }
-
-        if (!$region->isManageableBy($self)) {
-            return redirect('admin/organisations')->with('error', 'Du darfst in dieser Region keine Organisationen verwalten.');
         }
 
         $organisation = createOrganisation($name, $websiteUrl, $regionId);
@@ -253,7 +240,7 @@ class AdminController extends BaseController
         }
     }
 
-    public function editGroup(int $organisationId): RedirectResponse|string
+    public function editOrganisation(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
         $organisation = getOrganisationById($organisationId);

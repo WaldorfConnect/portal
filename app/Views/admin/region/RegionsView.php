@@ -67,20 +67,19 @@ $currentUser = getCurrentUser();
                 <td id="td-id-<?= $region->getId() ?>" class="td-class-<?= $region->getId() ?>"
                     data-title="<?= $region->getName() ?>"><?= $region->getName() ?></td>
                 <td>
-                    <div class="btn-group gap-2" role="group">
+                    <div class="btn-group">
                         <a class="btn btn-primary btn-sm"
                            href="<?= base_url('admin/region/edit') . '/' . $region->getId() ?>"><i
                                     class="fas fa-pen"></i>
                         </a>
-                        <div>
-                            <?= form_open('admin/region/delete', ['onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
-                            <?= form_hidden('id', $region->getId()) ?>
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <?= form_close() ?>
-                        </div>
                     </div>
+
+                    <?= form_open('admin/region/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $region->getId()) ?>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <?= form_close() ?>
                 </td>
             </tr>
         <?php endforeach; ?>

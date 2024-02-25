@@ -76,7 +76,7 @@ use function App\Helpers\getOrganisations;
                     data-title="<?= $organisation->getName() ?>"><?= $organisation->getName() ?></td>
                 <td><?= $organisation->getRegion()->getName() ?></td>
                 <td>
-                    <div class="btn-group gap-2" role="group">
+                    <div class="btn-group">
                         <a class="btn btn-primary btn-sm"
                            href="<?= base_url('organisation') . '/' . $organisation->getId() ?>">
                             <i class="fas fa-info-circle"></i>
@@ -85,15 +85,14 @@ use function App\Helpers\getOrganisations;
                            href="<?= base_url('admin/organisation/edit') . '/' . $organisation->getId() ?>">
                             <i class="fas fa-pen"></i>
                         </a>
-                        <div>
-                            <?= form_open('admin/organisation/delete', ['onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich löschen?');"]) ?>
-                            <?= form_hidden('id', $organisation->getId()) ?>
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <?= form_close() ?>
-                        </div>
                     </div>
+
+                    <?= form_open('admin/organisation/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $organisation->getId()) ?>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <?= form_close() ?>
                 </td>
             </tr>
         <?php endforeach; ?>

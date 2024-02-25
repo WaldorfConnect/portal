@@ -1,8 +1,6 @@
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\isRegionAdmin;
 
 ?>
 <nav class="navbar navbar-expand-md navbar-light navbar-expand-lg bg-white border-bottom fixed-top shadow-sm">
@@ -28,7 +26,7 @@ use function App\Helpers\isRegionAdmin;
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
-                            <?php if ($user->isGlobalAdmin()): ?>
+                            <?php if ($user->isAdmin()): ?>
                                 <a class="dropdown-item" href="<?= base_url('/admin/debug') ?>">
                                     Debug
                                 </a>
@@ -37,12 +35,12 @@ use function App\Helpers\isRegionAdmin;
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer
                             </a>
-                            <?php if ($user->isGlobalAdmin() || isRegionAdmin($user->getId(), null)): ?>
+                            <?php if ($user->isAdmin()): ?>
                                 <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
                                     Organisationen
                                 </a>
                             <?php endif; ?>
-                            <?php if ($user->isGlobalAdmin()): ?>
+                            <?php if ($user->isAdmin()): ?>
                                 <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
                                     Regionen
                                 </a>

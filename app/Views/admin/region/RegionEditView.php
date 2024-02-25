@@ -1,8 +1,6 @@
 <?php
 
-use App\Entities\UserRole;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getSchools;
 
 $currentUser = getCurrentUser();
 ?>
@@ -29,14 +27,6 @@ $currentUser = getCurrentUser();
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputName" name="name" autocomplete="name"
                    placeholder="Name" value="<?= $region->getName() ?>" required>
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label for="inputISO" class="col-form-label col-md-4 col-lg-3">ISO 3166-2 / ISO 3166-2</label>
-        <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputISO" name="iso" autocomplete="iso"
-                   placeholder="ISO Code" value="<?= $region->getIsoCode() ?>" required>
         </div>
     </div>
 

@@ -127,7 +127,7 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleChangeUserStatus(): string|RedirectResponse
+    public function handleChangeMembershipStatus(): string|RedirectResponse
     {
         $currentUser = getCurrentUser();
         $organisationId = $this->request->getPost('organisationId');

@@ -36,15 +36,16 @@ $routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', 
 $routes->post('/organisation/join', 'OrganisationController::handleJoin', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/accept', 'OrganisationController::handleAcceptJoin', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/deny', 'OrganisationController::handleDenyJoin', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/change_user_status', 'OrganisationController::handleChangeUserStatus', ['filter' => LoggedInFilter::class]);
+$routes->post('/organisation/change_membership_status', 'OrganisationController::handleChangeMembershipStatus', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/kick_user', 'OrganisationController::handleKickUser', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class]);
-$routes->get('/admin/debug', 'AdminController::debug', ['filter' => GlobalAdminFilter::class]);
+$routes->get('/admin/debug', 'AdminController::debug', ['filter' => AdminFilter::class]);
 
 $routes->get('/admin/users', 'AdminController::users', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/activate', 'AdminController::activateUser', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/deactivate', 'AdminController::deactivateUser', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/accept', 'AdminController::acceptUser', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/deny', 'AdminController::denyUser', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/delete', 'AdminController::handleDeleteUser', ['filter' => AdminFilter::class]);
 $routes->get('/admin/user/edit/(:num)', 'AdminController::editUser/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/edit', 'AdminController::handleEditUser', ['filter' => AdminFilter::class]);
@@ -56,11 +57,11 @@ $routes->post('/admin/organisation/delete', 'AdminController::handleDeleteOrgani
 $routes->get('/admin/organisation/edit/(:num)', 'AdminController::editOrganisation/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/organisation/edit', 'AdminController::handleEditOrganisation', ['filter' => AdminFilter::class]);
 
-$routes->get('/admin/regions', 'AdminController::regions', ['filter' => GlobalAdminFilter::class]);
-$routes->get('/admin/region/create', 'AdminController::createRegion', ['filter' => GlobalAdminFilter::class]);
-$routes->post('/admin/region/create', 'AdminController::handleCreateRegion', ['filter' => GlobalAdminFilter::class]);
-$routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['filter' => GlobalAdminFilter::class]);
-$routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => GlobalAdminFilter::class]);
-$routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => GlobalAdminFilter::class]);
+$routes->get('/admin/regions', 'AdminController::regions', ['filter' => AdminFilter::class]);
+$routes->get('/admin/region/create', 'AdminController::createRegion', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/create', 'AdminController::handleCreateRegion', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['filter' => AdminFilter::class]);
+$routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => AdminFilter::class]);
 
 $routes->cli('/cron', 'CronController::index');

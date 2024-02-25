@@ -3,11 +3,9 @@
 namespace App\Helpers;
 
 use App\Entities\User;
-use App\Entities\UserStatus;
 use App\Models\UserModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use InvalidArgumentException;
-use Ramsey\Uuid\Uuid;
 use ReflectionException;
 
 /**
@@ -39,25 +37,6 @@ function getCurrentUser(): ?User
 function getUsers(): array
 {
     return getUserModel()->findAll();
-}
-
-/**
- * @return User[]
- * @throws DatabaseException
- */
-function getManageableUsers(): array
-{
-    $self = getCurrentUser();
-    $manageableUsers = [];
-
-    $allUsers = getUsers();
-    foreach ($allUsers as $user) {
-        if ($self->mayManage($user)) {
-            $manageableUsers[] = $user;
-        }
-    }
-
-    return $manageableUsers;
 }
 
 /**
@@ -126,19 +105,19 @@ function saveUser(User $user): string|int
 /**
  * @param string $username
  * @param string $email
- * @param string $name
+ * @param string $firstName
+ * @param string $lastName
  * @param string $password
  * @return User
  */
-function createUser(string $username, string $name, string $email, string $password): User
+function createUser(string $username, string $firstName, string $lastName, string $email, string $password): User
 {
     $user = new User();
-    $user->setToken(Uuid::uuid4()->toString());
     $user->setUsername($username);
-    $user->setName($name);
+    $user->setFirstName($firstName);
+    $user->setLastName($lastName);
     $user->setEmail($email);
     $user->setPassword($password);
-    $user->setStatus(UserStatus::PENDING_REGISTER);
     return $user;
 }
 
@@ -156,19 +135,15 @@ function getUserModel(): UserModel
 }
 
 /**
- * @param $name
+ * @param $firstName
+ * @param $lastName
+ *
  * @return string
  * @throws InvalidArgumentException
  */
-function generateUsername($name): string
+function generateUsername($firstName, $lastName): string
 {
-    $firstLetterFirstName = substr($name, 0, 1);
-    $splitName = explode(' ', $name);
-    if (count($splitName) < 2) {
-        throw new InvalidArgumentException();
-    }
-
-    $lastName = end($splitName);
+    $firstLetterFirstName = substr($firstName, 0, 1);
     $username = mb_strtolower($firstLetterFirstName . $lastName);
     $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
     return preg_replace("/[^\p{L}]+/", '', $username);

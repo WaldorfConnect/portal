@@ -2,8 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Entities\UserStatus;
+use Cassandra\Date;
 use CodeIgniter\HTTP\RedirectResponse;
+use DateTime;
 use Exception;
 use InvalidArgumentException;
 use function App\Helpers\checkSSHA;
@@ -51,19 +52,20 @@ class AuthenticationController extends BaseController
         }
 
         // Check if logging is blocked by current status
-        $denyMessage = $user->getStatus()->getLoginDenyMessage();
-        if (!is_null($denyMessage)) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', $denyMessage);
+        if (!$user->isActive()) {
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Benutzer ist nicht aktiv.');
         }
 
         // Remove pending password reset if login was successful
-        if ($user->getStatus() == UserStatus::PENDING_PWRESET) {
-            try {
-                $user->setStatus(UserStatus::OK);
-                saveUser($user);
-            } catch (Exception $e) {
-                return redirect('login')->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
-            }
+        if ($user->isPasswordReset()) {
+            $user->setPasswordReset(false);
+        }
+
+        try {
+            $user->setLastLoginDate(new DateTime());
+            saveUser($user);
+        } catch (Exception $e) {
+            return redirect('login')->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
         // Everything worked - welcome!
@@ -76,14 +78,15 @@ class AuthenticationController extends BaseController
 
     public function handleRegister(): string|RedirectResponse
     {
-        $name = trim($this->request->getPost('name'));
+        $firstName = trim($this->request->getPost('firstName'));
+        $lastName = trim($this->request->getPost('lastName'));
         $email = trim($this->request->getPost('email'));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
         $organisationIds = $this->request->getPost('organisations');
 
         try {
-            $username = generateUsername($name);
+            $username = generateUsername($firstName, $lastName);
             $user = getUserByUsername($username);
 
             // If name is already taken add a number
@@ -112,7 +115,7 @@ class AuthenticationController extends BaseController
         }
 
         $hashedPassword = hashSSHA($password);
-        $user = createUser($username, $name, $email, $hashedPassword);
+        $user = createUser($username, $firstName, $lastName, $email, $hashedPassword);
 
         try {
             $id = saveUser($user);

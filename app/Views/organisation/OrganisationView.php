@@ -176,7 +176,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 <?php if ($organisation->isManageableBy($currentUser)): ?>
                                     <td>
                                         <?php if ($membership->getStatus() == MembershipStatus::ADMIN): ?>
-                                            <?= form_open('organisation/change_user_status') ?>
+                                            <?= form_open('organisation/change_membership_status') ?>
                                             <?= form_hidden('organisationId', $organisation->getId()) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::USER->value) ?>
@@ -185,7 +185,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                             </button>
                                             <?= form_close() ?>
                                         <?php else: ?>
-                                            <?= form_open('organisation/change_user_status') ?>
+                                            <?= form_open('organisation/change_membership_status') ?>
                                             <?= form_hidden('organisationId', $organisation->getId()) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::ADMIN->value) ?>
