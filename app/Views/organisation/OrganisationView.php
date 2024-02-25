@@ -136,6 +136,21 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                 <?php endif; ?>
             </div>
         </div>
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                Arbeitsgruppen
+                <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
+                    <div class="justify-content-between align-items-center">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#workgroupModal">
+                            <i class="fas fa-add"></i> Arbeitsgruppe hinzufügen
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="card-body">
+
+            </div>
+        </div>
     </div>
 </div>
 
