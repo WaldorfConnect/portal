@@ -190,18 +190,6 @@ function saveMembership(Membership $membership): void
 }
 
 /**
- * Returns whether a given user has administrative permissions for given organisation (or any if null).
- *
- * @param int $userId
- * @param int|null $organisationId
- * @return bool
- */
-function isOrganisationAdmin(int $userId, ?int $organisationId): bool
-{
-
-}
-
-/**
  * Returns the group table wrapper and query builder.
  *
  * @return OrganisationModel

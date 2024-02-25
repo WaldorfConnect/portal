@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use function App\Helpers\getMembership;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getRegionById;
@@ -203,6 +204,11 @@ class Organisation extends Entity
 
     public function isManageableBy(User $user): bool
     {
-        return $user->isAdmin() || isOrganisationAdmin($user->getId(), $this->getId());
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $membership = getMembership($user->getId(), $this->getId());
+        return $membership && $membership->getStatus() == MembershipStatus::ADMIN;
     }
 }

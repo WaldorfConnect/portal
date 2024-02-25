@@ -5,13 +5,16 @@ namespace App\Controllers;
 use App\Entities\MembershipStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembershipRequest;
 use function App\Helpers\deleteMembership;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUserById;
+use function App\Helpers\saveImage;
 use function App\Helpers\saveMembership;
+use function App\Helpers\saveOrganisation;
 
 class OrganisationController extends BaseController
 {
@@ -30,10 +33,9 @@ class OrganisationController extends BaseController
         return $this->render('organisation/OrganisationView', ['organisation' => $organisation]);
     }
 
-    public function handleJoin(): string|RedirectResponse
+    public function handleJoin(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisationId = $this->request->getPost('id');
         $organisation = getOrganisationById($organisationId);
 
         if (!$organisation) {
@@ -55,10 +57,106 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleAcceptJoin(): string|RedirectResponse
+    public function handleLeave(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisationId = $this->request->getPost('organisationId');
+        $organisation = getOrganisationById($organisationId);
+
+        if (!$organisation) {
+            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        }
+
+        $membership = getMembership($currentUser->getId(), $organisationId);
+        if (!$membership) {
+            return redirect('organisations')->with('error', 'Du bist kein Mitglied dieser Organisation.');
+        }
+
+        deleteMembership($currentUser->getId(), $organisationId);
+
+        return redirect()->to(base_url('organisation/' . $organisationId));
+    }
+
+    public function addMember(int $organisationId): string
+    {
+
+    }
+
+    public function handleAddMember(int $organisationId): string
+    {
+
+    }
+
+    public function edit(int $organisationId): RedirectResponse|string
+    {
+        $self = getCurrentUser();
+        $organisation = getOrganisationById($organisationId);
+        if (!$organisation) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
+        }
+
+        if (!$organisation->isManageableBy($self)) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
+        }
+
+        return $this->render('organisation/OrganisationEditView', ['organisation' => $organisation]);
+    }
+
+    public function handleEdit(int $organisationId): RedirectResponse|string
+    {
+        $self = getCurrentUser();
+        $organisation = getOrganisationById($organisationId);
+
+        if (!$organisation) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
+        }
+
+        if (!$organisation->isManageableBy($self)) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
+        }
+
+        $name = $this->request->getPost('name');
+        $websiteUrl = $this->request->getPost('websiteUrl');
+        $regionId = $this->request->getPost('region');
+        $description = $this->request->getPost('description');
+
+        if ($self->isAdmin()) {
+            $organisation->setName($name);
+            $organisation->setWebsiteUrl($websiteUrl);
+            $organisation->setRegionId($regionId);
+        }
+
+        $organisation->setDescription($description);
+
+        // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
+        if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $this->validator->getErrors());
+        }
+        if (!$this->validate(createImageValidationRule('image'))) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $this->validator->getErrors());
+        }
+
+        $logoFile = $this->request->getFile('logo');
+        $imageFile = $this->request->getFile('image');
+
+        // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
+        if ($logoFile->isValid()) {
+            saveImage($logoFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'logo');
+        }
+        if ($imageFile->isValid()) {
+            saveImage($imageFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'image');
+        }
+
+        try {
+            saveOrganisation($organisation);
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Organisation bearbeitet.');
+        } catch (Exception $e) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+    }
+
+    public function handleAcceptJoin(int $organisationId): RedirectResponse
+    {
+        $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
         $organisation = getOrganisationById($organisationId);
@@ -92,10 +190,9 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleDenyJoin(): string|RedirectResponse
+    public function handleDenyJoin(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisationId = $this->request->getPost('organisationId');
         $userId = $this->request->getPost('userId');
 
         $organisation = getOrganisationById($organisationId);
@@ -127,10 +224,9 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleChangeMembershipStatus(): string|RedirectResponse
+    public function handleChangeMembershipStatus(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisationId = $this->request->getPost('organisationId');
         $userId = $this->request->getPost('userId');
         $status = $this->request->getPost('status');
 
@@ -164,10 +260,9 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleKickUser(): string|RedirectResponse
+    public function handleKickUser(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisationId = $this->request->getPost('$organisationId');
         $userId = $this->request->getPost('userId');
 
         $organisation = getOrganisationById($organisationId);
