@@ -6,6 +6,7 @@ use App\Entities\MembershipStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use function App\Helpers\createImageValidationRule;
+use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
 use function App\Helpers\deleteMembership;
 use function App\Helpers\getCurrentUser;
@@ -76,14 +77,21 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function addMember(int $organisationId): string
+    public function handleAddMember(int $organisationId): RedirectResponse|string
     {
+        $currentUser = getCurrentUser();
+        $organisation = getOrganisationById($organisationId);
 
-    }
+        if (!$organisation) {
+            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        }
 
-    public function handleAddMember(int $organisationId): string
-    {
+        $members = $this->request->getPost('member');
+        foreach ($members as $member) {
+            createMembership($member, $organisationId);
+        }
 
+        return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
     public function edit(int $organisationId): RedirectResponse|string

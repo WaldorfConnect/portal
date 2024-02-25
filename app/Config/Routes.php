@@ -35,7 +35,6 @@ $routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', 
 
 $routes->post('/organisation/(:num)/join', 'OrganisationController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/leave', 'OrganisationController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
-$routes->get('/organisation/(:num)/add', 'OrganisationController::addMember/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/add', 'OrganisationController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
 $routes->get('/organisation/(:num)/edit', 'OrganisationController::edit/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/edit', 'OrganisationController::handleEdit/$1', ['filter' => LoggedInFilter::class]);

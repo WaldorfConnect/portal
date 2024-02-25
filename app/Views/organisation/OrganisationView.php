@@ -4,6 +4,7 @@ use App\Entities\MembershipStatus;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getMembership;
+use function App\Helpers\getUsers;
 
 $currentUser = getCurrentUser();
 $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
@@ -71,7 +72,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 <tr>
                                     <th>Website:&nbsp;</th>
                                     <td>
-                                        <a href="<?= $organisation->getWebsiteUrl() ?>"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
+                                        <a href="<?= $organisation->getWebsiteUrl() ?>" target="_blank"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -144,9 +145,9 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                 Nutzer*innen
                 <?php if ($currentUser->isAdmin()): ?>
                     <div class="justify-content-between align-items-center">
-                        <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('organisation/add/' . $organisation->getId()) ?>"><i
-                                    class="fas fa-add"></i> Mitglied hinzufügen</a>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#memberModal">
+                            <i class="fas fa-add"></i> Mitglied hinzufügen
+                        </button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -230,6 +231,35 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?= form_open("organisation/{$organisation->getId()}/add") ?>
+            <div class="modal-header">
+                <h5 class="modal-title" id="memberModalLabel">Mitglieder hinzufügen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bitte wählen ein oder mehrere Mitglieder, die der Organisation hinzugefügt werden sollen.</p>
+                <div class="form-group">
+                    <label for="inputMember" class="sr-only">Mitglied wählen</label>
+                    <select class="form-select" id="inputMember" name="member[]" multiple>
+                        <?php foreach (getUsers() as $user): ?>
+                            <option value="<?= $user->getId() ?>">
+                                <?= $user->getName() ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Speichern</button>
+            </div>
+            <?= form_close() ?>
         </div>
     </div>
 </div>

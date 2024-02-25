@@ -172,6 +172,23 @@ function createMembershipRequest(int $userId, int $organisationId): void
     saveMembership($membership);
 }
 
+/**
+ * Create membership with given parameters.
+ *
+ * @param int $userId
+ * @param int $organisationId
+ * @return void
+ * @throws ReflectionException
+ */
+function createMembership(int $userId, int $organisationId): void
+{
+    $membership = new Membership();
+    $membership->setUserId($userId);
+    $membership->setOrganisationId($organisationId);
+    $membership->setStatus(MembershipStatus::USER);
+    saveMembership($membership);
+}
+
 function deleteMembership(int $userId, int $organisationId): void
 {
     getMembershipModel()->where('user_id', $userId)->where('organisation_id', $organisationId)->delete();
