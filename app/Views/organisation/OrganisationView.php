@@ -72,7 +72,8 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 <tr>
                                     <th>Website:&nbsp;</th>
                                     <td>
-                                        <a href="<?= $organisation->getWebsiteUrl() ?>" target="_blank"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
+                                        <a href="<?= $organisation->getWebsiteUrl() ?>"
+                                           target="_blank"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -244,10 +245,12 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
             </div>
             <div class="modal-body">
-                <p>Bitte wählen ein oder mehrere Mitglieder, die der Organisation hinzugefügt werden sollen.</p>
+                <p>Bitte wählen ein oder mehrere Mitglieder, die der Organisation hinzugefügt werden sollen.<br>
+                    <small>(Zur Mehrfachauswahl die STRG-Taste gedrückt halten.)</small>
+                </p>
                 <div class="form-group">
                     <label for="inputMember" class="sr-only">Mitglied wählen</label>
-                    <select class="form-select" id="inputMember" name="member[]" multiple>
+                    <select class="form-select" id="inputMember" name="member[]" size="20" multiple>
                         <?php foreach (getUsers() as $user): ?>
                             <option value="<?= $user->getId() ?>">
                                 <?= $user->getName() ?>

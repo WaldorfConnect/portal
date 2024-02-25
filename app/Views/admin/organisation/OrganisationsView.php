@@ -82,7 +82,7 @@ use function App\Helpers\getOrganisations;
                             <i class="fas fa-info-circle"></i>
                         </a>
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('admin/organisation/edit') . '/' . $organisation->getId() ?>">
+                           href="<?= base_url("organisation/{$organisation->getId()}/edit") ?>">
                             <i class="fas fa-pen"></i>
                         </a>
                     </div>

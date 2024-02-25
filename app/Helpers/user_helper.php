@@ -36,7 +36,9 @@ function getCurrentUser(): ?User
  */
 function getUsers(): array
 {
-    return getUserModel()->findAll();
+    $users = getUserModel()->findAll();
+    usort($users, fn($a, $b) => strcmp($a->getName(), $b->getName()));
+    return $users;
 }
 
 /**
