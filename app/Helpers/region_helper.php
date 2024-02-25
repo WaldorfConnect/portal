@@ -41,7 +41,6 @@ function createRegion(string $name, string $iso): Region
 {
     $region = new Region();
     $region->setName($name);
-    $region->setIsoCode($iso);
     return $region;
 }
 
