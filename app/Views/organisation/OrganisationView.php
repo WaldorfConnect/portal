@@ -159,7 +159,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 Nutzer*innen
-                <?php if ($currentUser->isAdmin()): ?>
+                <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
                     <div class="justify-content-between align-items-center">
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#memberModal">
                             <i class="fas fa-add"></i> Mitglied hinzufügen

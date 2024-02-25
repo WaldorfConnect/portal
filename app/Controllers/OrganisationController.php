@@ -79,11 +79,15 @@ class OrganisationController extends BaseController
 
     public function handleAddMember(int $organisationId): RedirectResponse|string
     {
-        $currentUser = getCurrentUser();
+        $self = getCurrentUser();
         $organisation = getOrganisationById($organisationId);
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        }
+
+        if (!$organisation->isManageableBy($self)) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht verwalten.');
         }
 
         $members = $this->request->getPost('member');
