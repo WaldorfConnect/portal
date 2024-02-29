@@ -148,14 +148,19 @@ class OrganisationController extends BaseController
         }
 
         $logoFile = $this->request->getFile('logo');
+        $logoAuthor = $this->request->getPost('logoAuthor');
+
         $imageFile = $this->request->getFile('image');
+        $imageAuthor = $this->request->getPost('imageAuthor');
 
         // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
-            saveImage($logoFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'logo');
+            $logoId = saveImage($logoFile, $logoAuthor);
+            $organisation->setLogoId($logoId);
         }
         if ($imageFile->isValid()) {
-            saveImage($imageFile, ROOTPATH . 'public/assets/img/organisation/' . $organisationId, 'image');
+            $imageId = saveImage($imageFile, $imageAuthor);
+            $organisation->setImageId($imageId);
         }
 
         try {

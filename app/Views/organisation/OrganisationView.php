@@ -2,6 +2,8 @@
 
 use App\Entities\MembershipStatus;
 use function App\Helpers\getCurrentUser;
+use function App\Helpers\getImageAuthorById;
+use function App\Helpers\getImageUrlById;
 use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUsers;
@@ -51,17 +53,8 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     <div class="col-lg-6">
                         <table>
                             <tr>
-                                <?php
-                                $groupLogoPath = "/assets/img/organisation/" . $organisation->getId() . "/logo";
-                                if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.svg')) {
-                                    $groupLogoSrc = base_url($groupLogoPath . '.svg');
-                                } else if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupLogoPath . '.webp')) {
-                                    $groupLogoSrc = base_url($groupLogoPath . '.webp');
-                                } else {
-                                    $groupLogoSrc = base_url('/assets/img/placeholders/organisation-logo_512x128.webp');
-                                }
-                                ?>
-                                <img class="img-thumbnail mb-3" src="<?= $groupLogoSrc ?>"
+                                <img class="img-thumbnail mb-3"
+                                     src="<?= getImageUrlById($organisation->getLogoId(), 'assets/img/organisation-logo_512x128.webp') ?>"
                                      alt="Logo <?= $organisation->getName() ?>">
                             </tr>
                             <tr>
@@ -81,20 +74,13 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     </div>
                     <div class="col-lg-6">
                         <figure>
-                            <?php
-                            $groupImagePath = "/assets/img/organisation/" . $organisation->getId() . "/image.webp";
-                            if (is_file($_SERVER['DOCUMENT_ROOT'] . $groupImagePath)) {
-                                $groupImageSrc = base_url($groupImagePath);
-                            } else {
-                                $groupImageSrc = base_url('/assets/img/placeholders/organisation-image_1920x1080.webp');
-                            }
-                            ?>
+                            <?php $groupImageSrc = getImageUrlById($organisation->getImageId(), 'assets/img/organisation-image_1920x1080.webp'); ?>
                             <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
                                 <img class="img-thumbnail mt-3" src="<?= $groupImageSrc ?>"
                                      alt="Logo <?= $organisation->getName() ?>">
                             </a>
                             <figcaption>
-                                <small><?= !is_null($organisation->getImageAuthor()) ? '&copy;&nbsp;' . $organisation->getImageAuthor() : '' ?></small>
+                                <small><?= getImageAuthorById($organisation->getImageId()) ?></small>
                             </figcaption>
                         </figure>
                     </div>

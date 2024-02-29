@@ -2,7 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Entities\Image;
+use App\Models\ImageModel;
 use CodeIgniter\Files\File;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @param $inputName string the name attribute value of the <input type="file" name="...">
@@ -35,27 +38,26 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
  * @param int $quality of the resulting image
  * @return void
  *
- * Convert the image to WEBP format and save it under the specified outputPath
+ * Convert the image to WEBP format and save it under the specified imageId
  * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
  */
-function saveImage(File $file, string $outputDir, string $newName, int $quality = 100): void
+function saveImage(File $file, string $author, int $quality = 100): string
 {
+    $imageId = Uuid::uuid4()->toString();
+    insertImage($imageId, $author);
+
     $inputFilePath = $file->getTempName();
 
     // Create the output directory if it doesn't exist
-    if (!is_dir($outputDir)) mkdir($outputDir);
+    if (!is_dir(UPLOADED_IMAGES_DIR)) mkdir(UPLOADED_IMAGES_DIR);
 
     // If it's a logo file in SVG format, move it to its destination and quit
     if (mime_content_type($inputFilePath) == 'image/svg+xml') {
-        rename($inputFilePath, $outputDir . '/' . $newName . '.svg');
-        return;
+        rename($inputFilePath, UPLOADED_IMAGES_DIR . $imageId . '.svg');
+        return $imageId;
     }
 
-    // If it's a logo file not in SVG format, delete the one in SVG, because else that still gets displayed
-    if ($newName == 'logo' && mime_content_type($inputFilePath) != 'image/svg+xml' && is_file($outputDir . '/logo.svg'))
-        unlink($outputDir . '/logo.svg');
-
-    $outputFilePath = $outputDir . '/' . $newName . '.webp';
+    $outputFilePath = UPLOADED_IMAGES_DIR . $imageId . '.webp';
 
     // Determine image format from Exif data
     $fileType = exif_imagetype($inputFilePath);
@@ -79,9 +81,9 @@ function saveImage(File $file, string $outputDir, string $newName, int $quality 
             break;
         case IMAGETYPE_WEBP:
             rename($inputFilePath, $outputFilePath);
-            return;
+            return $imageId;
         default:
-            return;
+            return $imageId;
     }
 
     // Convert the image to WEBP and save (create/overwrite) it
@@ -89,4 +91,49 @@ function saveImage(File $file, string $outputDir, string $newName, int $quality 
 
     // Free up memory
     imagedestroy($image);
+
+    return $imageId;
+}
+
+function getImageUrlById(?string $id, string $placeholder): string
+{
+    if (is_null($id)) {
+        return base_url($placeholder);
+    }
+
+    $path = UPLOADED_IMAGES_DIR . $id . '.svg';
+    if (is_file($path)) {
+        return base_url(UPLOADED_IMAGE_URL . $id . '.svg');
+    }
+
+    $path = UPLOADED_IMAGES_DIR . $id . '.webp';
+    if (is_file($path)) {
+        return base_url(UPLOADED_IMAGE_URL . $id . '.webp');
+    }
+
+    return base_url($placeholder);
+}
+
+function getImageAuthorById(?string $id): string
+{
+    if (is_null($id)) {
+        return "";
+    }
+
+    $image = getImageModel()->find($id);
+    return $image->getAuthor();
+}
+
+function insertImage(string $id, string $author): void
+{
+    $image = new Image();
+    $image->setId($id);
+    $image->setAuthor($author);
+
+    getImageModel()->insert($image);
+}
+
+function getImageModel(): ImageModel
+{
+    return new ImageModel();
 }

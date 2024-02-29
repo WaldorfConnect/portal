@@ -172,8 +172,6 @@ class AdminController extends BaseController
 
     public function handleCreateOrganisation(): RedirectResponse
     {
-        $self = getCurrentUser();
-
         $name = $this->request->getPost('name');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
@@ -186,8 +184,6 @@ class AdminController extends BaseController
         $organisation = createOrganisation($name, $websiteUrl, $regionId);
 
         try {
-            $id = saveOrganisation($organisation);
-
             // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
             if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
                 return redirect('admin/organisations')->with('error', $this->validator->getErrors());
@@ -197,15 +193,22 @@ class AdminController extends BaseController
             }
 
             $logoFile = $this->request->getFile('logo');
+            $logoAuthor = $this->request->getPost('logoAuthor');
+
             $imageFile = $this->request->getFile('image');
+            $imageAuthor = $this->request->getPost('imageAuthor');
 
             // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
             if ($logoFile->isValid()) {
-                saveImage($logoFile, ROOTPATH . 'public/assets/img/organisation/' . $id, 'logo');
+                $logoId = saveImage($logoFile, $logoAuthor);
+                $organisation->setLogoId($logoId);
             }
             if ($imageFile->isValid()) {
-                saveImage($imageFile, ROOTPATH . 'public/assets/img/organisation/' . $id, 'image');
+                $imageId = saveImage($imageFile, $imageAuthor);
+                $organisation->setImageId($imageId);
             }
+
+            saveOrganisation($organisation);
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {

@@ -47,10 +47,24 @@ $currentUser = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
+        <label for="inputLogoAuthor" class="col-form-label col-md-4 col-lg-3">Author des Logos</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputLogoAuthor" name="logoAuthor" type="text">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
         <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Bild (ca. 1920x1080 | max. 2MB)</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputImage" name="image" type="file"
                    accept="image/png, image/jpg, image/jpeg, image/gif, image/webp">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="inputImageAuthor" class="col-form-label col-md-4 col-lg-3">Author des Bildes</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputImageAuthor" name="imageAuthor" type="text">
         </div>
     </div>
 

@@ -12,7 +12,7 @@ class OrganisationModel extends Model
     protected $returnType = Organisation::class;
 
     protected $allowedFields = [
-        'parent_id', 'name', 'short_name', 'region_id', 'address', 'description', 'website_url', 'email_office', 'email_students', 'image_author'
+        'parent_id', 'name', 'short_name', 'region_id', 'address', 'description', 'website_url', 'email_office', 'email_students', 'image_id', 'logo_id'
     ];
 }
 

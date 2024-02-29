@@ -7,8 +7,6 @@ use function App\Helpers\getMembership;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembershipsByOrganisationId;
 use function App\Helpers\getRegionById;
-use function App\Helpers\isOrganisationAdmin;
-use function App\Helpers\isRegionAdmin;
 
 class Organisation extends Entity
 {
@@ -23,7 +21,8 @@ class Organisation extends Entity
         'website_url' => null,
         'email_office' => null,
         'email_students' => null,
-        'image_author' => null,
+        'image_id' => null,
+        'logo_id' => null
     ];
 
     protected $casts = [
@@ -37,7 +36,8 @@ class Organisation extends Entity
         'website_url' => 'string',
         'email_office' => 'string',
         'email_students' => 'string',
-        'image_author' => 'string',
+        'image_id' => 'string',
+        'logo_id' => 'string'
     ];
 
     /**
@@ -184,14 +184,27 @@ class Organisation extends Entity
     /**
      * @return ?string
      */
-    public function getImageAuthor(): ?string
+    public function getLogoId(): ?string
     {
-        return $this->attributes['image_author'];
+        return $this->attributes['logo_id'];
     }
 
-    public function setImageAuthor(string $imageAuthor): void
+    public function setLogoId(string $logoId): void
     {
-        $this->attributes['image_author'] = $imageAuthor;
+        $this->attributes['logo_id'] = $logoId;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getImageId(): ?string
+    {
+        return $this->attributes['image_id'];
+    }
+
+    public function setImageId(string $imageId): void
+    {
+        $this->attributes['image_id'] = $imageId;
     }
 
     /**
