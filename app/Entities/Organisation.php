@@ -56,16 +56,17 @@ class Organisation extends Entity
         return $this->attributes['parent_id'];
     }
 
-    public function setParentId(int $parentOrganisationId): void
+    public function setParentId(?int $parentOrganisationId): void
     {
         $this->attributes['parent_id'] = $parentOrganisationId;
     }
 
     /**
-     * @return Organisation
+     * @return ?Organisation
      */
-    public function getParent(): Organisation
+    public function getParent(): ?Organisation
     {
+        if (is_null($this->getParentId())) return null;
         return getOrganisationById($this->getParentId());
     }
 
@@ -80,6 +81,12 @@ class Organisation extends Entity
     public function setName(string $name): void
     {
         $this->attributes['name'] = $name;
+    }
+
+    public function getDisplayName(): string
+    {
+        $parent = $this->getParent();
+        return ($parent ? $parent->getName() . ' / ' : '') . $this->getName();
     }
 
     /**

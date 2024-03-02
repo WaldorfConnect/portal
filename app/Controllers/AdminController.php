@@ -173,6 +173,7 @@ class AdminController extends BaseController
     public function handleCreateOrganisation(): RedirectResponse
     {
         $name = $this->request->getPost('name');
+        $shortName = $this->request->getPost('shortName');
         $websiteUrl = $this->request->getPost('websiteUrl');
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
@@ -181,7 +182,8 @@ class AdminController extends BaseController
             return redirect('admin/organisations')->with('error', 'Unbekannte Region.');
         }
 
-        $organisation = createOrganisation($name, $websiteUrl, $regionId);
+        $organisation = createOrganisation($name, $shortName, $regionId);
+        $organisation->setWebsiteUrl($websiteUrl);
 
         try {
             // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
@@ -232,11 +234,6 @@ class AdminController extends BaseController
 
         try {
             deleteOrganisation($organisationId);
-            $imagesFolder = ROOTPATH . 'public/assets/img/organisation/' . $organisationId;
-            if (is_dir($imagesFolder)) {
-                delete_files($imagesFolder, true, false, true);
-                rmdir($imagesFolder);
-            }
             return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');
         } catch (Exception $e) {
             return redirect('admin/organisations')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());

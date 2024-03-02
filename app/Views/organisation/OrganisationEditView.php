@@ -14,9 +14,18 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Organisationen</a></li>
-        <li class="breadcrumb-item active" aria-current="page">
-            <a href="<?= base_url('/organisation/' . $organisation->getId()) ?>"><?= $organisation->getName() ?></a>
-        </li>
+        <?php if ($parent = $organisation->getParent()): ?>
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="<?= base_url('/organisation/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
+            </li>
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="<?= base_url('/organisation/' . $organisation->getId()) ?>"><?= $organisation->getName() ?></a>
+            </li>
+        <?php else: ?>
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="<?= base_url('/organisation/' . $organisation->getId()) ?>"><?= $organisation->getName() ?></a>
+            </li>
+        <?php endif; ?>
         <li class="breadcrumb-item active" aria-current="page">
             Bearbeiten
         </li>
@@ -24,7 +33,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
 </nav>
 
 <h1 class="header">
-    <?= $organisation->getName() ?>
+    <?= $organisation->getDisplayName() ?>
     <?php if (($membership = getMembership(getCurrentUser()->getId(), $organisation->getId()))): ?>
         <?= $membership->getStatus()->badge() ?>
     <?php endif; ?>
@@ -46,7 +55,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <label for="inputRegion" class="col-form-label col-md-4 col-lg-3">Region</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputRegion"
-                    name="region" <?= $currentUser->isAdmin() ? 'required' : 'disabled' ?>>
+                    name="region" <?= $currentUser->isAdmin() && !$organisation->getParentId() ? 'required' : 'disabled' ?>>
                 <?php foreach (getRegions() as $region): ?>
                     <option value="<?= $region->getId() ?>" <?= $region->getId() == $organisation->getRegionId() ? "selected" : "" ?>>
                         <?= $region->getName() ?>
@@ -99,8 +108,8 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
 
     <div class="mb-3">
         <label for="description" class="form-label">Beschreibung</label>
-        <textarea class="form-control" id="description" name="description"
-                  required><?= $organisation->getDescription() ?></textarea>
+        <textarea class="form-control" id="description"
+                  name="description"><?= $organisation->getDescription() ?></textarea>
     </div>
 
     <button id="submitButton" class="btn btn-primary btn-block" type="submit">Bearbeiten</button>

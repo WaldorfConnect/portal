@@ -73,7 +73,7 @@ use function App\Helpers\getOrganisations;
 
             <tr>
                 <td id="td-id-<?= $organisation->getId() ?>" class="td-class-<?= $organisation->getId() ?>"
-                    data-title="<?= $organisation->getName() ?>"><?= $organisation->getName() ?></td>
+                    data-title="<?= $organisation->getDisplayName() ?>"><?= $organisation->getDisplayName() ?></td>
                 <td><?= $organisation->getRegion()->getName() ?></td>
                 <td>
                     <div class="btn-group">

@@ -35,11 +35,13 @@ $routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', 
 
 $routes->post('/organisation/(:num)/join', 'OrganisationController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/leave', 'OrganisationController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/add', 'OrganisationController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/organisation/(:num)/add_member', 'OrganisationController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/organisation/(:num)/add_workgroup', 'OrganisationController::handleAddWorkgroup/$1', ['filter' => LoggedInFilter::class]);
 $routes->get('/organisation/(:num)/edit', 'OrganisationController::edit/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/edit', 'OrganisationController::handleEdit/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/accept', 'OrganisationController::handleAcceptJoin/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/deny', 'OrganisationController::handleDenyJoin/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/organisation/(:num)/delete', 'OrganisationController::handleDelete/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/membership_status', 'OrganisationController::handleChangeMembershipStatus/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/kick_user', 'OrganisationController::handleKickUser/$1', ['filter' => LoggedInFilter::class]);
 

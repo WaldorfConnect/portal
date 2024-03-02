@@ -34,6 +34,15 @@ function getOrganisationById(int $id): ?object
 }
 
 /**
+ * @param int $parentId
+ * @return array
+ */
+function getChildOrganisationsByParentId(int $parentId): array
+{
+    return getOrganisationModel()->where(['parent_id' => $parentId])->findAll();
+}
+
+/**
  * Saves the given organisation and returns the id of the new entry.
  *
  * @param Organisation $group
@@ -51,16 +60,18 @@ function saveOrganisation(Organisation $group): string|int
  * Creates an organisation with the given parameters.
  *
  * @param string $name
- * @param string $websiteUrl
+ * @param string $shortName
  * @param int $regionId
+ * @param int|null $parentId
  * @return Organisation
  */
-function createOrganisation(string $name, string $websiteUrl, int $regionId): Organisation
+function createOrganisation(string $name, string $shortName, int $regionId, int $parentId = null): Organisation
 {
     $group = new Organisation();
     $group->setName($name);
-    $group->setWebsiteUrl($websiteUrl);
+    $group->setShortName($shortName);
     $group->setRegionId($regionId);
+    $group->setParentId($parentId);
     return $group;
 }
 
@@ -151,7 +162,7 @@ function getJoinRequests(int $organisationId): array
  */
 function getOrganisationsByRegionId(int $regionId): array
 {
-    return getOrganisationModel()->where('region_id', $regionId)->findAll();
+    return getOrganisationModel()->where('region_id', $regionId)->where('parent_id', null)->findAll();
 }
 
 /**

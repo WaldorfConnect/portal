@@ -8,7 +8,9 @@ use Exception;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
+use function App\Helpers\createOrganisation;
 use function App\Helpers\deleteMembership;
+use function App\Helpers\deleteOrganisation;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembership;
@@ -98,6 +100,31 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
+    public function handleAddWorkgroup(int $organisationId): RedirectResponse|string
+    {
+        $self = getCurrentUser();
+        $organisation = getOrganisationById($organisationId);
+
+        $name = $this->request->getPost('name');
+
+        if (!$organisation) {
+            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        }
+
+        if (!$organisation->isManageableBy($self)) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        }
+
+        try {
+            $workgroup = createOrganisation($name, $name, $organisation->getRegionId(), $organisation->getId());
+            saveOrganisation($workgroup);
+
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
+        } catch (Exception $e) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+        }
+    }
+
     public function edit(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
@@ -133,11 +160,19 @@ class OrganisationController extends BaseController
 
         if ($self->isAdmin()) {
             $organisation->setName($name);
-            $organisation->setWebsiteUrl($websiteUrl);
-            $organisation->setRegionId($regionId);
+
+            if ($websiteUrl) {
+                $organisation->setWebsiteUrl($websiteUrl);
+            }
+
+            if ($regionId) {
+                $organisation->setRegionId($regionId);
+            }
         }
 
-        $organisation->setDescription($description);
+        if ($description) {
+            $organisation->setDescription($description);
+        }
 
         // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
         if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
@@ -308,5 +343,31 @@ class OrganisationController extends BaseController
         }
 
         return redirect()->to(base_url('organisation/' . $organisationId));
+    }
+
+    public function handleDelete(int $organisationId): RedirectResponse
+    {
+        $currentUser = getCurrentUser();
+        $organisation = getOrganisationById($organisationId);
+
+        if (!$organisation) {
+            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        }
+
+        $parent = $organisation->getParent();
+        if (!$parent) {
+            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Stammgruppen dürfen nur von globalen Administratoren gelöscht werden.');
+        }
+
+        if (!$parent->isManageableBy($currentUser)) {
+            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        }
+
+        try {
+            deleteOrganisation($organisationId);
+            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('success', 'Arbeitsgruppe gelöscht.');
+        } catch (Exception $e) {
+            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+        }
     }
 }
