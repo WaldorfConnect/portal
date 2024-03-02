@@ -144,7 +144,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                Nutzer*innen
+                Mitglieder
                 <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
                     <div class="justify-content-between align-items-center">
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#memberModal">
