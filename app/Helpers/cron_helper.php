@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-function getCronLog(): string
+function getCronLog(string $service): string
 {
-    return readfile(getenv('cron.log'));
+    return readfile(getenv("cron.log_{$service}"));
 }

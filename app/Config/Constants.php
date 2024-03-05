@@ -104,4 +104,4 @@ const USERS = PREFIX . "users";
 const MAILS = PREFIX . "mails";
 const IMAGES = PREFIX . "images";
 
-const GROUP_FOLDERS_API = "https://cloud.waldorfconnect.de/apps/groupfolders";
+const FOLDERS_API = "https://cloud.waldorfconnect.de/apps/groupfolders";

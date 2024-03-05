@@ -7,9 +7,16 @@ use App\Entities\Membership;
 use App\Entities\Organisation;
 use App\Entities\User;
 use CodeIgniter\CLI\CLI;
+use CodeIgniter\Database\Exceptions\DatabaseException;
+use Composer\CaBundle\CaBundle;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use LdapRecord\LdapRecordException;
+use LdapRecord\Query\Collection;
+use ReflectionException;
 
-function syncUsers(): void
+function syncLDAPUsers(): void
 {
     $users = getUsers();
 
@@ -35,7 +42,7 @@ function syncUsers(): void
             try {
                 // Update properties on LDAP server
                 updateLDAPUser($ldapUser, $wantedUser);
-                CLI::write('Updated ' . $wantedUser->getUsername() . ' on LDAP server');
+                CLI::write('Updated user ' . $wantedUser->getUsername() . ' on LDAP server');
             } catch (LdapRecordException $e) {
                 CLI::error($e->getMessage());
             }
@@ -44,7 +51,7 @@ function syncUsers(): void
                 $uid = $ldapUser->uid[0];
                 // Delete from LDAP server if no longer in database
                 $ldapUser->delete();
-                CLI::write('Deleted ' . $uid . ' on LDAP server');
+                CLI::write('Deleted user ' . $uid . ' on LDAP server');
             } catch (LdapRecordException $e) {
                 CLI::error($e->getMessage());
             }
@@ -55,14 +62,14 @@ function syncUsers(): void
         try {
             // Create user on LDAP server is inexistent
             createLDAPUser($user);
-            CLI::write('Created ' . $user->getUsername() . ' on LDAP server');
+            CLI::write('Created user ' . $user->getUsername() . ' on LDAP server');
         } catch (LdapRecordException $e) {
             CLI::error($e->getMessage());
         }
     }
 }
 
-function syncOrganisations(): void
+function syncLDAPOrganisations(): void
 {
     $organisations = getOrganisations();
 
@@ -86,13 +93,17 @@ function syncOrganisations(): void
             try {
                 // Update properties on LDAP server
                 updateLDAPOrganisation($ldapOrganisation, $wantedOrganisation);
+                CLI::write('Updated organisation ' . $wantedOrganisation->getDisplayName() . ' on LDAP server');
             } catch (LdapRecordException $e) {
                 CLI::error($e->getTraceAsString());
             }
         } else {
             try {
+                $displayName = $ldapOrganisation->cn[0];
+
                 // Delete from LDAP server if no longer in database
                 $ldapOrganisation->delete();
+                CLI::write('Deleted organisation ' . $displayName . ' on LDAP server');
             } catch (LdapRecordException $e) {
                 CLI::error($e->getTraceAsString());
             }
@@ -103,8 +114,71 @@ function syncOrganisations(): void
         try {
             // Create user on LDAP server is inexistent
             createLDAPOrganisation($organisation);
+            CLI::write('Created organisation ' . $organisation->getDisplayName() . ' on LDAP server');
         } catch (LdapRecordException $e) {
             CLI::error($e->getTraceAsString());
+        }
+    }
+}
+
+function syncOrganisationFolders(): void
+{
+    $client = new Client([
+        RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
+        RequestOptions::AUTH => [
+            getenv('nextcloud.username'),
+            getenv('nextcloud.password')
+        ],
+        RequestOptions::HEADERS => [
+            'Accept' => 'application/json',
+            'OCS-APIRequest' => 'true'
+        ]
+    ]);
+
+    $organisations = getOrganisations();
+
+    foreach (getOrganisationFolders($client) as $folder) {
+        // Skip folders starting with underscore
+        if (str_starts_with($folder->mount_point, "_"))
+            continue;
+
+        $wantedOrganisation = null;
+        $wantedOrganisationIndex = 0;
+
+        // Find database organisation, and it's array index by id of organisation on LDAP server
+        foreach ($organisations as $index => $organisation) {
+            if (!is_null($organisation->getFolderId()) && $organisation->getFolderId() == $folder->id) {
+                $wantedOrganisationIndex = $index;
+                $wantedOrganisation = $organisation;
+                break;
+            }
+        }
+
+        if ($wantedOrganisation) {
+            unset($organisations[$wantedOrganisationIndex]);
+
+            // Update folder on Nextcloud
+            updateOrganisationFolder($client, $wantedOrganisation, $folder);
+            CLI::write('Updated folder ' . $wantedOrganisation->getDisplayName() . ' on Nextcloud');
+        } else {
+            // Delete folder on Nextcloud
+            deleteOrganisationFolder($client, $folder->id);
+            CLI::write('Deleted folder ' . $folder->mount_point . ' on Nextcloud');
+        }
+    }
+
+    foreach ($organisations as $organisation) {
+        // Create new folder on Nextcloud
+        $id = createOrganisationFolder($client, $organisation);
+
+        if ($id != -1) {
+            try {
+                $organisation->setFolderId($id);
+                saveOrganisation($organisation);
+
+                CLI::write('Created folder ' . $organisation->getDisplayName() . ' on Nextcloud');
+            } catch (DatabaseException|ReflectionException) {
+            }
         }
     }
 }
@@ -168,6 +242,32 @@ function createLDAPOrganisation(Organisation $organisation): void
     updateLDAPOrganisation($ldapOrganisation, $organisation);
 }
 
+function createOrganisationFolder(Client $client, Organisation $organisation): int
+{
+    try {
+        $response = $client->post(FOLDERS_API . '/folders', [
+            'json' => [
+                'mountpoint' => $organisation->getFolderMountPoint()
+            ]
+        ]);
+
+        $decodedResponse = json_decode($response->getBody()->getContents());
+        $data = $decodedResponse->ocs->data;
+
+        $client->post(FOLDERS_API . '/folders/' . $data->id . '/groups', [
+            'json' => [
+                'group' => $organisation->getDisplayName()
+            ]
+        ]);
+
+        return $data->id;
+    } catch (GuzzleException $e) {
+        CLI::error("Error while creating folder: " . $e->getMessage());
+    }
+
+    return -1;
+}
+
 /**
  * @param LDAPOrganisation $ldapOrganisation
  * @param Organisation $organisation
@@ -216,10 +316,46 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Organisation
     $ldapOrganisation->save();
 }
 
+function updateOrganisationFolder(Client $client, Organisation $organisation, object $folder): void
+{
+    try {
+        $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/mountpoint', [
+            'json' => [
+                'mountpoint' => $organisation->getFolderMountPoint()
+            ]
+        ]);
+    } catch (GuzzleException $e) {
+        CLI::error("Error while creating folder: " . $e->getMessage());
+    }
+
+    // Add group as member of folder
+    $groups = $folder->groups;
+    if (empty($groups) || !array_key_exists($organisation->getDisplayName(), get_object_vars($groups))) {
+        try {
+            $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/groups', [
+                'json' => [
+                    'group' => $organisation->getDisplayName()
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            CLI::error("Error while adding group: " . $e->getMessage());
+        }
+    }
+}
+
+function deleteOrganisationFolder(Client $client, int $id): void
+{
+    try {
+        $client->delete(FOLDERS_API . '/folders/' . $id);
+    } catch (GuzzleException $e) {
+        CLI::error("Error while deleting folder: " . $e->getMessage());
+    }
+}
+
 /**
- * @return array|\LdapRecord\Query\Collection
+ * @return array|Collection
  */
-function getLDAPUsers(): array|\LdapRecord\Query\Collection
+function getLDAPUsers(): array|Collection
 {
     return \LdapRecord\Models\OpenLDAP\User::query()->in(getUserDistinguishedName())->paginate();
 }
@@ -234,9 +370,9 @@ function getLDAPUserByUsername(string $username): ?object
 }
 
 /**
- * @return array|\LdapRecord\Query\Collection
+ * @return array|Collection
  */
-function getLDAPOrganisations(): array|\LdapRecord\Query\Collection
+function getLDAPOrganisations(): array|Collection
 {
     return LDAPOrganisation::query()->in(getOrganisationsDistinguishedName())->paginate();
 }
@@ -254,4 +390,19 @@ function getOrganisationsDistinguishedName(): string
 function getPortalUserDistinguishedName(): string
 {
     return getenv('ldap.portalUserDN');
+}
+
+function getOrganisationFolders(Client $client): array
+{
+    $dataArray = [];
+    try {
+        $response = $client->get(FOLDERS_API . '/folders');
+        $decodedResponse = json_decode($response->getBody()->getContents());
+        $data = $decodedResponse->ocs->data;
+
+        return get_object_vars($data);
+    } catch (GuzzleException $e) {
+        CLI::error("Error while requesting folders: " . $e->getMessage());
+    }
+    return $dataArray;
 }

@@ -21,11 +21,19 @@ use function App\Helpers\getMails;
 <b>Nachrichten in der Warteschlange:</b> <?= count(getMails()) ?>
 <br><br>
 
-<h3 class="subheader">Protokoll</h3>
+<h3 class="subheader">Protokolle</h3>
 
-<label for="log">
-    Protokoll der automatischen Synchronisation zw. Nextcloud und LDAP und der E-Mail-Versandbericht.
-</label>
+<h4>Mail</h4>
 <textarea class="form-control log" id="log" rows="50" readonly>
-    <?= getCronLog() ?>
+    <?= getCronLog('mail') ?>
+</textarea>
+<br>
+<h4>LDAP</h4>
+<textarea class="form-control log" id="log" rows="50" readonly>
+    <?= getCronLog('ldap') ?>
+</textarea>
+<br>
+<h4>Nextcloud</h4>
+<textarea class="form-control log" id="log" rows="50" readonly>
+    <?= getCronLog('nextcloud') ?>
 </textarea>

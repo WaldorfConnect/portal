@@ -22,7 +22,8 @@ class Organisation extends Entity
         'email_office' => null,
         'email_students' => null,
         'image_id' => null,
-        'logo_id' => null
+        'logo_id' => null,
+        'folder_id' => null,
     ];
 
     protected $casts = [
@@ -37,7 +38,8 @@ class Organisation extends Entity
         'email_office' => 'string',
         'email_students' => 'string',
         'image_id' => 'string',
-        'logo_id' => 'string'
+        'logo_id' => 'string',
+        'folder_id' => 'integer'
     ];
 
     /**
@@ -212,6 +214,25 @@ class Organisation extends Entity
     public function setImageId(string $imageId): void
     {
         $this->attributes['image_id'] = $imageId;
+    }
+
+    /**
+     * @return ?int
+     */
+    public function getFolderId(): ?int
+    {
+        return $this->attributes['folder_id'];
+    }
+
+    public function setFolderId(int $folderId): void
+    {
+        $this->attributes['folder_id'] = $folderId;
+    }
+
+    public function getFolderMountPoint(): string
+    {
+        $parent = $this->getParent();
+        return ($parent ? $parent->getName() . '/' : '') . $this->getName();
     }
 
     /**

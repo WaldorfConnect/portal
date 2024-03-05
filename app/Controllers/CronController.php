@@ -13,15 +13,20 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use function App\Helpers\getOrganisations;
 use function App\Helpers\openLDAPConnection;
-use function App\Helpers\syncOrganisations;
-use function App\Helpers\syncUsers;
+use function App\Helpers\syncLDAPOrganisations;
+use function App\Helpers\syncLDAPUsers;
+use function App\Helpers\syncOrganisationFolders;
 use function App\Helpers\workMailQueue;
 
 class CronController extends BaseController
 {
-    public function index(): void
+    public function mail(): void
     {
-        CLI::write(date("d.m.Y H:i:s"));
+        if (!$this->acquireLock('mail')) {
+            return;
+        }
+
+        $this->printTimestamp();
 
         try {
             CLI::write('Working mail queue ...');
@@ -30,76 +35,83 @@ class CronController extends BaseController
             CLI::error("Error working mail queue: {$e->getMessage()}");
         }
 
+        $this->releaseLock('mail');
+    }
+
+    public function ldap(): void
+    {
+        if (!$this->acquireLock('ldap')) {
+            return;
+        }
+
+        $this->printTimestamp();
+
+        while ($this->isAcquired('nextcloud')) {
+            sleep(1);
+            CLI::write('Waiting for Nextcloud sync to finish ...');
+        }
+
         try {
+            CLI::write('Opening LDAP connection ...');
             openLDAPConnection();
 
             CLI::write('Synchronizing LDAP users ...');
-            syncUsers();
+            syncLDAPUsers();
 
             CLI::write('Synchronizing LDAP organisations ...');
-            syncOrganisations();
-        } catch (LDAPException $e) {
+            syncLDAPOrganisations();
+        } catch (Exception $e) {
             CLI::error("Error synchronizing with LDAP: {$e->getMessage()}");
         }
+
+        $this->releaseLock('ldap');
     }
 
-    /**
-     * @throws Exception
-     */
-    private function syncNextcloudGroupFolders(): void
+    public function nextcloud(): void
     {
-        $client = new Client([
-            RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
-            RequestOptions::AUTH => [
-                getenv('nextcloud.username'),
-                getenv('nextcloud.password')
-            ],
-            RequestOptions::HEADERS => [
-                'Accept' => 'application/json',
-                'OCS-APIRequest' => 'true'
-            ]
-        ]);
-
-        $folders = $this->getGroupFolders($client);
-        $groups = getOrganisations();
-
-        // Check if folder for group exists
-        foreach ($groups as $group) {
-            $this->updateOrCreateGroupFolder($client, $folders, $group);
+        if (!$this->acquireLock('nextcloud')) {
+            return;
         }
 
-        // Check if group for folder exists
-        foreach ($folders as $folder) {
+        $this->printTimestamp();
 
+        while ($this->isAcquired('ldap')) {
+            sleep(1);
+            CLI::write('Waiting for LDAP sync to finish ...');
         }
+
+        CLI::write('Synchronizing Nextcloud folders ...');
+        syncOrganisationFolders();
+
+        $this->releaseLock('nextcloud');
     }
 
-    private function updateOrCreateGroupFolder(Client $client, array $folders, Organisation $group): void
+    function acquireLock(string $name): bool
     {
+        $path = WRITEPATH . '.lock_' . $name;
+        if (file_exists($path)) {
+            return false;
+        }
 
+        $file = fopen($path, 'w');
+        fclose($file);
+
+        return true;
     }
 
-    private function getGroupFolders(Client $client): array
+    function isAcquired(string $name): bool
     {
-        $dataArray = [];
-        try {
-            $request = new Request('GET', GROUP_FOLDERS_API . '/folders');
-            $response = $client->send($request);
-            $decodedResponse = json_decode($response->getBody()->getContents());
-            $data = $decodedResponse->ocs->data;
+        $path = WRITEPATH . '.lock_' . $name;
+        return file_exists($path);
+    }
 
-            $index = 1;
-            while (true) {
-                if (!property_exists($data, $index)) {
-                    break;
-                }
+    function releaseLock(string $name): void
+    {
+        unlink(WRITEPATH . '.lock_' . $name);
+    }
 
-                $dataArray[] = $data->{$index};
-                $index++;
-            }
-        } catch (GuzzleException $e) {
-            CLI::error("Error while requesting folders: " . $e->getMessage());
-        }
-        return $dataArray;
+    function printTimestamp(): void
+    {
+        CLI::write(date("d.m.Y H:i:s"));
     }
 }

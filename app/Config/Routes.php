@@ -68,4 +68,6 @@ $routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['f
 $routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => AdminFilter::class]);
 
-$routes->cli('/cron', 'CronController::index');
+$routes->cli('/cron_mail', 'CronController::mail');
+$routes->cli('/cron_ldap', 'CronController::ldap');
+$routes->cli('/cron_nextcloud', 'CronController::nextcloud');
