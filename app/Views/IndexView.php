@@ -35,14 +35,24 @@ use function App\Helpers\getCurrentUser;
                         <li class="list-group-item">
                             <div class="flex-container">
                                 <div class="flex-main">
-                                    <?= ($organisation = $membership->getOrganisation())->getName() ?>
-                                    <?= $membership->getStatus()->badge() ?>
+                                    <?php $organisation = $membership->getOrganisation(); ?>
+                                    <?php if ($organisation->getParentId()): ?>
+                                        <?= $organisation->getParent()->getName() ?>
+                                        <br>
+                                        <small><?= $organisation->getName() ?></small>
+                                    <?php else: ?>
+                                        <?= $organisation->getName() ?>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="flex-actions">
+                                    <div class="me-2">
+                                        <?= $membership->getStatus()->badge() ?>
+                                    </div>
                                     <a class="btn btn-sm btn-outline-primary"
                                        href="<?= base_url('organisation') ?>/<?= $organisation->getId() ?>">
                                         Öffnen
                                     </a>
+
                                 </div>
                             </div>
                         </li>
