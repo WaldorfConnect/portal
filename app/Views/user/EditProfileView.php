@@ -1,13 +1,14 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
+use function App\Helpers\getImageUrlById;
 
 $self = getCurrentUser();
 ?>
     <div class="row">
         <h1 class="header">Profil bearbeiten</h1>
     </div>
-<?= form_open('user/profile') ?>
+<?= form_open_multipart('user/profile') ?>
 
 <?php if ($error = session('error')): ?>
     <div class="alert alert-danger mb-3">
@@ -21,6 +22,21 @@ $self = getCurrentUser();
     </div>
 <?php endif; ?>
 
+    <div class="form-group row align-items-end mb-3">
+        <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Profilbild</label>
+        <div class="col-md-2">
+            <img class="img-thumbnail"
+                 width="200"
+                 height="200"
+                 src="<?= getImageUrlById($self->getImageId(), 'assets/img/user_400x400.webp') ?>"
+                 alt="Profilbild">
+        </div>
+        <div class="col-md-4">
+            <input class="form-control" id="inputImage" name="image"
+                   type="file">
+        </div>
+    </div>
+
     <div class="form-group row mb-3">
         <label for="inputUsername" class="col-form-label col-md-4 col-lg-3">Benutzername</label>
         <div class="col-md-8 col-lg-9">
@@ -30,10 +46,18 @@ $self = getCurrentUser();
     </div>
 
     <div class="form-group row mb-3">
-        <label for="inputName" class="col-form-label col-md-4 col-lg-3">Vor- und Nachname</label>
+        <label for="inputFirstName" class="col-form-label col-md-4 col-lg-3">Vorname(n)</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputName" name="name" autocomplete="name"
-                   placeholder="Vor- und Nachname" value="<?= $self->getName() ?>" required>
+            <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
+                   placeholder="Vorname(n)" value="<?= $self->getFirstName() ?>" required>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="lastName" class="col-form-label col-md-4 col-lg-3">Nachname</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
+                   placeholder="Nachname" value="<?= $self->getLastName() ?>" required>
         </div>
     </div>
 
@@ -45,11 +69,11 @@ $self = getCurrentUser();
             <?php if (!$self->isEmailConfirmed()): ?>
                 <span id="emailHelp" class="badge bg-warning">Warte auf Bestätigung</span>
                 <?php if (session('resendSuccess')): ?>
-                <span id="resentBadge" class="badge bg-success">Erneut versandt</span>
+                    <span id="resentBadge" class="badge bg-success">Erneut versandt</span>
                 <?php endif; ?>
                 <button type="button" class="btn btn-link btn-sm text-dark"
                         onclick="document.getElementById('resendEmailButton').click();">
-                        Nach ein paar Minuten noch keine E-Mail erhalten? Erneut anfordern!
+                    Nach ein paar Minuten noch keine E-Mail erhalten? Erneut anfordern!
                 </button>
             <?php else: ?>
                 <span id="emailHelp" class="badge bg-success">E-Mail bestätigt</span>

@@ -22,6 +22,7 @@ class User extends Entity
         'active' => null,
         'email_confirmed' => null,
         'password_reset' => null,
+        'image_id' => null,
         'token' => null,
         'registration_date' => null,
         'accept_date' => null,
@@ -39,6 +40,7 @@ class User extends Entity
         'active' => 'boolean',
         'email_confirmed' => 'boolean',
         'password_reset' => 'boolean',
+        'image_id' => 'string',
         'token' => 'string',
         'registration_date' => 'timestamp',
         'accept_date' => 'timestamp',
@@ -313,6 +315,16 @@ class User extends Entity
 
         $this->attributes['token'] = null;
         return true;
+    }
+
+    public function getImageId(): ?string
+    {
+        return $this->attributes['image_id'];
+    }
+
+    public function setImageId(?string $imageId): void
+    {
+        $this->attributes['image_id'] = $imageId;
     }
 
     public function getRegistrationDate(): ?DateTime

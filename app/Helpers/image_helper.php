@@ -41,7 +41,7 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
  * Convert the image to WEBP format and save it under the specified imageId
  * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
  */
-function saveImage(File $file, string $author, int $quality = 100): string
+function saveImage(File $file, string $author = '', int $quality = 100, int $newWidth = 0, int $newHeight = 0): string
 {
     $imageId = Uuid::uuid4()->toString();
     insertImage($imageId, $author);
@@ -86,6 +86,16 @@ function saveImage(File $file, string $author, int $quality = 100): string
             return $imageId;
     }
 
+    // Resize image
+    if ($newWidth > 0 && $newHeight > 0) {
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        $canvas = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresized($canvas, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        $image = $canvas;
+    }
+
     // Convert the image to WEBP and save (create/overwrite) it
     imagewebp($image, $outputFilePath, $quality);
 
@@ -93,6 +103,11 @@ function saveImage(File $file, string $author, int $quality = 100): string
     imagedestroy($image);
 
     return $imageId;
+}
+
+function deleteImage(string $id): void
+{
+    getImageModel()->delete($id);
 }
 
 function getImageUrlById(?string $id, string $placeholder): string

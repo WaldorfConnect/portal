@@ -5,6 +5,8 @@ namespace App\Controllers;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Ramsey\Uuid\Uuid;
+use function App\Helpers\createImageValidationRule;
+use function App\Helpers\deleteImage;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
@@ -12,6 +14,7 @@ use function App\Helpers\getUserByToken;
 use function App\Helpers\getUserByUsernameAndEmail;
 use function App\Helpers\getUsers;
 use function App\Helpers\hashSSHA;
+use function App\Helpers\saveImage;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 
@@ -31,6 +34,12 @@ class UserController extends BaseController
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
 
+        if (!$this->validate(createImageValidationRule('image'))) {
+            return redirect('user/profile')->with('error', join(" ", $this->validator->getErrors()));
+        }
+
+        $image = $this->request->getFile('image');
+
         try {
             // If email changed set status accordingly
             if ($user->getEmail() != $email) {
@@ -45,6 +54,17 @@ class UserController extends BaseController
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
             $user->setEmail($email);
+
+            if ($image->isValid()) {
+                $oldImageId = $user->getImageId();
+                $imageId = saveImage($image, '', 100, 400, 400);
+                $user->setImageId($imageId);
+
+                // Ensure old image deleted AFTER new one has been set
+                if ($oldImageId) {
+                    deleteImage($oldImageId);
+                }
+            }
 
             // Check if user wants to change password
             if (strlen($password) > 0) {
