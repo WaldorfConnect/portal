@@ -133,6 +133,20 @@ function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user):
     $ldapUser->sn = $user->getLastName();
     $ldapUser->givenName = $user->getFirstName();
     $ldapUser->mail = $user->getEmail();
+
+    if ($imageId = $user->getImageId()) {
+        $webp = imagecreatefromwebp(getImagePathById($imageId));
+
+        ob_start();
+        imagejpeg($webp);
+        $jpegPhoto = ob_get_clean();
+        imagedestroy($webp);
+
+        $ldapUser->jpegPhoto = $jpegPhoto;
+    } elseif ($ldapUser->jpegPhoto) {
+        $ldapUser->removeAttribute('jpegPhoto');
+    }
+
     $ldapUser->save();
 }
 

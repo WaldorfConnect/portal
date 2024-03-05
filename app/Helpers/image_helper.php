@@ -129,6 +129,25 @@ function getImageUrlById(?string $id, string $placeholder): string
     return base_url($placeholder);
 }
 
+function getImagePathById(?string $id): ?string
+{
+    if (is_null($id)) {
+        return null;
+    }
+
+    $path = UPLOADED_IMAGES_DIR . $id . '.svg';
+    if (is_file($path)) {
+        return $path;
+    }
+
+    $path = UPLOADED_IMAGES_DIR . $id . '.webp';
+    if (is_file($path)) {
+        return $path;
+    }
+
+    return null;
+}
+
 function getImageAuthorById(?string $id): string
 {
     if (is_null($id)) {
