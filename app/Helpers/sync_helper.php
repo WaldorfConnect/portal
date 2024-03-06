@@ -238,8 +238,6 @@ function createLDAPOrganisation(Organisation $organisation): void
     ]);
     $ldapOrganisation->inside(getOrganisationsDistinguishedName());
     $ldapOrganisation->setDn('uid=' . $organisation->getId() . ',' . getOrganisationsDistinguishedName());
-
-    updateLDAPOrganisation($ldapOrganisation, $organisation);
 }
 
 function createOrganisationFolder(Client $client, Organisation $organisation): int

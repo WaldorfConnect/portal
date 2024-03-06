@@ -2,16 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Entities\Organisation;
-use App\Exceptions\LDAPException;
 use CodeIgniter\CLI\CLI;
-use Composer\CaBundle\CaBundle;
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\RequestOptions;
-use function App\Helpers\getOrganisations;
 use function App\Helpers\openLDAPConnection;
 use function App\Helpers\syncLDAPOrganisations;
 use function App\Helpers\syncLDAPUsers;
@@ -33,9 +25,9 @@ class CronController extends BaseController
             workMailQueue();
         } catch (Exception $e) {
             CLI::error("Error working mail queue: {$e->getMessage()}");
+        } finally {
+            $this->releaseLock('mail');
         }
-
-        $this->releaseLock('mail');
     }
 
     public function ldap(): void
@@ -46,9 +38,15 @@ class CronController extends BaseController
 
         $this->printTimestamp();
 
+        $count = 0;
         while ($this->isAcquired('nextcloud')) {
             sleep(1);
-            CLI::write('Waiting for Nextcloud sync to finish ...');
+            CLI::write('Waiting for Nextcloud sync to finish ... [' . $count . ']');
+
+            if ($count++ == 30) {
+                CLI::error('Timed out waiting for Nextcloud. Quitting...');
+                return;
+            }
         }
 
         try {
@@ -62,9 +60,9 @@ class CronController extends BaseController
             syncLDAPOrganisations();
         } catch (Exception $e) {
             CLI::error("Error synchronizing with LDAP: {$e->getMessage()}");
+        } finally {
+            $this->releaseLock('ldap');
         }
-
-        $this->releaseLock('ldap');
     }
 
     public function nextcloud(): void
@@ -75,15 +73,25 @@ class CronController extends BaseController
 
         $this->printTimestamp();
 
-        while ($this->isAcquired('ldap')) {
-            sleep(1);
-            CLI::write('Waiting for LDAP sync to finish ...');
+        try {
+            $count = 0;
+            while ($this->isAcquired('ldap')) {
+                sleep(1);
+                CLI::write('Waiting for LDAP sync to finish ... [' . $count . ']');
+
+                if ($count++ == 10) {
+                    CLI::error('Timed out waiting for LDAP. Quitting...');
+                    return;
+                }
+            }
+
+            CLI::write('Synchronizing Nextcloud folders ...');
+            syncOrganisationFolders();
+        } catch (Exception $e) {
+            CLI::error("Error synchronizing folders: {$e->getMessage()}");
+        } finally {
+            $this->releaseLock('nextcloud');
         }
-
-        CLI::write('Synchronizing Nextcloud folders ...');
-        syncOrganisationFolders();
-
-        $this->releaseLock('nextcloud');
     }
 
     function acquireLock(string $name): bool
