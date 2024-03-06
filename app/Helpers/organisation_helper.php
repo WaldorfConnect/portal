@@ -191,12 +191,12 @@ function createMembershipRequest(int $userId, int $organisationId): void
  * @return void
  * @throws ReflectionException
  */
-function createMembership(int $userId, int $organisationId): void
+function createMembership(int $userId, int $organisationId, MembershipStatus $status = MembershipStatus::USER): void
 {
     $membership = new Membership();
     $membership->setUserId($userId);
     $membership->setOrganisationId($organisationId);
-    $membership->setStatus(MembershipStatus::USER);
+    $membership->setStatus($status);
     saveMembership($membership);
 }
 

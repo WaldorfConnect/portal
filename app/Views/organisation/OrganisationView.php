@@ -161,7 +161,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                             Öffnen
                                         </a>
                                         <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
-                                            <?= form_open("organisation/{$child->getId()}/delete") ?>
+                                            <?= form_open("organisation/{$child->getId()}/delete", ['onsubmit' => "return confirm('Möchtest du die Arbeitsgruppe {$child->getName()} wirklich löschen?');"]) ?>
                                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2">
                                                 Löschen
                                             </button>

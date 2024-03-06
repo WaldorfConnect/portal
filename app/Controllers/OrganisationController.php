@@ -117,8 +117,9 @@ class OrganisationController extends BaseController
 
         try {
             $workgroup = createOrganisation($name, $name, $organisation->getRegionId(), $organisation->getId());
-            saveOrganisation($workgroup);
+            $id = saveOrganisation($workgroup);
 
+            createMembership($self->getId(), $id, MembershipStatus::ADMIN);
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
         } catch (Exception $e) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
