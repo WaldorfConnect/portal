@@ -94,8 +94,8 @@ use function App\Helpers\getRegions;
                     <h3 class="mt-5">Organisationsangaben</h3>
 
                     <div class="mb-3">
-                        <label for="inputGroups" class="form-label">Organisationen/Gruppen</label>
-                        <select class="form-select" id="inputGroups" name="groups[]" aria-describedby="groupsHelp"
+                        <label for="inputOrganisations" class="form-label">Organisationen/Gruppen</label>
+                        <select class="form-select" id="inputOrganisations" name="organisations[]" aria-describedby="organisationsHelp"
                                 multiple
                                 required>
                             <?php foreach (getRegions() as $region): ?>
@@ -107,7 +107,7 @@ use function App\Helpers\getRegions;
                                 </optgroup>
                             <?php endforeach; ?>
                         </select>
-                        <small id="groupsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
+                        <small id="organisationsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
                             Desktop-Geräten die STRG-Taste gedrückt halten.</small>
                     </div>
 

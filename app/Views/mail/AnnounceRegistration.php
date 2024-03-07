@@ -137,8 +137,6 @@
                                                                 registriert.<br>
                                                                 <br>
                                                                 <b>Vor- und Nachname:</b> <?= $target->getName() ?><br>
-                                                                <b>Schule:</b> <?= $target->getSchool()->getName() ?>
-                                                                <br>
                                                                 <br>
                                                                 Um diesen Registrierungswunsch zu bearbeiten, <a
                                                                         href="https://portal.waldorfconnect.de/admin/users"

@@ -120,6 +120,7 @@ function createUser(string $username, string $firstName, string $lastName, strin
     $user->setLastName($lastName);
     $user->setEmail($email);
     $user->setPassword($password);
+    $user->generateAndSetToken();
     return $user;
 }
 

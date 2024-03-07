@@ -18,10 +18,10 @@ class User extends Entity
         'last_name' => null,
         'email' => null,
         'password' => null,
-        'admin' => null,
-        'active' => null,
-        'email_confirmed' => null,
-        'password_reset' => null,
+        'admin' => false,
+        'active' => false,
+        'email_confirmed' => false,
+        'password_reset' => false,
         'image_id' => null,
         'token' => null,
         'registration_date' => null,
@@ -308,6 +308,10 @@ class User extends Entity
      */
     public function removeToken(): bool
     {
+        if (!$this->attributes['token']) {
+            return true;
+        }
+
         // Check if token is necessary
         if (!$this->isEmailConfirmed() || $this->isPasswordReset()) {
             return false;
