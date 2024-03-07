@@ -38,18 +38,18 @@ class CronController extends BaseController
 
         $this->printTimestamp();
 
-        $count = 0;
-        while ($this->isAcquired('nextcloud')) {
-            sleep(1);
-            CLI::write('Waiting for Nextcloud sync to finish ... [' . $count . ']');
-
-            if ($count++ == 30) {
-                CLI::error('Timed out waiting for Nextcloud. Quitting...');
-                return;
-            }
-        }
-
         try {
+            $count = 0;
+            while ($this->isAcquired('nextcloud')) {
+                sleep(1);
+                CLI::write('Waiting for Nextcloud sync to finish ... [' . $count . ']');
+
+                if ($count++ == 30) {
+                    CLI::error('Timed out waiting for Nextcloud. Quitting...');
+                    return;
+                }
+            }
+
             CLI::write('Opening LDAP connection ...');
             openLDAPConnection();
 
