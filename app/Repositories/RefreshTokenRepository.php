@@ -2,29 +2,28 @@
 
 namespace App\Repositories;
 
-use League\OAuth2\Server\AbstractServer;
-use League\OAuth2\Server\Entity\RefreshTokenEntity;
-use League\OAuth2\Server\Storage\RefreshTokenInterface;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
-class RefreshTokenRepository implements RefreshTokenInterface
+class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
-    public function get($token)
+    public function getNewRefreshToken()
     {
-        // TODO: Implement get() method.
+        // TODO: Implement getNewRefreshToken() method.
     }
 
-    public function create($token, $expireTime, $accessToken)
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity)
     {
-        // TODO: Implement create() method.
+        // TODO: Implement persistNewRefreshToken() method.
     }
 
-    public function delete(RefreshTokenEntity $token)
+    public function revokeRefreshToken($tokenId)
     {
-        // TODO: Implement delete() method.
+        // TODO: Implement revokeRefreshToken() method.
     }
 
-    public function setServer(AbstractServer $server)
+    public function isRefreshTokenRevoked($tokenId)
     {
-        // TODO: Implement setServer() method.
+        // TODO: Implement isRefreshTokenRevoked() method.
     }
 }

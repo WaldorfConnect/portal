@@ -7,7 +7,6 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
 
 class ClaimRepository implements ClaimRepositoryInterface
 {
-
     public function getClaimEntityByIdentifier($identifier, $type, $essential)
     {
         // TODO: Implement getClaimEntityByIdentifier() method.

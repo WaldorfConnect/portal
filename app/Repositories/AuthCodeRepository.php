@@ -2,43 +2,28 @@
 
 namespace App\Repositories;
 
-use App\Entities\Image;
-use CodeIgniter\Model;
-use League\OAuth2\Server\AbstractServer;
-use League\OAuth2\Server\Entity\AuthCodeEntity;
-use League\OAuth2\Server\Entity\ScopeEntity;
-use League\OAuth2\Server\Storage\AuthCodeInterface;
-use League\OAuth2\Server\Storage\ScopeInterface;
+use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
+use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 
-class AuthCodeRepository implements AuthCodeInterface
+class AuthCodeRepository implements AuthCodeRepositoryInterface
 {
-    public function create($token, $expireTime, $sessionId, $redirectUri)
+    public function getNewAuthCode()
     {
-        // TODO: Implement create() method.
+        // TODO: Implement getNewAuthCode() method.
     }
 
-    public function getScopes(AuthCodeEntity $token)
+    public function persistNewAuthCode(AuthCodeEntityInterface $authCodeEntity)
     {
-        // TODO: Implement getScopes() method.
+        // TODO: Implement persistNewAuthCode() method.
     }
 
-    public function associateScope(AuthCodeEntity $token, ScopeEntity $scope)
+    public function revokeAuthCode($codeId)
     {
-        // TODO: Implement associateScope() method.
+        // TODO: Implement revokeAuthCode() method.
     }
 
-    public function delete(AuthCodeEntity $token)
+    public function isAuthCodeRevoked($codeId)
     {
-        // TODO: Implement delete() method.
-    }
-
-    public function get($code)
-    {
-        // TODO: Implement get() method.
-    }
-
-    public function setServer(AbstractServer $server)
-    {
-        // TODO: Implement setServer() method.
+        // TODO: Implement isAuthCodeRevoked() method.
     }
 }

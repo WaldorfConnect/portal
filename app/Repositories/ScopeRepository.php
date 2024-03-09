@@ -2,20 +2,18 @@
 
 namespace App\Repositories;
 
-use App\Entities\Image;
-use CodeIgniter\Model;
-use League\OAuth2\Server\AbstractServer;
-use League\OAuth2\Server\Storage\ScopeInterface;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 
-class ScopeRepository implements ScopeInterface
+class ScopeRepository implements ScopeRepositoryInterface
 {
-    public function get($scope, $grantType = null, $clientId = null)
+    public function getScopeEntityByIdentifier($identifier)
     {
-        // TODO: Implement get() method.
+        // TODO: Implement getScopeEntityByIdentifier() method.
     }
 
-    public function setServer(AbstractServer $server)
+    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null)
     {
-        // TODO: Implement setServer() method.
+        // TODO: Implement finalizeScopes() method.
     }
 }
