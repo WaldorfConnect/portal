@@ -13,7 +13,8 @@ class LoggedInFilter implements FilterInterface
     {
         helper('user');
         if (!isLoggedIn()) {
-            return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}");
+            $query = urlencode("?{$request->getUri()->getQuery()}");
+            return redirect()->to(site_url('login') . "?return={$request->getUri()->getPath()}{$query}");
         }
     }
 
