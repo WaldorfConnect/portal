@@ -3,6 +3,7 @@
 namespace App\OIDC\Http;
 
 use CodeIgniter\HTTP\IncomingRequest;
+use Nyholm\Psr7\Stream;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,9 +26,8 @@ class RequestWrapper implements ServerRequestInterface
 
     public function withProtocolVersion(string $version): MessageInterface
     {
-        $incomingRequest = clone $this->incomingRequest;
-        $incomingRequest->setProtocolVersion($version);
-        return new RequestWrapper($incomingRequest);
+        $this->incomingRequest->setProtocolVersion($version);
+        return $this;
     }
 
     public function getHeaders(): array
@@ -57,33 +57,31 @@ class RequestWrapper implements ServerRequestInterface
 
     public function withHeader(string $name, $value): MessageInterface
     {
-        $incomingRequest = clone $this->incomingRequest;
-        $incomingRequest->setHeader($name, $value);
-        return new RequestWrapper($incomingRequest);
+        $this->incomingRequest->setHeader($name, $value);
+        return $this;
     }
 
     public function withAddedHeader(string $name, $value): MessageInterface
     {
-        $incomingRequest = clone $this->incomingRequest;
-        $incomingRequest->appendHeader($name, $value);
-        return new RequestWrapper($incomingRequest);
+        $this->incomingRequest->appendHeader($name, $value);
+        return $this;
     }
 
     public function withoutHeader(string $name): MessageInterface
     {
-        $incomingRequest = clone $this->incomingRequest;
-        $incomingRequest->removeHeader($name);
-        return new RequestWrapper($incomingRequest);
+        $this->incomingRequest->removeHeader($name);
+        return $this;
     }
 
     public function getBody(): StreamInterface
     {
-        // TODO: Implement getBody() method.
+        return Stream::create($this->incomingRequest->getBody() ?? '');
     }
 
     public function withBody(StreamInterface $body): MessageInterface
     {
-        // TODO: Implement withBody() method.
+        $this->incomingRequest->setBody($body);
+        return $this;
     }
 
     public function getRequestTarget(): string
@@ -103,7 +101,8 @@ class RequestWrapper implements ServerRequestInterface
 
     public function withMethod(string $method): RequestInterface
     {
-        return new RequestWrapper($this->incomingRequest->withMethod($method));
+        $this->incomingRequest->setMethod($method);
+        return $this;
     }
 
     public function getUri(): UriInterface
@@ -118,49 +117,75 @@ class RequestWrapper implements ServerRequestInterface
 
     public function getServerParams(): array
     {
-        return [];
+        return $_SERVER;
     }
 
     public function getCookieParams(): array
     {
-        return [];
+        return $_COOKIE;
     }
 
     public function withCookieParams(array $cookies): ServerRequestInterface
     {
+        $_COOKIE[] = $cookies;
         return $this;
     }
 
     public function getQueryParams(): array
     {
-        $this->incomingRequest->
-        // TODO: Implement getQueryParams() method.
+        $queryString = $this->incomingRequest->getUri()->getQuery();
+        if (empty($queryString))
+            return [];
+
+        $queryItems = explode("&", $queryString);
+
+        $queryParams = [];
+        foreach ($queryItems as $queryItem) {
+            $splitQueryItem = explode("=", $queryItem);
+            $key = $splitQueryItem[0];
+            $value = $splitQueryItem[1];
+            $queryParams[$key] = $value;
+        }
+
+        return $queryParams;
     }
 
     public function withQueryParams(array $query): ServerRequestInterface
     {
-
-        // TODO: Implement withQueryParams() method.
+        $this->incomingRequest->getUri()->addQuery($query[0], $query[1]);
+        return $this;
     }
 
     public function getUploadedFiles(): array
     {
+        // Not necessary for implementation
         return [];
     }
 
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
+        // Not necessary for implementation
         return $this;
     }
 
-    public function getParsedBody()
+    public function getParsedBody(): null|array|object
     {
-        // TODO: Implement getParsedBody() method.
+        if ($this->getHeaderLine('Content-Type') == 'application/json') {
+            return json_decode($this->incomingRequest->getBody());
+        }
+
+        return null;
     }
 
     public function withParsedBody($data): ServerRequestInterface
     {
-        // TODO: Implement withParsedBody() method.
+        if ($this->getHeaderLine('Content-Type') == 'application/json') {
+            $this->incomingRequest->setBody(json_encode($data));
+            return $this;
+        }
+
+        $this->incomingRequest->setBody($data);
+        return $this;
     }
 
     public function getAttributes(): array

@@ -43,7 +43,7 @@ class AccessToken extends Entity
      */
     public function getClientId(): string
     {
-        return $this->attributes['name'];
+        return $this->attributes['client_id'];
     }
 
     public function setClientId(string $clientId): void

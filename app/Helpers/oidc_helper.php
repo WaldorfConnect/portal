@@ -23,17 +23,14 @@ function getAuthorizationServer(): AuthorizationServer
     $authCodeRepository = new AuthCodeRepository();
     $refreshTokenRepository = new RefreshTokenRepository();
 
-    $privateKey = new CryptKey('path', 'passphrase');
-    $encryptionKey = '';
-
     $responseType = new IdTokenResponse(new IdentityRepository(), new ClaimExtractor());
 
     $server = new AuthorizationServer(
         $clientRepository,
         $accessTokenRepository,
         $scopeRepository,
-        $privateKey,
-        $encryptionKey,
+        getenv('oidc.privateKey'),
+        getenv('oidc.publicKey'),
         $responseType
     );
 
@@ -44,6 +41,7 @@ function getAuthorizationServer(): AuthorizationServer
     );
 
     $grant->setRefreshTokenTTL(new DateInterval('P1M'));
+
     $server->enableGrantType(
         $grant,
         new DateInterval('PT1H')

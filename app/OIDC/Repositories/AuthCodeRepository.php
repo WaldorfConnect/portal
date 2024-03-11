@@ -22,7 +22,7 @@ class AuthCodeRepository implements AuthCodeRepositoryInterface
         $authCode->setUserId($authCodeEntity->getUserIdentifier());
         $authCode->setScopes(json_encode($authCodeEntity->getScopes()));
         $authCode->setExpirationDate($authCodeEntity->getExpiryDateTime());
-        $this->getAuthCodeModel()->save($authCode);
+        $this->getAuthCodeModel()->insert($authCode);
     }
 
     public function revokeAuthCode($codeId): void

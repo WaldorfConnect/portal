@@ -23,7 +23,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
         $accessToken->setUserId($accessTokenEntity->getUserIdentifier());
         $accessToken->setScopes(json_encode($accessTokenEntity->getScopes()));
         $accessToken->setExpirationDate($accessTokenEntity->getExpiryDateTime());
-        $this->getAccessTokenModel()->save($accessToken);
+        $this->getAccessTokenModel()->insert($accessToken);
     }
 
     public function revokeAccessToken($tokenId): void

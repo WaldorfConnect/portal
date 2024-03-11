@@ -19,8 +19,8 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         $refreshToken = new RefreshToken();
         $refreshToken->setId($refreshTokenEntity->getIdentifier());
         $refreshToken->setAccessTokenId($refreshTokenEntity->getAccessToken()->getIdentifier());
-        $refreshToken->setExpirationDate($refreshToken->getExpirationDate());
-        $this->getRefreshTokenModel()->save($refreshToken);
+        $refreshToken->setExpirationDate($refreshTokenEntity->getExpiryDateTime());
+        $this->getRefreshTokenModel()->insert($refreshToken);
     }
 
     public function revokeRefreshToken($tokenId): void

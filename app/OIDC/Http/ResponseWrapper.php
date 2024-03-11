@@ -2,15 +2,18 @@
 
 namespace App\OIDC\Http;
 
+use CodeIgniter\HTTP\Response;
+use Nyholm\Psr7\Stream;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 class ResponseWrapper implements ResponseInterface
 {
-    private \CodeIgniter\HTTP\ResponseInterface $response;
+    private Response $response;
+    private ?StreamInterface $stream = null;
 
-    public function __construct(\CodeIgniter\HTTP\ResponseInterface $response)
+    public function __construct(Response $response)
     {
         $this->response = $response;
     }
@@ -22,9 +25,8 @@ class ResponseWrapper implements ResponseInterface
 
     public function withProtocolVersion(string $version): MessageInterface
     {
-        $clonedResponse = clone $this->response;
-        $clonedResponse->setProtocolVersion($version);
-        return new ResponseWrapper($clonedResponse);
+        $this->response->setProtocolVersion($version);
+        return $this;
     }
 
     public function getHeaders(): array
@@ -54,33 +56,36 @@ class ResponseWrapper implements ResponseInterface
 
     public function withHeader(string $name, $value): MessageInterface
     {
-        $clonedResponse = clone $this->response;
-        $clonedResponse->setHeader($name, $value);
-        return new ResponseWrapper($clonedResponse);
+        $this->response->setHeader($name, $value);
+        return $this;
     }
 
     public function withAddedHeader(string $name, $value): MessageInterface
     {
-        $clonedResponse = clone $this->response;
-        $clonedResponse->appendHeader($name, $value);
-        return new ResponseWrapper($clonedResponse);
+        $this->response->appendHeader($name, $value);
+        return $this;
     }
 
     public function withoutHeader(string $name): MessageInterface
     {
-        $clonedResponse = clone $this->response;
-        $clonedResponse->removeHeader($name);
-        return new ResponseWrapper($clonedResponse);
+        $this->response->removeHeader($name);
+        return $this;
     }
 
     public function getBody(): StreamInterface
     {
-        // TODO: Implement getBody() method.
+        if (!$this->stream) {
+            $this->stream = Stream::create('');
+        }
+
+        return $this->stream;
     }
 
     public function withBody(StreamInterface $body): MessageInterface
     {
-        // TODO: Implement withBody() method.
+        $this->response->setBody($body);
+        $this->stream = $body;
+        return $this;
     }
 
     public function getStatusCode(): int
@@ -90,9 +95,8 @@ class ResponseWrapper implements ResponseInterface
 
     public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
-        $clonedResponse = clone $this->response;
-        $clonedResponse->setStatusCode($code, $reasonPhrase);
-        return new ResponseWrapper($clonedResponse);
+        $this->response->setStatusCode($code, $reasonPhrase);
+        return $this;
     }
 
     public function getReasonPhrase(): string
@@ -100,8 +104,9 @@ class ResponseWrapper implements ResponseInterface
         return $this->response->getReasonPhrase();
     }
 
-    public function getHandle(): \CodeIgniter\HTTP\ResponseInterface
+    public function getHandle(): Response
     {
+        $this->response->setBody($this->stream);
         return $this->response;
     }
 }

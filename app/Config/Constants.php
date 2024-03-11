@@ -104,9 +104,9 @@ const USERS = PREFIX . "users";
 const MAILS = PREFIX . "mails";
 const IMAGES = PREFIX . "images";
 
-const OIDC_ACCESS_TOKENS = PREFIX . '_oidc_access_tokens';
-const OIDC_AUTH_CODES = PREFIX . '_oidc_auth_codes';
-const OIDC_CLIENTS = PREFIX . '_oidc_clients';
-const OIDC_REFRESH_TOKENS = PREFIX . '_oidc_refresh_tokens';
+const OIDC_ACCESS_TOKENS = PREFIX . 'oidc_access_tokens';
+const OIDC_AUTH_CODES = PREFIX . 'oidc_auth_codes';
+const OIDC_CLIENTS = PREFIX . 'oidc_clients';
+const OIDC_REFRESH_TOKENS = PREFIX . 'oidc_refresh_tokens';
 
 const FOLDERS_API = "https://cloud.waldorfconnect.de/apps/groupfolders";
