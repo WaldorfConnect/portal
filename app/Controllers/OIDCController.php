@@ -10,6 +10,7 @@ use CodeIgniter\HTTP\Response;
 use CodeIgniter\HTTP\ResponseInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use function App\Helpers\getAuthorizationServer;
+use function App\Helpers\getCurrentUser;
 
 class OIDCController extends BaseController
 {
@@ -22,7 +23,7 @@ class OIDCController extends BaseController
 
         try {
             $authRequest = $server->validateAuthorizationRequest($wrappedRequest);
-            $authRequest->setUser(new UserEntity('lgroschke'));
+            $authRequest->setUser(new UserEntity(getCurrentUser()->getUsername()));
             $authRequest->setAuthorizationApproved(true);
             $server->completeAuthorizationRequest($authRequest, $wrappedResponse);
         } catch (OAuthServerException $e) {
