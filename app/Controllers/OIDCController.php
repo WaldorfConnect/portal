@@ -7,7 +7,6 @@ use App\OIDC\Http\RequestWrapper;
 use App\OIDC\Http\ResponseWrapper;
 use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\Response;
-use CodeIgniter\HTTP\ResponseInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use function App\Helpers\getAuthorizationServer;
 use function App\Helpers\getCurrentUser;
@@ -40,6 +39,8 @@ class OIDCController extends BaseController
 
         $wrappedRequest = new RequestWrapper($this->request);
         $wrappedResponse = new ResponseWrapper(Services::response());
+
+        log_message('info', print_r($wrappedRequest->getParsedBody(), true));
 
         try {
             $server->respondToAccessTokenRequest($wrappedRequest, $wrappedResponse);

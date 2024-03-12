@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\OIDC\Entities\CustomIdTokenResponse;
 use App\OIDC\Repositories\AccessTokenRepository;
 use App\OIDC\Repositories\AuthCodeRepository;
 use App\OIDC\Repositories\ClientRepository;
@@ -10,10 +11,8 @@ use App\OIDC\Repositories\RefreshTokenRepository;
 use App\OIDC\Repositories\ScopeRepository;
 use DateInterval;
 use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\CryptKey;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use OpenIDConnectServer\ClaimExtractor;
-use OpenIDConnectServer\IdTokenResponse;
 
 function getAuthorizationServer(): AuthorizationServer
 {
@@ -23,7 +22,7 @@ function getAuthorizationServer(): AuthorizationServer
     $authCodeRepository = new AuthCodeRepository();
     $refreshTokenRepository = new RefreshTokenRepository();
 
-    $responseType = new IdTokenResponse(new IdentityRepository(), new ClaimExtractor());
+    $responseType = new CustomIdTokenResponse(new IdentityRepository(), new ClaimExtractor());
 
     $server = new AuthorizationServer(
         $clientRepository,

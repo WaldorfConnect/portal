@@ -133,21 +133,9 @@ class RequestWrapper implements ServerRequestInterface
 
     public function getQueryParams(): array
     {
-        $queryString = $this->incomingRequest->getUri()->getQuery();
-        if (empty($queryString))
-            return [];
-
-        $queryItems = explode("&", $queryString);
-
-        $queryParams = [];
-        foreach ($queryItems as $queryItem) {
-            $splitQueryItem = explode("=", $queryItem);
-            $key = $splitQueryItem[0];
-            $value = $splitQueryItem[1];
-            $queryParams[$key] = $value;
-        }
-
-        return $queryParams;
+        $array = [];
+        parse_str($this->incomingRequest->getUri()->getQuery(), $array);
+        return $array;
     }
 
     public function withQueryParams(array $query): ServerRequestInterface
@@ -170,21 +158,14 @@ class RequestWrapper implements ServerRequestInterface
 
     public function getParsedBody(): null|array|object
     {
-        if ($this->getHeaderLine('Content-Type') == 'application/json') {
-            return json_decode($this->incomingRequest->getBody());
-        }
-
-        return null;
+        $array = [];
+        parse_str($this->incomingRequest->getBody(), $array);
+        return $array;
     }
 
     public function withParsedBody($data): ServerRequestInterface
     {
-        if ($this->getHeaderLine('Content-Type') == 'application/json') {
-            $this->incomingRequest->setBody(json_encode($data));
-            return $this;
-        }
-
-        $this->incomingRequest->setBody($data);
+        $this->incomingRequest->setBody(http_build_query($data));
         return $this;
     }
 
