@@ -41,19 +41,25 @@ class AuthenticationController extends BaseController
         $password = trim($this->request->getPost('password'));
         $user = getUserByUsername($username);
 
+        $returnUrl = $this->request->getPost('return');
+        $loginUrl = site_url('login');
+        if ($returnUrl) {
+            $loginUrl = $loginUrl . '?return=' . urlencode($returnUrl);
+        }
+
         // Check if user exists
         if (!$user) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Benutzername ungültig!');
+            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Benutzername ungültig!');
         }
 
         // Check if password is correct
         if (!checkSSHA($password, $user->getPassword())) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Passwort ungültig!');
+            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Passwort ungültig!');
         }
 
         // Check if logging is blocked by current status
         if (!$user->isActive()) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Benutzer ist nicht aktiv.');
+            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Benutzer ist nicht aktiv.');
         }
 
         // Remove pending password reset if login was successful
@@ -65,14 +71,13 @@ class AuthenticationController extends BaseController
             $user->setLastLoginDate(new DateTime());
             saveUser($user);
         } catch (Exception $e) {
-            return redirect('login')->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
 
         // Everything worked - welcome!
         session()->set('user_id', $user->getId());
 
         // Check if user is returning and redirect
-        $returnUrl = $this->request->getPost('return');
         return redirect()->to($returnUrl ?: '/');
     }
 
