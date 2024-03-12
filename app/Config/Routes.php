@@ -1,7 +1,6 @@
 <?php
 
 use App\Filters\AdminFilter;
-use App\Filters\GlobalAdminFilter;
 use App\Filters\LoggedInFilter;
 use App\Filters\LoggedOutFilter;
 use CodeIgniter\Router\RouteCollection;
@@ -67,6 +66,9 @@ $routes->post('/admin/region/create', 'AdminController::handleCreateRegion', ['f
 $routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['filter' => AdminFilter::class]);
 $routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => AdminFilter::class]);
+
+$routes->get('/oidc/authorize', 'OIDCController::authorize', ['filter' => LoggedInFilter::class]);
+$routes->post('/oidc/access_token', 'OIDCController::accessToken');
 
 $routes->cli('/cron_mail', 'CronController::mail');
 $routes->cli('/cron_ldap', 'CronController::ldap');
