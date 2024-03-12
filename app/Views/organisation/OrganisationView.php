@@ -315,7 +315,6 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     <select class="form-select" id="inputMember" name="member[]" size="20" multiple>
                         <?php if ($parent = $organisation->getParent()): ?>
                             <?php foreach (getUsers() as $user): ?>
-                                <?php if (!getMembership($user->getId(), $parent->getId())): continue; endif; ?>
                                 <option value="<?= $user->getId() ?>">
                                     <?= $user->getName() ?>
                                 </option>
