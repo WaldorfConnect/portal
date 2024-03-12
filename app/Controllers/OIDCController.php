@@ -6,6 +6,7 @@ use App\OIDC\Entities\UserEntity;
 use App\OIDC\Http\RequestWrapper;
 use App\OIDC\Http\ResponseWrapper;
 use CodeIgniter\Config\Services;
+use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\Response;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use function App\Helpers\getAuthorizationServer;
@@ -50,5 +51,12 @@ class OIDCController extends BaseController
 
         $response = $wrappedResponse->getHandle();
         return $response->getBody() ?? $response;
+    }
+
+    public function logout(): RedirectResponse
+    {
+        $redirectUri = $this->request->getGet('post_logout_redirect_uri');
+        session()->remove('user_id');
+        return redirect()->to($redirectUri);
     }
 }

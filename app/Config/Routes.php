@@ -69,6 +69,7 @@ $routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filte
 
 $routes->get('/oidc/authorize', 'OIDCController::authorize', ['filter' => LoggedInFilter::class]);
 $routes->post('/oidc/access_token', 'OIDCController::accessToken');
+$routes->get('/oidc/logout', 'OIDCController::logout');
 
 $routes->cli('/cron_mail', 'CronController::mail');
 $routes->cli('/cron_ldap', 'CronController::ldap');
