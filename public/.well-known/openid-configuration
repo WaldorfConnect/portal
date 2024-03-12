@@ -1,8 +1,9 @@
 {
-  "issuer": "https://portal.dev.waldorfconnect.de",
-  "authorization_endpoint": "https://portal.dev.waldorfconnect.de/oidc/authorize",
-  "token_endpoint": "https://portal.dev.waldorfconnect.de/oidc/access_token",
-  "jwks_uri": "https://portal.dev.waldorfconnect.de/.well-known/certs",
+  "issuer": "https://portal.waldorfconnect.de",
+  "authorization_endpoint": "https://portal.waldorfconnect.de/oidc/authorize",
+  "token_endpoint": "https://portal.waldorfconnect.de/oidc/access_token",
+  "end_session_endpoint": "https://portal.waldorfconnect.de/oidc/logout",
+  "jwks_uri": "https://portal.waldorfconnect.de/.well-known/certs",
   "scopes_supported": [
     "openid"
   ],
