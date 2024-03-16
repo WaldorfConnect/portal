@@ -9,7 +9,7 @@ use function App\Helpers\getRegions;
 
         <div class="card register">
             <div class="card-header header-plain">
-                <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>/assets/img/banner_small.png"
+                <img class="mb-2 navbar-brand-logo" src="<?= base_url('/') ?>assets/img/banner_small.png"
                      alt="WaldorfConnect Logo">
                 <h1 class="h2">Registrieren</h1>
             </div>

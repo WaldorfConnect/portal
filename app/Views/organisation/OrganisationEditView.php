@@ -126,4 +126,4 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
     });
 </script>
 
-<script src="<?= base_url('/') ?>/assets/js/enforceFileUploadSizeLimits.js"></script>
+<script src="<?= base_url('/') ?>assets/js/enforceFileUploadSizeLimits.js"></script>

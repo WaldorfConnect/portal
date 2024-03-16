@@ -92,4 +92,4 @@ $currentUser = getCurrentUser();
     <?= form_close() ?>
 </div>
 
-<script src="<?= base_url('/') ?>/assets/js/enforceFileUploadSizeLimits.js"></script>
+<script src="<?= base_url('/') ?>assets/js/enforceFileUploadSizeLimits.js"></script>
