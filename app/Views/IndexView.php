@@ -71,7 +71,7 @@ use function App\Helpers\getCurrentUser;
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                Benachrichtigungen
+                Mitteilungen
             </div>
             <div class="card-body">
                 <p class="text-center">Diese Funktion folgt demnächst!</p>

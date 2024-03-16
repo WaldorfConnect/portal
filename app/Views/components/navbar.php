@@ -3,7 +3,7 @@
 use function App\Helpers\getCurrentUser;
 
 ?>
-<nav class="navbar navbar-expand-md navbar-light navbar-expand-lg bg-white border-bottom fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="<?= base_url('/') ?>">
             <img class="navbar-brand-logo" src="<?= base_url('/') ?>assets/img/banner_small.png"
@@ -20,7 +20,7 @@ use function App\Helpers\getCurrentUser;
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Administration
+                            <i class="fa fa-gauge"></i> Admin
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
@@ -49,11 +49,20 @@ use function App\Helpers\getCurrentUser;
                     </li>
                 <?php endif; ?>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <?= $user->getName() ?>
+                        <i class="fa fa-bell"></i> Mitteilungen
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-user"></i> <?= $user->getName() ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
                             Profil bearbeiten
                         </a>
