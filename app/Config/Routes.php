@@ -71,6 +71,8 @@ $routes->get('/oidc/authorize', 'OIDCController::authorize', ['filter' => Logged
 $routes->post('/oidc/access_token', 'OIDCController::accessToken');
 $routes->get('/oidc/logout', 'OIDCController::logout');
 
+$routes->get('/search', 'SearchController::index', ['filter' => LoggedInFilter::class]);
+
 $routes->cli('/cron_mail', 'CronController::mail');
 $routes->cli('/cron_ldap', 'CronController::ldap');
 $routes->cli('/cron_nextcloud', 'CronController::nextcloud');

@@ -42,6 +42,15 @@ function getUsers(): array
 }
 
 /**
+ * @param string $name
+ * @return User[]
+ */
+function getUsersByName(string $name): array
+{
+    return getUserModel()->like('first_name', $name)->orLike('last_name', $name)->findAll();
+}
+
+/**
  * @param int $id
  * @return ?User
  * @throws DatabaseException

@@ -5,7 +5,21 @@ use function App\Helpers\getCurrentUser;
 ?>
 <h1 class="header">Willkommen <?= ($user = getCurrentUser())->getName() ?></h1>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-sm-12">
+        <?= form_open('search', 'method="get"') ?>
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Organisationen, Benutzer, ... suchen"
+                   aria-label="Suchbegriff" aria-describedby="search" name="query" required>
+            <button class="btn btn-outline-secondary" type="submit" id="search"><i class="fas fa-magnifying-glass"></i>
+                Suchen
+            </button>
+        </div>
+        <?= form_close() ?>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">

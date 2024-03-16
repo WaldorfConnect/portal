@@ -22,6 +22,17 @@ function getOrganisations(): array
 }
 
 /**
+ * Returns all organisations where name matches.
+ *
+ * @param string $name
+ * @return Organisation[]
+ */
+function getOrganisationsByName(string $name): array
+{
+    return getOrganisationModel()->like('name', $name)->orLike('short_name', $name)->findAll();
+}
+
+/**
  * Returns the organisation corresponding to the given id.
  *
  * @param int $id
