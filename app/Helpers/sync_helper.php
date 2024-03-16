@@ -44,7 +44,7 @@ function syncLDAPUsers(): void
                 updateLDAPUser($ldapUser, $wantedUser);
                 CLI::write('Updated user ' . $wantedUser->getUsername() . ' on LDAP server');
             } catch (LdapRecordException $e) {
-                CLI::error($e->getMessage());
+                CLI::error($e);
             }
         } else {
             try {
@@ -53,7 +53,7 @@ function syncLDAPUsers(): void
                 $ldapUser->delete();
                 CLI::write('Deleted user ' . $uid . ' on LDAP server');
             } catch (LdapRecordException $e) {
-                CLI::error($e->getMessage());
+                CLI::error($e);
             }
         }
     }
@@ -64,7 +64,7 @@ function syncLDAPUsers(): void
             createLDAPUser($user);
             CLI::write('Created user ' . $user->getUsername() . ' on LDAP server');
         } catch (LdapRecordException $e) {
-            CLI::error($e->getMessage());
+            CLI::error($e);
         }
     }
 }
@@ -95,7 +95,7 @@ function syncLDAPOrganisations(): void
                 updateLDAPOrganisation($ldapOrganisation, $wantedOrganisation);
                 CLI::write('Updated organisation ' . $wantedOrganisation->getDisplayName() . ' on LDAP server');
             } catch (LdapRecordException $e) {
-                CLI::error($e->getTraceAsString());
+                CLI::error($e);
             }
         } else {
             try {
@@ -105,7 +105,7 @@ function syncLDAPOrganisations(): void
                 $ldapOrganisation->delete();
                 CLI::write('Deleted organisation ' . $displayName . ' on LDAP server');
             } catch (LdapRecordException $e) {
-                CLI::error($e->getTraceAsString());
+                CLI::error($e);
             }
         }
     }
@@ -116,7 +116,7 @@ function syncLDAPOrganisations(): void
             createLDAPOrganisation($organisation);
             CLI::write('Created organisation ' . $organisation->getDisplayName() . ' on LDAP server');
         } catch (LdapRecordException $e) {
-            CLI::error($e->getTraceAsString());
+            CLI::error($e);
         }
     }
 }
@@ -177,7 +177,8 @@ function syncOrganisationFolders(): void
                 saveOrganisation($organisation);
 
                 CLI::write('Created folder ' . $organisation->getDisplayName() . ' on Nextcloud');
-            } catch (DatabaseException|ReflectionException) {
+            } catch (DatabaseException|ReflectionException $e) {
+                CLI::error($e);
             }
         }
     }
@@ -238,6 +239,7 @@ function createLDAPOrganisation(Organisation $organisation): void
     ]);
     $ldapOrganisation->inside(getOrganisationsDistinguishedName());
     $ldapOrganisation->setDn('uid=' . $organisation->getId() . ',' . getOrganisationsDistinguishedName());
+    $ldapOrganisation->save();
 }
 
 function createOrganisationFolder(Client $client, Organisation $organisation): int
@@ -260,7 +262,7 @@ function createOrganisationFolder(Client $client, Organisation $organisation): i
 
         return $data->id;
     } catch (GuzzleException $e) {
-        CLI::error("Error while creating folder: " . $e->getMessage());
+        CLI::error($e);
     }
 
     return -1;
@@ -323,7 +325,7 @@ function updateOrganisationFolder(Client $client, Organisation $organisation, ob
             ]
         ]);
     } catch (GuzzleException $e) {
-        CLI::error("Error while creating folder: " . $e->getMessage());
+        CLI::error($e);
     }
 
     // Add group as member of folder
@@ -336,7 +338,7 @@ function updateOrganisationFolder(Client $client, Organisation $organisation, ob
                 ]
             ]);
         } catch (GuzzleException $e) {
-            CLI::error("Error while adding group: " . $e->getMessage());
+            CLI::error($e);
         }
     }
 }
@@ -346,7 +348,7 @@ function deleteOrganisationFolder(Client $client, int $id): void
     try {
         $client->delete(FOLDERS_API . '/folders/' . $id);
     } catch (GuzzleException $e) {
-        CLI::error("Error while deleting folder: " . $e->getMessage());
+        CLI::error($e);
     }
 }
 
@@ -400,7 +402,7 @@ function getOrganisationFolders(Client $client): array
 
         return get_object_vars($data);
     } catch (GuzzleException $e) {
-        CLI::error("Error while requesting folders: " . $e->getMessage());
+        CLI::error($e);
     }
     return $dataArray;
 }
