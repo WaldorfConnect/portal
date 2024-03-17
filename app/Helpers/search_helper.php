@@ -18,7 +18,9 @@ function getSearchEntries(string $query): array
         $entries[] = new SearchEntry(
             $organisation->getName(),
             'Organisation',
-            ['Öffnen' => base_url("organisation/{$organisation->getId()}")]
+            [
+                '<i class="fas fa-arrow-up-right-from-square"></i> Öffnen' => base_url("organisation/{$organisation->getId()}"),
+            ]
         );
     }
 
@@ -27,7 +29,9 @@ function getSearchEntries(string $query): array
         $entries[] = new SearchEntry(
             $user->getName(),
             'Benutzer',
-            ['Chat starten' => "https://cloud.waldorfconnect.de/apps/spreed/?callUser={$user->getUsername()}"]
+            [
+                '<i class="fas fa-message"></i> Chat starten' => "https://cloud.waldorfconnect.de/apps/spreed/?callUser={$user->getUsername()}"
+            ]
         );
     }
 
