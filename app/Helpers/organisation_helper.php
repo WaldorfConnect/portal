@@ -228,6 +228,28 @@ function saveMembership(Membership $membership): void
     getMembershipModel()->save($membership);
 }
 
+function createOrganisationNotification(int $organisationId, string $subject, string $body, MembershipStatus $status = null, array $exceptUsers = []): void
+{
+    $organisation = getOrganisationById($organisationId);
+    $body = sprintf($body, $organisation->getUrl());
+
+    foreach ($organisation->getMemberships() as $membership) {
+        if ($membership->getStatus() == MembershipStatus::PENDING)
+            continue;
+
+        if ($status != null && $membership->getStatus() != $status)
+            continue;
+
+        if (in_array($membership->getUserId(), $exceptUsers))
+            continue;
+
+        try {
+            createNotification($membership->getUserId(), $subject, $body);
+        } catch (ReflectionException $e) {
+        }
+    }
+}
+
 /**
  * Returns the group table wrapper and query builder.
  *

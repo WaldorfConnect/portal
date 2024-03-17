@@ -8,7 +8,16 @@ enum MembershipStatus: string
     case USER = "USER";
     case ADMIN = "ADMIN";
 
-    public function badge(): ?string
+    public function displayName(): string
+    {
+        return match ($this) {
+            self::PENDING => 'Anfrage ausstehend',
+            self::USER => 'Mitglied',
+            self::ADMIN => 'Admin',
+        };
+    }
+
+    public function badge(): string
     {
         return match ($this) {
             self::PENDING => '<span class="badge bg-warning"><i class="fas fa-hourglass"></i></span>',

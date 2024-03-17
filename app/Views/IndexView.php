@@ -76,7 +76,7 @@ use function App\Helpers\getCurrentUser;
             <div class="card-footer footer-plain">
                 <div class="text-center">
                     <a class="btn btn-block btn-outline-primary" href="/organisations">
-                        Alle Organisationen anzeigen
+                        <i class="fas fa-people-group"></i> Alle Organisationen anzeigen
                     </a>
                 </div>
             </div>
@@ -85,12 +85,17 @@ use function App\Helpers\getCurrentUser;
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                Mitteilungen
+                Benachrichtigungen
             </div>
             <div class="card-body">
-                <p class="text-center">Diese Funktion folgt demnächst!</p>
+                <?= view('notification/NotificationListComponent', ['limit' => 5]) ?>
             </div>
             <div class="card-footer footer-plain">
+                <div class="text-center">
+                    <a class="btn btn-block btn-outline-primary" href="/notifications">
+                        <i class="fas fa-bell"></i> Alle Benachrichtigungen anzeigen
+                    </a>
+                </div>
             </div>
         </div>
     </div>

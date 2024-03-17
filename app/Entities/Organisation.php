@@ -243,6 +243,11 @@ class Organisation extends Entity
         return getMembershipsByOrganisationId($this->getId());
     }
 
+    public function getUrl(): string
+    {
+        return "<a href=\"organisation/{$this->getId()}\">{$this->getDisplayName()}</a>";
+    }
+
     public function isManageableBy(User $user): bool
     {
         if ($user->isAdmin()) {

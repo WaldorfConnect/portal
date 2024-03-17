@@ -103,6 +103,7 @@ const REGIONS = PREFIX . "regions";
 const USERS = PREFIX . "users";
 const MAILS = PREFIX . "mails";
 const IMAGES = PREFIX . "images";
+const NOTIFICATIONS = PREFIX . "notifications";
 
 const OIDC_ACCESS_TOKENS = PREFIX . 'oidc_access_tokens';
 const OIDC_AUTH_CODES = PREFIX . 'oidc_auth_codes';

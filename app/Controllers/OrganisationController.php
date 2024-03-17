@@ -8,7 +8,9 @@ use Exception;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
+use function App\Helpers\createNotification;
 use function App\Helpers\createOrganisation;
+use function App\Helpers\createOrganisationNotification;
 use function App\Helpers\deleteMembership;
 use function App\Helpers\deleteOrganisation;
 use function App\Helpers\getCurrentUser;
@@ -52,7 +54,11 @@ class OrganisationController extends BaseController
 
         try {
             createMembershipRequest($currentUser->getId(), $organisationId);
-            // TODO send email / notification
+
+            createOrganisationNotification($organisationId,
+                'Beitrittsanfrage',
+                "{$currentUser->getName()} möchte %s beitreten.</a>",
+                MembershipStatus::ADMIN);
         } catch (Exception $e) {
             return redirect('organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -75,6 +81,9 @@ class OrganisationController extends BaseController
         }
 
         deleteMembership($currentUser->getId(), $organisationId);
+        createOrganisationNotification($organisationId,
+            'Organisation verlassen',
+            "{$currentUser->getName()} hat %s verlassen.</a>");
 
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
@@ -95,6 +104,15 @@ class OrganisationController extends BaseController
         $members = $this->request->getPost('member');
         foreach ($members as $member) {
             createMembership($member, $organisationId);
+
+            $memberUser = getUserById($member);
+            createOrganisationNotification($organisationId,
+                'Organisation beigetreten',
+                "{$memberUser->getName()} ist %s beigetreten.</a>",
+                null,
+                [$member]);
+
+            createNotification($member, 'Zur Organisation hinzugefügt', "Du wurdest zu {$organisation->getUrl()} hinzugefügt.");
         }
 
         return redirect()->to(base_url('organisation/' . $organisationId));
@@ -120,6 +138,8 @@ class OrganisationController extends BaseController
             $id = saveOrganisation($workgroup);
 
             createMembership($self->getId(), $id, MembershipStatus::ADMIN);
+            createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
+
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
         } catch (Exception $e) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -234,8 +254,17 @@ class OrganisationController extends BaseController
         $membership->setStatus(MembershipStatus::USER);
 
         try {
+            createOrganisationNotification($organisationId,
+                'Organisation beigetreten',
+                "{$membership->getUser()->getName()} ist %s beigetreten.</a>",
+                null,
+                [$membership->getUserId()]);
+
+            createNotification($membership->getUserId(),
+                'Beitrittsanfrage akzeptiert',
+                "Deine Anfrage an {$organisation->getUrl()} wurden akzeptiert.");
+
             saveMembership($membership);
-            // TODO send email / notification
         } catch (Exception $e) {
             return redirect('organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -269,7 +298,14 @@ class OrganisationController extends BaseController
 
         try {
             deleteMembership($userId, $organisationId);
-            // TODO send email / notification
+
+            createOrganisationNotification($organisationId,
+                'Beitrittsanfrage abgelehnt',
+                "Anfrage von {$membership->getUser()->getName()} an %s abgelehnt.</a>",
+                MembershipStatus::ADMIN,
+                [$membership->getUserId()]);
+
+            createNotification($membership->getUserId(), 'Beitrittsanfrage abgelehnt', "Deine Anfrage an {$organisation->getUrl()} wurde abgelehnt.");
         } catch (Exception $e) {
             return redirect('organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -302,9 +338,18 @@ class OrganisationController extends BaseController
             return redirect('organisations')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Organisation.');
         }
 
-        $membership->setStatus(MembershipStatus::from($status));
+        $statusEnum = MembershipStatus::from($status);
+        $membership->setStatus($statusEnum);
 
         try {
+            createOrganisationNotification($organisationId,
+                'Organisationsrolle geändert',
+                "Rolle von {$membership->getUser()->getName()} in %s zu {$statusEnum->displayName()} geändert.</a>",
+                MembershipStatus::ADMIN,
+                [$membership->getUserId()]);
+
+            createNotification($membership->getUserId(), 'Organisationsrolle geändert', "Deine Rolle in {$organisation->getUrl()} wurde zu {$statusEnum->displayName()} geändert.");
+
             saveMembership($membership);
         } catch (Exception $e) {
             return redirect('organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
@@ -339,6 +384,20 @@ class OrganisationController extends BaseController
 
         try {
             deleteMembership($userId, $organisationId);
+
+            createOrganisationNotification($organisationId,
+                'Aus Organisation entfernt',
+                "{$membership->getUser()->getName()} von {$currentUser->getName()} aus %s entfernt.</a>",
+                MembershipStatus::ADMIN,
+                [$membership->getUserId()]);
+
+            createOrganisationNotification($organisationId,
+                'Organisation verlassen',
+                "{$currentUser->getName()} hat %s verlassen.</a>",
+                MembershipStatus::USER,
+                [$membership->getUserId()]);
+
+            createNotification($membership->getUserId(), 'Aus Organisation entfernt', "Du wurdest aus {$organisation->getUrl()} entfernt.");
         } catch (Exception $e) {
             return redirect('organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
         }
@@ -365,6 +424,7 @@ class OrganisationController extends BaseController
         }
 
         try {
+            createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$organisation->getName()} in %s gelöscht.");
             deleteOrganisation($organisationId);
             return redirect()->to(base_url('organisation/' . $parent->getId()))->with('success', 'Arbeitsgruppe gelöscht.');
         } catch (Exception $e) {

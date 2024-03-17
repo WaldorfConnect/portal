@@ -1,5 +1,6 @@
 <?php
 
+use function App\Helpers\countNotificationsByUserId;
 use function App\Helpers\getCurrentUser;
 
 ?>
@@ -48,14 +49,16 @@ use function App\Helpers\getCurrentUser;
                         </div>
                     </li>
                 <?php endif; ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-bell"></i> Mitteilungen
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= base_url('notifications') ?>">
+                        <i class="fa fa-bell position-relative">
+                            <?php if (($count = countNotificationsByUserId($user->getId())) > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?= $count ?>
+                                    <span class="visually-hidden">offene Benachrichtigungen</span>
+                                </span>
+                            <?php endif; ?>
+                        </i> Benachrichtigungen
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-
-                    </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
