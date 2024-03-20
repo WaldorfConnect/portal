@@ -13,6 +13,8 @@ class Notification extends Entity
         'subject' => null,
         'body' => null,
         'created_at' => null,
+        'read_at' => null,
+        'deleted_at' => null
     ];
 
     protected $casts = [
@@ -20,7 +22,9 @@ class Notification extends Entity
         'user_id' => 'integer',
         'subject' => 'string',
         'body' => 'string',
-        'created_at' => 'timestamp'
+        'created_at' => 'timestamp',
+        'read_at' => 'timestamp',
+        'deleted_at' => 'timestamp'
     ];
 
     /**
@@ -81,5 +85,31 @@ class Notification extends Entity
     public function setCreateDate(DateTime $time): void
     {
         $this->attributes['created_at'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function getReadDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['read_at'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setReadDate(DateTime $time): void
+    {
+        $this->attributes['read_at'] = $time->format('Y-m-d H:i:s');
+    }
+
+    public function getDeleteDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['deleted_at'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    public function setDeleteDate(DateTime $time): void
+    {
+        $this->attributes['deleted_at'] = $time->format('Y-m-d H:i:s');
     }
 }
