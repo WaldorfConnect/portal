@@ -17,6 +17,7 @@ use function App\Helpers\getCurrentUser;
 use function App\Helpers\getOrganisationById;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUserById;
+use function App\Helpers\insertOrganisation;
 use function App\Helpers\saveImage;
 use function App\Helpers\saveMembership;
 use function App\Helpers\saveOrganisation;
@@ -139,7 +140,7 @@ class OrganisationController extends BaseController
 
         try {
             $workgroup = createOrganisation($name, $name, $organisation->getRegionId(), $organisation->getId());
-            $id = saveOrganisation($workgroup);
+            $id = insertOrganisation($workgroup);
 
             createMembership($self->getId(), $id, MembershipStatus::ADMIN);
             createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");

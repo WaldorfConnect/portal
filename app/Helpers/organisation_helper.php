@@ -54,17 +54,19 @@ function getChildOrganisationsByParentId(int $parentId): array
 }
 
 /**
- * Saves the given organisation and returns the id of the new entry.
+ * Saves the given organisation.
  *
  * @param Organisation $group
- * @return string|int
- * @throws DatabaseException|ReflectionException
+ * @return void
+ * @throws ReflectionException
  */
-function saveOrganisation(Organisation $group): string|int
+function saveOrganisation(Organisation $group): void
 {
-    $model = new OrganisationModel();
-    $model->save($group);
-    return $model->getInsertID();
+    if (!$group->hasChanged()) {
+        return;
+    }
+
+    getOrganisationModel()->save($group);
 }
 
 /**
@@ -78,12 +80,24 @@ function saveOrganisation(Organisation $group): string|int
  */
 function createOrganisation(string $name, string $shortName, int $regionId, int $parentId = null): Organisation
 {
-    $group = new Organisation();
-    $group->setName($name);
-    $group->setShortName($shortName);
-    $group->setRegionId($regionId);
-    $group->setParentId($parentId);
-    return $group;
+    $organisation = new Organisation();
+    $organisation->setName($name);
+    $organisation->setShortName($shortName);
+    $organisation->setRegionId($regionId);
+    $organisation->setParentId($parentId);
+    return $organisation;
+}
+
+/**
+ * Inserts an organisation and returns its newly created id.
+ *
+ * @throws ReflectionException
+ */
+function insertOrganisation(Organisation $organisation): string|int
+{
+    $model = getOrganisationModel();
+    $model->insert($organisation);
+    return $model->getInsertID();
 }
 
 /**
@@ -235,14 +249,20 @@ function createOrganisationNotification(int $organisationId, string $subject, st
     $body = sprintf($body, $organisation->getUrl());
 
     foreach ($organisation->getMemberships() as $membership) {
-        if ($membership->getStatus() == MembershipStatus::PENDING)
+        // If user isn't an accepted member of the organisation
+        if ($membership->getStatus() == MembershipStatus::PENDING) {
             continue;
+        }
 
-        if ($status != null && $membership->getStatus() != $status)
+        // If user hasn't got given membership status
+        if ($status != null && $membership->getStatus() != $status) {
             continue;
+        }
 
-        if (in_array($membership->getUserId(), $exceptUsers))
+        // If user is in given exception list
+        if (in_array($membership->getUserId(), $exceptUsers)) {
             continue;
+        }
 
         createNotification($membership->getUserId(), $subject, $body);
     }

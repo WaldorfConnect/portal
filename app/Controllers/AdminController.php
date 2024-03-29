@@ -5,10 +5,11 @@ namespace App\Controllers;
 use CodeIgniter\HTTP\RedirectResponse;
 use DateTime;
 use Exception;
+use function App\Helpers\insertOrganisation;
 use function App\Helpers\saveImage;
 use function App\Helpers\createOrganisation;
 use function App\Helpers\createImageValidationRule;
-use function App\Helpers\createRegion;
+use function App\Helpers\createAndInsertRegion;
 use function App\Helpers\deleteOrganisation;
 use function App\Helpers\deleteRegion;
 use function App\Helpers\deleteUser;
@@ -210,7 +211,7 @@ class AdminController extends BaseController
                 $organisation->setImageId($imageId);
             }
 
-            saveOrganisation($organisation);
+            insertOrganisation($organisation);
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
@@ -253,11 +254,10 @@ class AdminController extends BaseController
     public function handleCreateRegion(): RedirectResponse
     {
         $name = $this->request->getPost('name');
-        $isoCode = $this->request->getPost('iso');
-        $region = createRegion($name, $isoCode);
 
         try {
-            saveRegion($region);
+            createAndInsertRegion($name);
+
             return redirect('admin/regions')->with('success', 'Region erstellt.');
         } catch (Exception $e) {
             return redirect('admin/regions')->with('error', $e);

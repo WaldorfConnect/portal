@@ -43,6 +43,10 @@ class Notification extends Entity
         return $this->attributes['user_id'];
     }
 
+    /**
+     * @param int $userId
+     * @return void
+     */
     public function setUserId(int $userId): void
     {
         $this->attributes['user_id'] = $userId;
@@ -56,6 +60,10 @@ class Notification extends Entity
         return $this->attributes['subject'];
     }
 
+    /**
+     * @param string $subject
+     * @return void
+     */
     public function setSubject(string $subject): void
     {
         $this->attributes['subject'] = $subject;
@@ -69,11 +77,18 @@ class Notification extends Entity
         return $this->attributes['body'];
     }
 
+    /**
+     * @param string $body
+     * @return void
+     */
     public function setBody(string $body): void
     {
         $this->attributes['body'] = $body;
     }
 
+    /**
+     * @return DateTime|null
+     */
     public function getCreateDate(): ?DateTime
     {
         $formattedDate = $this->attributes['created_at'];
@@ -82,11 +97,18 @@ class Notification extends Entity
         return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
     }
 
+    /**
+     * @param DateTime $time
+     * @return void
+     */
     public function setCreateDate(DateTime $time): void
     {
         $this->attributes['created_at'] = $time->format('Y-m-d H:i:s');
     }
 
+    /**
+     * @return DateTime|null
+     */
     public function getReadDate(): ?DateTime
     {
         $formattedDate = $this->attributes['read_at'];
@@ -95,6 +117,10 @@ class Notification extends Entity
         return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
     }
 
+    /**
+     * @param DateTime $time
+     * @return void
+     */
     public function setReadDate(DateTime $time): void
     {
         $this->attributes['read_at'] = $time->format('Y-m-d H:i:s');

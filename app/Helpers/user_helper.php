@@ -103,14 +103,17 @@ function getUserByToken(string $token): ?object
 
 /**
  * @param User $user
- * @return string|int
- * @throws DatabaseException|ReflectionException
+ * @return void
+ * @throws ReflectionException
  */
-function saveUser(User $user): string|int
+function saveUser(User $user): void
 {
+    if (!$user->hasChanged()) {
+        return;
+    }
+
     $model = getUserModel();
     $model->save($user);
-    return $model->getInsertID();
 }
 
 /**
@@ -120,8 +123,9 @@ function saveUser(User $user): string|int
  * @param string $lastName
  * @param string $password
  * @return User
+ * @throws ReflectionException
  */
-function createUser(string $username, string $firstName, string $lastName, string $email, string $password): User
+function createAndInsertUser(string $username, string $firstName, string $lastName, string $email, string $password): User
 {
     $user = new User();
     $user->setUsername($username);
@@ -130,6 +134,11 @@ function createUser(string $username, string $firstName, string $lastName, strin
     $user->setEmail($email);
     $user->setPassword($password);
     $user->generateAndSetToken();
+
+    $model = getUserModel();
+    $model->insert($user);
+    $user->setId($model->getInsertID());
+
     return $user;
 }
 

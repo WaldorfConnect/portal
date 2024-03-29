@@ -24,6 +24,11 @@ class Region extends Entity
         return $this->attributes['id'];
     }
 
+    public function setId(int $id): void
+    {
+        $this->attributes['id'] = $id;
+    }
+
     /**
      * @return string
      */

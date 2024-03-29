@@ -58,6 +58,17 @@ class User extends Entity
     }
 
     /**
+     * Sets the consecutive user identifier.
+     *
+     * @param int $id
+     * @return void
+     */
+    public function setId(int $id): void
+    {
+        $this->attributes['id'] = $id;
+    }
+
+    /**
      * Returns the unique non-changeable username.
      *
      * @return string

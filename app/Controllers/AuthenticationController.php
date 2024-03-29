@@ -2,19 +2,19 @@
 
 namespace App\Controllers;
 
-use Cassandra\Date;
 use CodeIgniter\HTTP\RedirectResponse;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
 use function App\Helpers\checkSSHA;
 use function App\Helpers\createMembershipRequest;
-use function App\Helpers\createUser;
+use function App\Helpers\createAndInsertUser;
 use function App\Helpers\generateUsername;
 use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\hashSSHA;
+use function App\Helpers\insertUser;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 
@@ -47,19 +47,21 @@ class AuthenticationController extends BaseController
             $loginUrl = $loginUrl . '?return=' . urlencode($returnUrl);
         }
 
+        $redirect = redirect()->to($loginUrl)->withInput()->with('name', $username);
+
         // Check if user exists
         if (!$user) {
-            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Benutzername ungültig!');
+            return $redirect->with('error', 'Benutzername ungültig!');
         }
 
         // Check if password is correct
         if (!checkSSHA($password, $user->getPassword())) {
-            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Passwort ungültig!');
+            return $redirect->with('error', 'Passwort ungültig!');
         }
 
         // Check if logging is blocked by current status
         if (!$user->isActive()) {
-            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Benutzer ist nicht aktiv.');
+            return $redirect->with('error', 'Benutzer ist nicht aktiv.');
         }
 
         // Remove pending password reset if login was successful
@@ -71,7 +73,7 @@ class AuthenticationController extends BaseController
             $user->setLastLoginDate(new DateTime());
             saveUser($user);
         } catch (Exception $e) {
-            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', $e);
+            return $redirect->with('error', $e);
         }
 
         // Everything worked - welcome!
@@ -120,14 +122,13 @@ class AuthenticationController extends BaseController
         }
 
         $hashedPassword = hashSSHA($password);
-        $user = createUser($username, $firstName, $lastName, $email, $hashedPassword);
 
         try {
-            $id = saveUser($user);
+            $user = createAndInsertUser($username, $firstName, $lastName, $email, $hashedPassword);
             foreach ($organisationIds as $organisationId) {
-                createMembershipRequest($id, $organisationId);
+                createMembershipRequest($user->getId(), $organisationId);
             }
-            queueMail($id, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
+            queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
             return redirect('register')->withInput()->with('error', $e);
         }
@@ -139,6 +140,7 @@ class AuthenticationController extends BaseController
     {
         $userId = $this->request->getPost('userId');
         $user = getUserById($userId);
+
         try {
             queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
@@ -150,6 +152,7 @@ class AuthenticationController extends BaseController
     public function logout(): RedirectResponse
     {
         session()->remove('user_id');
+
         return redirect('login');
     }
 }

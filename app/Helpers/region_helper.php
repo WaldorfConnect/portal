@@ -27,20 +27,30 @@ function getRegionById(int $id): ?object
 
 /**
  * @param Region $region
- * @return string|int
- * @throws DatabaseException|ReflectionException
+ * @return void
+ * @throws ReflectionException
  */
-function saveRegion(Region $region): string|int
+function saveRegion(Region $region): void
 {
-    $model = getRegionModel();
-    $model->save($region);
-    return $model->getInsertID();
+    if (!$region->hasChanged()) {
+        return;
+    }
+
+    getRegionModel()->save($region);
 }
 
-function createRegion(string $name, string $iso): Region
+/**
+ * @throws ReflectionException
+ */
+function createAndInsertRegion(string $name): Region
 {
     $region = new Region();
     $region->setName($name);
+
+    $model = getRegionModel();
+    $model->insert($region);
+    $region->setId($model->getInsertID());
+
     return $region;
 }
 
