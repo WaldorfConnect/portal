@@ -13,7 +13,7 @@ class NotificationModel extends Model
     protected $returnType = Notification::class;
 
     protected $allowedFields = [
-        'user_id', 'subject', 'body', 'created_at', 'read_at', 'deleted_at'
+        'user_id', 'subject', 'body', 'created_at', 'read_at'
     ];
 }
 

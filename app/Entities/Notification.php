@@ -99,17 +99,4 @@ class Notification extends Entity
     {
         $this->attributes['read_at'] = $time->format('Y-m-d H:i:s');
     }
-
-    public function getDeleteDate(): ?DateTime
-    {
-        $formattedDate = $this->attributes['deleted_at'];
-        if (!$formattedDate) return null;
-
-        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
-    }
-
-    public function setDeleteDate(DateTime $time): void
-    {
-        $this->attributes['deleted_at'] = $time->format('Y-m-d H:i:s');
-    }
 }

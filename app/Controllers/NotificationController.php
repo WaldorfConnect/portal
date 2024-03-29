@@ -2,15 +2,9 @@
 
 namespace App\Controllers;
 
-use App\OIDC\Entities\UserEntity;
-use App\OIDC\Http\RequestWrapper;
-use App\OIDC\Http\ResponseWrapper;
-use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\HTTP\Response;
-use League\OAuth2\Server\Exception\OAuthServerException;
+use Exception;
 use function App\Helpers\deleteNotification;
-use function App\Helpers\getAuthorizationServer;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getNotificationById;
 
@@ -30,7 +24,12 @@ class NotificationController extends BaseController
             return redirect()->back()->with('error', 'Du darfst nur deine Benachrichtigungen löschen.');
         }
 
-        deleteNotification($id);
-        return redirect()->back();
+        try {
+            deleteNotification($id);
+
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Fehler beim Löschen der Benachrichtigung: ' . $e);
+        }
     }
 }

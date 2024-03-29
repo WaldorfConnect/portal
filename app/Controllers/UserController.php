@@ -78,7 +78,7 @@ class UserController extends BaseController
 
             saveUser($user);
         } catch (Exception $e) {
-            return redirect('user/profile')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('user/profile')->with('error', $e);
         }
 
         return redirect('user/profile')->with('success', 1);
@@ -91,7 +91,7 @@ class UserController extends BaseController
         try {
             queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('user/profile')->with('error', 'Fehler beim erneuten Versenden der E-Mail: ' . $e->getMessage());
+            return redirect('user/profile')->with('error', $e);
         }
         return redirect('user/profile')->with('success', 1)->with('resendSuccess', 1);
     }
@@ -133,7 +133,7 @@ class UserController extends BaseController
                 try {
                     saveUser($user);
                 } catch (Exception $e) {
-                    return $this->render('user/PasswordSetView', ['user' => $user, 'error' => 'Fehler beim Speichern: ' . $e->getMessage()], false);
+                    return $this->render('user/PasswordSetView', ['user' => $user, 'error' => $e], false);
                 }
 
                 return $this->render('user/PasswordSetView', ['success' => true], false);
@@ -151,7 +151,7 @@ class UserController extends BaseController
                 saveUser($user);
                 queueMail($user->getId(), 'Passwort vergessen', view('mail/ResetPassword', ['user' => $user]));
             } catch (Exception $e) {
-                return redirect('user/reset_password')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+                return redirect('user/reset_password')->with('error', $e);
             }
         }
 
@@ -176,7 +176,7 @@ class UserController extends BaseController
         try {
             saveUser($user);
         } catch (Exception $e) {
-            return redirect('login')->with('error', 'Verifikation fehlgeschlagen! (' . $e->getMessage() . ')');
+            return redirect('login')->with('error', $e);
         }
 
         // If newbie show accept information
@@ -191,7 +191,7 @@ class UserController extends BaseController
                     }
                 }
             } catch (Exception $e) {
-                return redirect('login')->with('error', 'Verifikation fehlgeschlagen! (' . $e->getMessage() . ')');
+                return redirect('login')->with('error', $e);
             }
             return $this->render('user/ConfirmView', [], false);
         }

@@ -71,7 +71,7 @@ class AuthenticationController extends BaseController
             $user->setLastLoginDate(new DateTime());
             saveUser($user);
         } catch (Exception $e) {
-            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect()->to($loginUrl)->withInput()->with('name', $username)->with('error', $e);
         }
 
         // Everything worked - welcome!
@@ -129,7 +129,7 @@ class AuthenticationController extends BaseController
             }
             queueMail($id, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('register')->withInput()->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('register')->withInput()->with('error', $e);
         }
 
         return redirect('register')->with('success', 1)->with('userId', $id)->with('email', $email)->with('username', $username);

@@ -5,7 +5,7 @@ namespace App\Helpers;
 use App\Entities\Notification;
 use App\Models\NotificationModel;
 use DateTime;
-use ReflectionException;
+use Exception;
 
 /**
  * Returns a user's notifications.
@@ -19,7 +19,6 @@ function getNotificationsByUserId(int $userId, int $limit = 0, bool $read = fals
 {
     $model = getNotificationModel()
         ->where('user_id', $userId)
-        ->where('deleted_at', '')
         ->orderBy('created_at', 'DESC');
     if ($limit > 0) {
         $model = $model->limit($limit);
@@ -47,7 +46,6 @@ function countNotificationsByUserId(int $userId): int
 /**
  * Create a new notification.
  *
- * @throws ReflectionException
  */
 function createNotification(int $userId, string $subject, string $body): void
 {
@@ -55,7 +53,12 @@ function createNotification(int $userId, string $subject, string $body): void
     $notification->setUserId($userId);
     $notification->setSubject($subject);
     $notification->setBody($body);
-    getNotificationModel()->insert($notification);
+
+    try {
+        getNotificationModel()->insert($notification);
+    } catch (Exception $e) {
+        // TODO handle exception
+    }
 }
 
 /**
@@ -74,7 +77,8 @@ function readNotifications(array $notifications): void
         $notification->setReadDate($now);
         try {
             getNotificationModel()->save($notification);
-        } catch (ReflectionException $e) {
+        } catch (Exception $e) {
+            // TODO handle exception
         }
     }
 }
@@ -84,13 +88,10 @@ function readNotifications(array $notifications): void
  *
  * @param int $id
  * @return void
- * @throws ReflectionException
  */
 function deleteNotification(int $id): void
 {
-    $notification = getNotificationById($id);
-    $notification->setDeleteDate(new DateTime());
-    getNotificationModel()->save($notification);
+    getNotificationModel()->delete($id);
 }
 
 /**

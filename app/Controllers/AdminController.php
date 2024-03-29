@@ -55,7 +55,7 @@ class AdminController extends BaseController
             saveUser($user);
             queueMail($user->getId(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
         } catch (Exception $e) {
-            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/users')->with('error', $e);
         }
 
         return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich freigegeben!');
@@ -138,7 +138,7 @@ class AdminController extends BaseController
             saveUser($user);
             return redirect('admin/users')->with('success', 'Benutzer bearbeitet.');
         } catch (Exception $e) {
-            return redirect('admin/users')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/users')->with('error', $e);
         }
     }
 
@@ -156,7 +156,7 @@ class AdminController extends BaseController
             deleteUser($userId);
             return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
         } catch (Exception $e) {
-            return redirect('admin/users')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            return redirect('admin/users')->with('error', $e);
         }
     }
 
@@ -214,7 +214,7 @@ class AdminController extends BaseController
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
-            return redirect('admin/organisations')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/organisations')->with('error', $e);
         }
     }
 
@@ -236,7 +236,7 @@ class AdminController extends BaseController
             deleteOrganisation($organisationId);
             return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');
         } catch (Exception $e) {
-            return redirect('admin/organisations')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            return redirect('admin/organisations')->with('error', $e);
         }
     }
 
@@ -260,7 +260,7 @@ class AdminController extends BaseController
             saveRegion($region);
             return redirect('admin/regions')->with('success', 'Region erstellt.');
         } catch (Exception $e) {
-            return redirect('admin/regions')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/regions')->with('error', $e);
         }
     }
 
@@ -277,7 +277,7 @@ class AdminController extends BaseController
             deleteRegion($regionId);
             return redirect('admin/regions')->with('success', 'Region gelöscht.');
         } catch (Exception $e) {
-            return redirect('admin/regions')->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            return redirect('admin/regions')->with('error', $e);
         }
     }
 
@@ -310,7 +310,7 @@ class AdminController extends BaseController
             saveRegion($region);
             return redirect('admin/regions')->with('success', 'Region bearbeitet.');
         } catch (Exception $e) {
-            return redirect('admin/regions')->with('error', 'Fehler beim Speichern: ' . $e->getMessage());
+            return redirect('admin/regions')->with('error', $e);
         }
     }
 }

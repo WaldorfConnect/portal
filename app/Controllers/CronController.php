@@ -24,7 +24,7 @@ class CronController extends BaseController
             CLI::write('Working mail queue ...');
             workMailQueue();
         } catch (Exception $e) {
-            CLI::error("Error working mail queue: {$e->getMessage()}");
+            CLI::error("Error working mail queue: {$e}");
         } finally {
             $this->releaseLock('mail');
         }
@@ -59,7 +59,7 @@ class CronController extends BaseController
             CLI::write('Synchronizing LDAP organisations ...');
             syncLDAPOrganisations();
         } catch (Exception $e) {
-            CLI::error("Error synchronizing with LDAP: {$e->getMessage()}");
+            CLI::error("Error synchronizing with LDAP: {$e}");
         } finally {
             $this->releaseLock('ldap');
         }
@@ -88,7 +88,7 @@ class CronController extends BaseController
             CLI::write('Synchronizing Nextcloud folders ...');
             syncOrganisationFolders();
         } catch (Exception $e) {
-            CLI::error("Error synchronizing folders: {$e->getMessage()}");
+            CLI::error("Error synchronizing folders: {$e}");
         } finally {
             $this->releaseLock('nextcloud');
         }

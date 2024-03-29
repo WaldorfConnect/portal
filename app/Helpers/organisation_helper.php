@@ -199,6 +199,7 @@ function createMembershipRequest(int $userId, int $organisationId): void
  *
  * @param int $userId
  * @param int $organisationId
+ * @param MembershipStatus $status
  * @return void
  * @throws ReflectionException
  */
@@ -243,10 +244,7 @@ function createOrganisationNotification(int $organisationId, string $subject, st
         if (in_array($membership->getUserId(), $exceptUsers))
             continue;
 
-        try {
-            createNotification($membership->getUserId(), $subject, $body);
-        } catch (ReflectionException $e) {
-        }
+        createNotification($membership->getUserId(), $subject, $body);
     }
 }
 
