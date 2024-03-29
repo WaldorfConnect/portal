@@ -7,6 +7,11 @@ use App\Models\NotificationModel;
 use DateTime;
 use Exception;
 
+function sendNotificationMails()
+{
+
+}
+
 /**
  * Returns a user's notifications.
  *
@@ -70,13 +75,15 @@ function readNotifications(array $notifications): void
     $now = new DateTime();
 
     foreach ($notifications as $notification) {
-        if ($notification->getReadDate()) {
+        $clonedNotification = clone $notification;
+
+        if ($clonedNotification->getReadDate()) {
             continue;
         }
 
-        $notification->setReadDate($now);
+        $clonedNotification->setReadDate($now);
         try {
-            getNotificationModel()->save($notification);
+            getNotificationModel()->save($clonedNotification);
         } catch (Exception $e) {
             // TODO handle exception
         }

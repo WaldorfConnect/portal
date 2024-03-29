@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-    <!-- Compiled with Bootstrap Email version: 1.4.0 -->
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="x-apple-disable-message-reformatting">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -167,7 +166,7 @@
                                                 <div class="card-footer footer-plain text-center"
                                                      style="background-color: transparent; border-top-style: none;"
                                                      align="center">
-                                                    <small>&#169; 2023 WaldorfConnect<br>
+                                                    <small>&#169; 2024 WaldorfConnect<br>
                                                         <a href="https://waldorfconnect.de/impressum"
                                                            style="color: #0d6efd;">Impressum</a> &#8211;
                                                         <a href="https://waldorfconnect.de/datenschutz"

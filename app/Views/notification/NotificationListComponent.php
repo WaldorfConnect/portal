@@ -9,17 +9,18 @@ $notifications = getNotificationsByUserId(getCurrentUser()->getId(), $limit, tru
 <?php if (count($notifications) > 0): ?>
     <ul class="list-group">
         <?php foreach ($notifications as $notification): ?>
-            <li class="list-group-item">
+            <li class="list-group-item <?= $notification->getReadDate() ? '' : 'notification-unread' ?>">
                 <div class="row">
-                    <div class="col-8">
+                    <div class="col-10">
                         <h5 class="mb-2"><?= $notification->getSubject() ?></h5>
                         <p><?= $notification->getBody() ?></p>
+                        <span class="notification-meta"><?= $notification->getCreateDate()->format('d.m.Y H:i') ?>
+                            &ndash; <?= $notification->getReadDate() ? 'gelesen' : 'ungelesen' ?></span>
                     </div>
-                    <div class="col-4 text-end">
-                        <p class="mb-1"><?= $notification->getCreateDate()->format('d.m. H:i:s') ?></p>
-                        <?= form_open(base_url("notification/{$notification->getId()}/delete"), 'method="post"') ?>
-                        <button type="submit" class="btn btn-outline-danger btn-block btn-lg">
-                            <i class="fas fa-times"></i>
+                    <div class="col-2 text-end">
+                        <?= form_open(base_url("notification/{$notification->getId()}/delete")) ?>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
                         </button>
                         <?= form_close() ?>
                     </div>

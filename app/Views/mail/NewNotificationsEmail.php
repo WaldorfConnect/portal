@@ -69,6 +69,12 @@
                 line-height: 8px !important;
                 height: 8px !important
             }
+
+            .s-5 > tbody > tr > td {
+                font-size: 20px !important;
+                line-height: 20px !important;
+                height: 20px !important
+            }
         }
     </style>
 </head>
@@ -132,10 +138,91 @@
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
-                                                                bitte best&#228;tige deine E-Mail-Adresse, indem du auf
-                                                                den untenstehenden Button dr&#252;ckst!<br>
-                                                                <br>
+                                                                du hast neue Benachrichtigungen erhalten!
                                                             </p>
+                                                            <table class="s-5 w-full" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;"
+                                                                   width="100%">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 20px; font-size: 20px; width: 100%; height: 20px; margin: 0;"
+                                                                        align="left" width="100%" height="20">
+                                                                        &#160;
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <table class="hr" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 24px; font-size: 16px; border-top-width: 1px; border-top-color: #e2e8f0; border-top-style: solid; height: 1px; width: 100%; margin: 0;"
+                                                                        align="left">
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <table class="s-5 w-full" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;"
+                                                                   width="100%">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 20px; font-size: 20px; width: 100%; height: 20px; margin: 0;"
+                                                                        align="left" width="100%" height="20">
+                                                                        &#160;
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <h4 style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;"
+                                                                align="left"><?= $notification->getSubject() ?></h4>
+                                                            <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
+                                                               align="left"><?= substr_replace($notification->getBody(), '...', 20) ?></p>
+                                                            <small><?= $notification->getCreateDate()->format('d.m.Y H:i') ?></small>
+                                                            <table class="s-5 w-full" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;"
+                                                                   width="100%">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 20px; font-size: 20px; width: 100%; height: 20px; margin: 0;"
+                                                                        align="left" width="100%" height="20">
+                                                                        &#160;
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <table class="hr" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 24px; font-size: 16px; border-top-width: 1px; border-top-color: #e2e8f0; border-top-style: solid; height: 1px; width: 100%; margin: 0;"
+                                                                        align="left">
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <table class="s-5 w-full" role="presentation" border="0"
+                                                                   cellpadding="0" cellspacing="0" style="width: 100%;"
+                                                                   width="100%">
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td style="line-height: 20px; font-size: 20px; width: 100%; height: 20px; margin: 0;"
+                                                                        align="left" width="100%" height="20">
+                                                                        &#160;
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <?php if ($count == 1): ?>
+                                                                <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
+                                                                   align="left">... und eine weitere
+                                                                    Benachrichtigung</p>
+                                                            <?php elseif ($count > 1): ?>
+                                                                <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
+                                                                   align="left">... und <?= $count ?> weitere
+                                                                    Benachrichtigungen</p>
+                                                            <?php endif; ?>
+                                                            <br>
                                                             <table class="btn btn-primary" role="presentation"
                                                                    border="0" cellpadding="0" cellspacing="0"
                                                                    style="border-radius: 6px; border-collapse: separate !important;">
@@ -143,19 +230,20 @@
                                                                 <tr>
                                                                     <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;"
                                                                         align="center" bgcolor="#0d6efd">
-                                                                        <a href="<?= base_url('user/confirm') . '?token=' . $user->getToken() ?>"
+                                                                        <a href="https://portal.waldorfconnect.de/notifications"
                                                                            style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">
-                                                                            E-Mail-Adresse best&#228;tigen
+                                                                            Jetzt ansehen!
                                                                         </a>
                                                                     </td>
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
                                                             <br>
-                                                            <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
-                                                               align="left"><b>Du bist nicht bei WaldorfConnect
-                                                                    angemeldet?</b> Dann ignoriere diese Nachricht bitte
-                                                                einfach!</p>
+                                                            <small><b>Du m&#246;chtest nicht mehr &#252;ber neue
+                                                                    Benachrichtigungen informiert werden?</b> <a
+                                                                        href="https://portal.waldorfconnect.de/user/settings"
+                                                                        style="color: #0d6efd;"> Dann deaktiviere
+                                                                    E-Mail-Benachrichtigungen hier.</a></small>
                                                         </td>
                                                     </tr>
                                                     </tbody>

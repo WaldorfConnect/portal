@@ -135,6 +135,16 @@ textarea.log {
     display: inline-flex !important;
 }
 
-.btn-group+.btn-group {
+.btn-group + .btn-group {
     margin-left: -5px !important;
+}
+
+.list-group-item + .notification-unread {
+    border-left: .625rem solid #9bb564 !important;
+    padding-left: .625rem;
+}
+
+span.notification-meta {
+    font-size: .875em;
+    width: 100%;
 }
