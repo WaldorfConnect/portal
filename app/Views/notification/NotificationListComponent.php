@@ -3,7 +3,7 @@
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getNotificationsByUserId;
 
-$notifications = getNotificationsByUserId(getCurrentUser()->getId(), $limit, true);
+$notifications = getNotificationsByUserId(getCurrentUser()->getId(), $limit, null, true);
 ?>
 
 <?php if (count($notifications) > 0): ?>

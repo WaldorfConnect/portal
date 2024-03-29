@@ -177,7 +177,8 @@
                                                             <h4 style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;"
                                                                 align="left"><?= $notification->getSubject() ?></h4>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
-                                                               align="left"><?= substr_replace($notification->getBody(), '...', 20) ?></p>
+                                                               align="left"><?= substr_replace($notification->getBody(), '...', 70) ?></p>
+                                                            <br>
                                                             <small><?= $notification->getCreateDate()->format('d.m.Y H:i') ?></small>
                                                             <table class="s-5 w-full" role="presentation" border="0"
                                                                    cellpadding="0" cellspacing="0" style="width: 100%;"

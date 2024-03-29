@@ -23,6 +23,7 @@ class User extends Entity
         'email_confirmed' => false,
         'password_reset' => false,
         'image_id' => null,
+        'email_notification' => true,
         'token' => null,
         'registration_date' => null,
         'accept_date' => null,
@@ -41,6 +42,7 @@ class User extends Entity
         'email_confirmed' => 'boolean',
         'password_reset' => 'boolean',
         'image_id' => 'string',
+        'email_notification' => 'boolean',
         'token' => 'string',
         'registration_date' => 'timestamp',
         'accept_date' => 'timestamp',
@@ -340,6 +342,16 @@ class User extends Entity
     public function setImageId(?string $imageId): void
     {
         $this->attributes['image_id'] = $imageId;
+    }
+
+    public function wantsEmailNotification(): bool
+    {
+        return $this->attributes['email_notification'];
+    }
+
+    public function setEmailNotification(bool $emailNotification): void
+    {
+        $this->attributes['email_notification'] = $emailNotification;
     }
 
     public function getRegistrationDate(): ?DateTime

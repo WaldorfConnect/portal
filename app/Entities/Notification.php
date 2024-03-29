@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
 use DateTime;
+use DateTimeInterface;
 
 class Notification extends Entity
 {
@@ -14,7 +15,7 @@ class Notification extends Entity
         'body' => null,
         'created_at' => null,
         'read_at' => null,
-        'deleted_at' => null
+        'mail_at' => null
     ];
 
     protected $casts = [
@@ -24,7 +25,7 @@ class Notification extends Entity
         'body' => 'string',
         'created_at' => 'timestamp',
         'read_at' => 'timestamp',
-        'deleted_at' => 'timestamp'
+        'mail_at' => 'timestamp'
     ];
 
     /**
@@ -101,7 +102,7 @@ class Notification extends Entity
      * @param DateTime $time
      * @return void
      */
-    public function setCreateDate(DateTime $time): void
+    public function setCreateDate(DateTimeInterface $time): void
     {
         $this->attributes['created_at'] = $time->format('Y-m-d H:i:s');
     }
@@ -121,8 +122,28 @@ class Notification extends Entity
      * @param DateTime $time
      * @return void
      */
-    public function setReadDate(DateTime $time): void
+    public function setReadDate(DateTimeInterface $time): void
     {
         $this->attributes['read_at'] = $time->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getMailDate(): ?DateTime
+    {
+        $formattedDate = $this->attributes['mail_at'];
+        if (!$formattedDate) return null;
+
+        return DateTime::createFromFormat('Y-m-d H:i:s', $formattedDate);
+    }
+
+    /**
+     * @param DateTime $time
+     * @return void
+     */
+    public function setMailDate(DateTimeInterface $time): void
+    {
+        $this->attributes['mail_at'] = $time->format('Y-m-d H:i:s');
     }
 }

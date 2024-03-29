@@ -27,6 +27,9 @@ $routes->get('/user/profile', 'UserController::profile', ['filter' => LoggedInFi
 $routes->post('/user/profile', 'UserController::handleProfile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile/resend', 'UserController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
 
+$routes->get('/user/settings', 'UserController::settings', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/settings', 'UserController::handleSettings', ['filter' => LoggedInFilter::class]);
+
 $routes->get('/user/confirm', 'UserController::handleConfirm');
 
 $routes->get('/organisations', 'OrganisationController::list', ['filter' => LoggedInFilter::class]);
@@ -77,5 +80,6 @@ $routes->get('/notifications', 'NotificationController::index', ['filter' => Log
 $routes->post('/notification/(:num)/delete', 'NotificationController::handleDelete/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->cli('/cron_mail', 'CronController::mail');
+$routes->cli('/cron_notifications', 'CronController::notifications');
 $routes->cli('/cron_ldap', 'CronController::ldap');
 $routes->cli('/cron_nextcloud', 'CronController::nextcloud');

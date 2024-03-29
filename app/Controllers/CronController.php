@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\CLI\CLI;
 use Exception;
 use function App\Helpers\openLDAPConnection;
+use function App\Helpers\queueNotificationMails;
 use function App\Helpers\syncLDAPOrganisations;
 use function App\Helpers\syncLDAPUsers;
 use function App\Helpers\syncOrganisationFolders;
@@ -27,6 +28,24 @@ class CronController extends BaseController
             CLI::error("Error working mail queue: {$e}");
         } finally {
             $this->releaseLock('mail');
+        }
+    }
+
+    public function notifications(): void
+    {
+        if (!$this->acquireLock('notifications')) {
+            return;
+        }
+
+        $this->printTimestamp();
+
+        try {
+            CLI::write('Queueing notification mails...');
+            queueNotificationMails();
+        } catch (Exception $e) {
+            CLI::error("Error queueing notification mails: {$e}");
+        } finally {
+            $this->releaseLock('notifications');
         }
     }
 

@@ -199,4 +199,24 @@ class UserController extends BaseController
         // If known redirect to profile page
         return redirect('user/profile');
     }
+
+    public function settings(): string
+    {
+        return $this->render('user/SettingsView', ['user' => getCurrentUser()]);
+    }
+
+    public function handleSettings(): RedirectResponse
+    {
+        $self = getCurrentUser();
+
+        $emailNotification = $this->request->getPost('emailNotification');
+        $self->setEmailNotification(!is_null($emailNotification));
+
+        try {
+            saveUser($self);
+            return redirect('user/settings')->with('success', 'Einstellungen gespeichert.');
+        } catch (Exception $e) {
+            return redirect('user/settings')->with('error', $e);
+        }
+    }
 }

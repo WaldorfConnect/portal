@@ -4,12 +4,63 @@ namespace App\Helpers;
 
 use App\Entities\Notification;
 use App\Models\NotificationModel;
+use CodeIgniter\CLI\CLI;
 use DateTime;
+use DateTimeImmutable;
 use Exception;
 
-function sendNotificationMails()
+/**
+ * Queues notifications mails.
+ *
+ * @return void
+ */
+function queueNotificationMails(): void
 {
+    $now = new DateTimeImmutable();
+    foreach (getUsers() as $user) {
+        // Skip if users has email notifications disabled
+        if (!$user->wantsEmailNotification())
+            continue;
 
+        $unreadNotifications = getNotificationsByUserId($user->getId(), 0, false);
+        $unreadNotificationsCount = count($unreadNotifications);
+
+        $firstNotification = null;
+        $mail = false;
+        foreach ($unreadNotifications as $notification) {
+            if (!$firstNotification) {
+                $firstNotification = $notification;
+            }
+
+            if (is_null($notification->getMailDate()) || $now->diff($notification->getMailDate())->days >= 3) {
+                try {
+                    $notification->setMailDate($now);
+                    getNotificationModel()->save($notification);
+
+                    $mail = true;
+                } catch (Exception $e) {
+                    // TODO handle exception
+                }
+            }
+        }
+
+        if ($mail) {
+            if ($unreadNotificationsCount == 1) {
+                $subject = 'eine ungelesene Benachrichtigung';
+            } else {
+                $subject = $unreadNotificationsCount . ' ungelesene Benachrichtigungen';
+            }
+
+            try {
+                queueMail($user->getId(), $subject,
+                    view('mail/NewNotificationsEmail', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
+
+                CLI::write("Queueing notification mail for {$user->getUsername()} ...");
+            } catch (Exception $e) {
+                // TODO handle exception
+            }
+        }
+    }
 }
 
 /**
@@ -17,20 +68,26 @@ function sendNotificationMails()
  *
  * @param int $userId
  * @param int $limit
- * @param bool $read
+ * @param bool|null $isRead
+ * @param bool $setRead
  * @return Notification[]
  */
-function getNotificationsByUserId(int $userId, int $limit = 0, bool $read = false): array
+function getNotificationsByUserId(int $userId, int $limit = 0, bool $isRead = null, bool $setRead = false): array
 {
     $model = getNotificationModel()
         ->where('user_id', $userId)
         ->orderBy('created_at', 'DESC');
+
+    if (!is_null($isRead)) {
+        $model = $model->where('read_at' . ($isRead ? ' IS NOT NULL' : ''));
+    }
+
     if ($limit > 0) {
         $model = $model->limit($limit);
     }
 
     $notifications = $model->findAll();
-    if ($read) {
+    if ($setRead) {
         readNotifications($notifications);
     }
 
@@ -43,9 +100,9 @@ function getNotificationsByUserId(int $userId, int $limit = 0, bool $read = fals
  * @param int $userId
  * @return int
  */
-function countNotificationsByUserId(int $userId): int
+function countUnreadNotificationsByUserId(int $userId): int
 {
-    return getNotificationModel()->where('user_id', $userId)->countAllResults();
+    return getNotificationModel()->where('user_id', $userId)->where('read_at')->countAllResults();
 }
 
 /**

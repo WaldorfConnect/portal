@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\countNotificationsByUserId;
+use function App\Helpers\countUnreadNotificationsByUserId;
 use function App\Helpers\getCurrentUser;
 
 ?>
@@ -52,7 +52,7 @@ use function App\Helpers\getCurrentUser;
                 <li class="nav-item">
                     <a class="nav-link" href="<?= base_url('notifications') ?>">
                         <i class="fa fa-bell position-relative">
-                            <?php if (($count = countNotificationsByUserId($user->getId())) > 0): ?>
+                            <?php if (($count = countUnreadNotificationsByUserId($user->getId())) > 0): ?>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?= $count ?>
                                     <span class="visually-hidden">offene Benachrichtigungen</span>
                                 </span>
@@ -66,6 +66,9 @@ use function App\Helpers\getCurrentUser;
                         <i class="fa fa-user"></i> <?= $user->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="<?= base_url('user/settings') ?>">
+                            Einstellungen
+                        </a>
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
                             Profil bearbeiten
                         </a>
