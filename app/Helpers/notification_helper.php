@@ -46,14 +46,14 @@ function queueNotificationMails(): void
 
         if ($mail) {
             if ($unreadNotificationsCount == 1) {
-                $subject = 'eine ungelesene Benachrichtigung';
+                $subject = 'Eine ungelesene Benachrichtigung';
             } else {
                 $subject = $unreadNotificationsCount . ' ungelesene Benachrichtigungen';
             }
 
             try {
                 queueMail($user->getId(), $subject,
-                    view('mail/NewNotificationsEmail', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
+                    view('mail/UnreadNotifications', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
 
                 CLI::write("Queueing notification mail for {$user->getUsername()} ...");
             } catch (Exception $e) {

@@ -138,7 +138,7 @@
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
-                                                                du hast neue Benachrichtigungen erhalten!
+                                                                du hast ungelesene Benachrichtigungen!
                                                             </p>
                                                             <table class="s-5 w-full" role="presentation" border="0"
                                                                    cellpadding="0" cellspacing="0" style="width: 100%;"

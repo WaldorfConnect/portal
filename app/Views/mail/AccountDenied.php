@@ -155,9 +155,8 @@
                                                                align="left"><b>Du hast dich nicht bei WaldorfConnect
                                                                     registriert?</b> Dann wende dich bitte umgehend an
                                                                 unseren <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
-                                                                        style="color: #0d6efd;">organisatorischen
-                                                                    Hilfedienst</a>!</p>
+                                                                        href="https://waldorfconnect.de/hilfedienst"
+                                                                        style="color: #0d6efd;">Hilfedienst</a>!</p>
                                                         </td>
                                                     </tr>
                                                     </tbody>

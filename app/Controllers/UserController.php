@@ -6,6 +6,7 @@ use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use function App\Helpers\createImageValidationRule;
+use function App\Helpers\createNotification;
 use function App\Helpers\deleteImage;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
@@ -74,6 +75,7 @@ class UserController extends BaseController
                 }
 
                 $user->setPassword(hashSSHA($password));
+                queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
             }
 
             saveUser($user);
@@ -115,7 +117,7 @@ class UserController extends BaseController
     public function handleResetPassword(): string|RedirectResponse
     {
         $password = trim($this->request->getPost('password'));
-        $confirmedPassword = trim($this->request->getPost('password'));
+        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
         $token = $this->request->getPost('token');
 
         // Are we performing a legitimate change?
@@ -132,6 +134,7 @@ class UserController extends BaseController
 
                 try {
                     saveUser($user);
+                    queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
                 } catch (Exception $e) {
                     return $this->render('user/PasswordSetView', ['user' => $user, 'error' => $e], false);
                 }
@@ -184,10 +187,10 @@ class UserController extends BaseController
             try {
                 queueMail($user->getId(), 'Erwarte Freigabe', view('mail/PendingAcceptEmail', ['user' => $user]));
 
-                // Send announcement to responsible admins
+                // Send announcement to admins
                 foreach (getUsers() as $target) {
-                    if ($target->mayAccept($user)) {
-                        queueMail($target->getId(), 'Neuer Benutzer', view('mail/AnnounceRegistration', ['user' => $target, 'target' => $user]));
+                    if ($target->isAdmin()) {
+                        createNotification($target->getId(), 'Neuer Benutzer', $user->getName() . ' hat sich erfolgreich registriert und wartet auf Freigabe.');
                     }
                 }
             } catch (Exception $e) {
@@ -211,6 +214,9 @@ class UserController extends BaseController
 
         $emailNotification = $this->request->getPost('emailNotification');
         $self->setEmailNotification(!is_null($emailNotification));
+
+        $emailNewsletter = $this->request->getPost('emailNewsletter');
+        $self->setEmailNewsletter(!is_null($emailNewsletter));
 
         try {
             saveUser($self);

@@ -154,8 +154,9 @@
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left"><b>Du bist nicht bei WaldorfConnect
-                                                                    angemeldet?</b> Dann ignoriere diese Nachricht bitte
-                                                                einfach!</p>
+                                                                    angemeldet?</b> Dann wende dich bitte umgehend an
+                                                                unseren <a href="https://waldorfconnect.de/hilfedienst/"
+                                                                           style="color: #0d6efd;">Hilfedienst</a>!</p>
                                                         </td>
                                                     </tr>
                                                     </tbody>

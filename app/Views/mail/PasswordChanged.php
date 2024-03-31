@@ -132,26 +132,17 @@
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
                                                                align="left">
-                                                                ein neuer Nutzer hat sich bei WaldorfConnect
-                                                                registriert.<br>
-                                                                <br>
-                                                                <b>Vor- und Nachname:</b> <?= $target->getName() ?><br>
-                                                                <br>
-                                                                Um diesen Registrierungswunsch zu bearbeiten, <a
-                                                                        href="https://portal.waldorfconnect.de/admin/users"
-                                                                        style="color: #0d6efd;">klicke bitte hier</a>.
+                                                                dein Passwort wurde ge&#228;ndert!<br>
                                                                 <br>
                                                             </p>
                                                             <br>
                                                             <p style="line-height: 24px; font-size: 16px; width: 100%; margin: 0;"
-                                                               align="left">Du erh&#228;ltst diese Nachricht als
-                                                                Mitglied des Administrationsteams f&#252;r
-                                                                WaldorfConnect.
-                                                                <b>Du bist kein Admin?</b> Dann wende dich bitte
-                                                                umgehend an unseren <a
-                                                                        href="https://waldorfconnect.de/hilfedienst/organisatorischer-hilfedienst/"
-                                                                        style="color: #0d6efd;">organisatorischen
-                                                                    Hilfedienst</a>!</p>
+                                                               align="left"><b>Du hast dein Passwort nicht
+                                                                    geändert?</b> Dann wende dich bitte umgehend an
+                                                                unseren <a
+                                                                        href="https://waldorfconnect.de/hilfedienst/"
+                                                                        style="color: #0d6efd;">Hilfedienst</a>!</p>
+                                                            </p>
                                                         </td>
                                                     </tr>
                                                     </tbody>
