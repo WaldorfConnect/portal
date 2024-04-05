@@ -38,6 +38,8 @@
                 <a class="btn btn-link text-dark"
                    href="<?= base_url('/user/reset_password') ?>">Passwort vergessen?</a>
                 <a class="btn btn-link text-dark"
+                   href="https://waldorfconnect.de/faq#forgot_username">Benutzername vergessen?</a>
+                <a class="btn btn-link text-dark"
                    href="<?= base_url('/register') ?>">Noch kein Konto? Jetzt registrieren!</a>
             </div>
         </div>
