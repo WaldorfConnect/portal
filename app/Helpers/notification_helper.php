@@ -82,11 +82,7 @@ function getNotificationsByUserId(int $userId, int $limit = 0, bool $isRead = nu
         $model = $model->where('read_at' . ($isRead ? ' IS NOT NULL' : ''));
     }
 
-    if ($limit > 0) {
-        $model = $model->limit($limit);
-    }
-
-    $notifications = $model->findAll();
+    $notifications = $model->findAll($limit);
     if ($setRead) {
         readNotifications($notifications);
     }
