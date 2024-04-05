@@ -18,8 +18,9 @@ class Organisation extends Entity
         'region_id' => null,
         'address' => null,
         'description' => null,
-        'website_url' => null,
+        'website' => null,
         'email' => null,
+        'phone' => null,
         'image_id' => null,
         'logo_id' => null,
         'folder_id' => null,
@@ -33,8 +34,9 @@ class Organisation extends Entity
         'region_id' => 'integer',
         'address' => 'string',
         'description' => 'string',
-        'website_url' => 'string',
+        'website' => 'string',
         'email' => 'string',
+        'phone' => 'string',
         'image_id' => 'string',
         'logo_id' => 'string',
         'folder_id' => 'integer'
@@ -152,14 +154,14 @@ class Organisation extends Entity
     /**
      * @return ?string
      */
-    public function getWebsiteUrl(): ?string
+    public function getWebsite(): ?string
     {
-        return $this->attributes['website_url'];
+        return $this->attributes['website'];
     }
 
-    public function setWebsiteUrl(string $websiteUrl): void
+    public function setWebsite(string $websiteUrl): void
     {
-        $this->attributes['website_url'] = $websiteUrl;
+        $this->attributes['website'] = $websiteUrl;
     }
 
     /**
@@ -173,6 +175,19 @@ class Organisation extends Entity
     public function setEmail(string $email): void
     {
         $this->attributes['email'] = $email;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getPhone(): ?string
+    {
+        return $this->attributes['phone'];
+    }
+
+    public function setPhone(string $phone): void
+    {
+        $this->attributes['phone'] = $phone;
     }
 
     /**

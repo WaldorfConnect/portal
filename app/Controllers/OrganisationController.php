@@ -181,20 +181,35 @@ class OrganisationController extends BaseController
         }
 
         $name = $this->request->getPost('name');
-        $websiteUrl = $this->request->getPost('websiteUrl');
+        $address = $this->request->getPost('address');
+        $website = $this->request->getPost('website');
+        $email = $this->request->getPost('email');
+        $phone = $this->request->getPost('phone');
         $regionId = $this->request->getPost('region');
         $description = $this->request->getPost('description');
 
         if ($self->isAdmin()) {
             $organisation->setName($name);
 
-            if ($websiteUrl) {
-                $organisation->setWebsiteUrl($websiteUrl);
-            }
-
             if ($regionId) {
                 $organisation->setRegionId($regionId);
             }
+        }
+
+        if ($address) {
+            $organisation->setAddress($address);
+        }
+
+        if ($website) {
+            $organisation->setWebsite($website);
+        }
+
+        if ($email) {
+            $organisation->setEmail($email);
+        }
+
+        if ($phone) {
+            $organisation->setPhone($phone);
         }
 
         if ($description) {

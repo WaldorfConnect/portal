@@ -77,9 +77,9 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
     <div class="form-group row mb-3">
         <label for="inputWebsite" class="col-form-label col-md-4 col-lg-3">Website</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputWebsite" name="websiteUrl" type="url"
+            <input class="form-control" id="inputWebsite" name="website" type="url"
                    placeholder="https://example.com"
-                   value="<?= $organisation->getWebsiteUrl() ?? '' ?>">
+                   value="<?= $organisation->getWebsite() ?? '' ?>">
         </div>
     </div>
 
@@ -89,6 +89,15 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
             <input class="form-control" id="inputEmail" name="email" type="email"
                    placeholder="mail@example.com"
                    value="<?= $organisation->getEmail() ?? '' ?>">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="inputPhone" class="col-form-label col-md-4 col-lg-3">Telefon</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputPhone" name="phone" type="tel"
+                   placeholder="+49 123 456789"
+                   value="<?= $organisation->getPhone() ?? '' ?>">
         </div>
     </div>
 

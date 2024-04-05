@@ -82,7 +82,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 </tr>
                             <?php endif; ?>
 
-                            <?php if ($url = $organisation->getWebsiteUrl()): ?>
+                            <?php if ($url = $organisation->getWebsite()): ?>
                                 <tr>
                                     <th>Website:&nbsp;</th>
                                     <td>
@@ -97,6 +97,15 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                     <th>E-Mail:&nbsp;</th>
                                     <td>
                                         <a href="mailto:<?= $email ?>"><?= $email ?></a>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <?php if ($phone = $organisation->getPhone()): ?>
+                                <tr>
+                                    <th>Telefon:&nbsp;</th>
+                                    <td>
+                                        <a href="tel:<?= $phone ?>"><?= $phone ?></a>
                                     </td>
                                 </tr>
                             <?php endif; ?>

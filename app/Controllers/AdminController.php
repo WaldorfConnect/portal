@@ -184,7 +184,7 @@ class AdminController extends BaseController
         }
 
         $organisation = createOrganisation($name, $shortName, $regionId);
-        $organisation->setWebsiteUrl($websiteUrl);
+        $organisation->setWebsite($websiteUrl);
 
         try {
             // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
