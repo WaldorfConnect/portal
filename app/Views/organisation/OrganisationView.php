@@ -71,12 +71,32 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 <th>Name:&nbsp;</th>
                                 <td><?= $organisation->getName() ?></td>
                             </tr>
-                            <?php if (!empty($organisation->getWebsiteUrl())): ?>
+
+                            <?php if ($address = $organisation->getAddress()): ?>
+                                <tr>
+                                    <th>Adresse:&nbsp;</th>
+                                    <td>
+                                        <a href="https://www.openstreetmap.org/search?query=<?= $address ?>"
+                                           target="_blank"><?= $address ?></a>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <?php if ($url = $organisation->getWebsiteUrl()): ?>
                                 <tr>
                                     <th>Website:&nbsp;</th>
                                     <td>
-                                        <a href="<?= $organisation->getWebsiteUrl() ?>"
-                                           target="_blank"><?= parse_url($organisation->getWebsiteUrl())['host'] ?></a>
+                                        <a href="<?= $url ?>"
+                                           target="_blank"><?= parse_url($url)['host'] ?></a>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+
+                            <?php if ($email = $organisation->getEmail()): ?>
+                                <tr>
+                                    <th>E-Mail:&nbsp;</th>
+                                    <td>
+                                        <a href="mailto:<?= $email ?>"><?= $email ?></a>
                                     </td>
                                 </tr>
                             <?php endif; ?>

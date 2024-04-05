@@ -19,8 +19,7 @@ class Organisation extends Entity
         'address' => null,
         'description' => null,
         'website_url' => null,
-        'email_office' => null,
-        'email_students' => null,
+        'email' => null,
         'image_id' => null,
         'logo_id' => null,
         'folder_id' => null,
@@ -35,8 +34,7 @@ class Organisation extends Entity
         'address' => 'string',
         'description' => 'string',
         'website_url' => 'string',
-        'email_office' => 'string',
-        'email_students' => 'string',
+        'email' => 'string',
         'image_id' => 'string',
         'logo_id' => 'string',
         'folder_id' => 'integer'
@@ -167,27 +165,14 @@ class Organisation extends Entity
     /**
      * @return ?string
      */
-    public function getEmailOffice(): ?string
+    public function getEmail(): ?string
     {
-        return $this->attributes['email_office'];
+        return $this->attributes['email'];
     }
 
-    public function setEmailOffice(string $emailOffice): void
+    public function setEmail(string $email): void
     {
-        $this->attributes['email_office'] = $emailOffice;
-    }
-
-    /**
-     * @return ?string
-     */
-    public function getEmailStudents(): ?string
-    {
-        return $this->attributes['email_students'];
-    }
-
-    public function setEmailStudents(string $emailStudents): void
-    {
-        $this->attributes['email_students'] = $emailStudents;
+        $this->attributes['email'] = $email;
     }
 
     /**
