@@ -122,6 +122,12 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
             <div class="card-header">Aktionen</div>
             <div class="card-body">
                 <?php if ($membership = getMembership($currentUser->getId(), $organisation->getId())): ?>
+                    <a class="btn btn-primary btn-lg btn-block mb-3"
+                       href="https://cloud.waldorfconnect.de/apps/files/files?dir=/<?= $organisation->getFolderMountPoint() ?>">
+                        <i class="fas fa-cloud"></i> Ordner in Cloud öffnen
+                    </a>
+
+                    <hr>
                     <?= form_open("organisation/{$organisation->getId()}/leave", ['onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich verlassen?');"]) ?>
                     <?= form_hidden('id', $organisation->getId()) ?>
                     <button type="submit" class="btn btn-danger btn-lg btn-block mb-3">
