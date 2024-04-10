@@ -173,14 +173,18 @@ class AdminController extends BaseController
 
     public function handleCreateOrganisation(): RedirectResponse
     {
-        $name = $this->request->getPost('name');
-        $shortName = $this->request->getPost('shortName');
-        $websiteUrl = $this->request->getPost('websiteUrl');
+        $name = trim($this->request->getPost('name'));
+        $shortName = trim($this->request->getPost('shortName'));
+        $websiteUrl = trim($this->request->getPost('websiteUrl'));
         $regionId = $this->request->getPost('region');
         $region = getRegionById($regionId);
 
+        if (str_contains($name, '/') || str_contains($shortName, '/')) {
+            return redirect()->back()->withInput()->with('error', 'Ungültige Zeichen im Organisationsnamen.');
+        }
+
         if (!$region) {
-            return redirect('admin/organisations')->with('error', 'Unbekannte Region.');
+            return redirect()->back()->withInput()->with('error', 'Unbekannte Region.');
         }
 
         $organisation = createOrganisation($name, $shortName, $regionId);
@@ -189,10 +193,10 @@ class AdminController extends BaseController
         try {
             // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
             if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-                return redirect('admin/organisations')->with('error', $this->validator->getErrors());
+                return redirect()->back()->withInput()->with('error', $this->validator->getErrors());
             }
             if (!$this->validate(createImageValidationRule('image'))) {
-                return redirect('admin/organisations')->with('error', $this->validator->getErrors());
+                return redirect()->back()->withInput()->with('error', $this->validator->getErrors());
             }
 
             $logoFile = $this->request->getFile('logo');
@@ -215,7 +219,7 @@ class AdminController extends BaseController
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
         } catch (Exception $e) {
-            return redirect('admin/organisations')->with('error', $e);
+            return redirect()->back()->withInput()->with('error', $e);
         }
     }
 
