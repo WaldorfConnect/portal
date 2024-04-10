@@ -22,8 +22,15 @@ $entries = getSearchEntries($query);
 
 <div class="row justify-content-center">
     <div class="col-lg-10 col-sm-12">
-        <ul class="list-group">
-            <?php if (count($entries) > 0): ?>
+        <div class="text-center mb-5">
+            <p><b>Du suchst eine Datei oder einen Ordner?</b><br>Verwende hierfür bitte die Suchfunktion in <a
+                        href="https://cloud.waldorfconnect.de/">unserer Cloud</a>.</p>
+        </div>
+
+        <hr>
+
+        <?php if (count($entries) > 0): ?>
+            <ul class="list-group">
                 <?php foreach ($entries as $entry): ?>
                     <li class="list-group-item">
                         <div class="flex-container">
@@ -41,11 +48,11 @@ $entries = getSearchEntries($query);
                         </div>
                     </li>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <div class="text-center">
-                    <h3>Keine Suchergebnisse gefunden!</h3>
-                </div>
-            <?php endif; ?>
-        </ul>
+            </ul>
+        <?php else: ?>
+            <div class="text-center">
+                <h3>Keine Suchergebnisse gefunden!</h3>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
