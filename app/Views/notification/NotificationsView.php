@@ -9,9 +9,10 @@
 
 <h1 class="header">Benachrichtigungen</h1>
 
-<p class="text-center">Du möchtest nicht mehr per E-Mail über ungelesene Benachrichtigungen informiert werden?<br>
+<p class="text-center mb-5">Du möchtest nicht mehr per E-Mail über ungelesene Benachrichtigungen informiert werden?<br>
     <a href="<?= base_url('user/settings') ?>">Dann ändere hier deine Benutzereinstellungen.</a></p>
-<br>
+
+<hr>
 
 <?php
 

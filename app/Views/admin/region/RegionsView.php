@@ -19,24 +19,6 @@ $currentUser = getCurrentUser();
     <p>
         Hier werden alle Regionen angezeigt, in denen sich Gruppen bzw. Schulen befinden können.
     </p>
-
-    <?php if ($success = session('error')): ?>
-        <br><br>
-        <div class="col-md-12">
-            <div class="alert alert-danger">
-                <?= $success ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($success = session('success')): ?>
-        <br><br>
-        <div class="col-md-12">
-            <div class="alert alert-success">
-                <?= $success ?>
-            </div>
-        </div>
-    <?php endif; ?>
 </div>
 
 <div class="row">

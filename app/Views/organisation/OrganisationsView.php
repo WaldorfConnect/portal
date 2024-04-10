@@ -9,22 +9,6 @@
 
 <h1 class="header">Alle Organisationen</h1>
 
-<?php if ($success = session('error')): ?>
-    <div class="col-md-12">
-        <div class="alert alert-danger">
-            <?= $success ?>
-        </div>
-    </div>
-<?php endif; ?>
-
-<?php if ($success = session('success')): ?>
-    <div class="col-md-12">
-        <div class="alert alert-success">
-            <?= $success ?>
-        </div>
-    </div>
-<?php endif; ?>
-
 <?php use function App\Helpers\countMembers;
 use function App\Helpers\getOrganisationsByRegionId;
 use function App\Helpers\getRegions;

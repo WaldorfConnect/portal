@@ -85,3 +85,25 @@ use function App\Helpers\getCurrentUser;
 
 <main>
     <div class="container">
+
+    <?php if ($errors = session('error')): ?>
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                <?php if (is_array($errors)): ?>
+                    <?php foreach ($errors as $error): ?>
+                        <?= esc($error) ?><br>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?= esc($errors) ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($success = session('success')): ?>
+        <div class="col-md-12">
+            <div class="alert alert-success">
+                <?= esc($success) ?>
+            </div>
+        </div>
+    <?php endif; ?>

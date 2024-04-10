@@ -19,20 +19,6 @@ $currentUser = getCurrentUser();
 </div>
 
 <div class="row">
-    <?php if ($error = session('error')): ?>
-        <div class="alert alert-danger mb-3">
-            <?= $error ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session('success')): ?>
-        <div class="alert alert-success mb-3">
-            Profil gespeichert.
-        </div>
-    <?php endif; ?>
-</div>
-
-<div class="row">
     <?= form_open('admin/user/edit') ?>
     <?= form_hidden('id', $user->getId()) ?>
 

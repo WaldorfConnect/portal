@@ -9,18 +9,6 @@ $self = getCurrentUser();
         <h1 class="header">Einstellungen</h1>
     </div>
 
-<?php if ($error = session('error')): ?>
-    <div class="alert alert-danger mb-3">
-        <?= $error ?>
-    </div>
-<?php endif; ?>
-
-<?php if ($success = session('success')): ?>
-    <div class="alert alert-success mb-3">
-        <?= $success ?>
-    </div>
-<?php endif; ?>
-
 <?= form_open_multipart('user/settings') ?>
     <h3 class="subheader">E-Mail</h3>
 

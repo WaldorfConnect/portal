@@ -8,20 +8,8 @@ $self = getCurrentUser();
     <div class="row">
         <h1 class="header">Profil bearbeiten</h1>
     </div>
+
 <?= form_open_multipart('user/profile') ?>
-
-<?php if ($error = session('error')): ?>
-    <div class="alert alert-danger mb-3">
-        <?= $error ?>
-    </div>
-<?php endif; ?>
-
-<?php if (session('success') && !session('resendSuccess')): ?>
-    <div class="alert alert-success mb-3">
-        Profil gespeichert.
-    </div>
-<?php endif; ?>
-
     <div class="form-group row align-items-end mb-3">
         <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Profilbild</label>
         <div class="col-md-2">

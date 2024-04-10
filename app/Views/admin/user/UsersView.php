@@ -22,22 +22,6 @@ use function App\Helpers\getUsers;
         versehentlich
         der Zugriff verweigert wird.
     </p>
-
-    <?php if ($success = session('error')): ?>
-        <div class="col-md-12">
-            <div class="alert alert-danger">
-                <?= $success ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($success = session('success')): ?>
-        <div class="col-md-12">
-            <div class="alert alert-success">
-                <?= $success ?>
-            </div>
-        </div>
-    <?php endif; ?>
 </div>
 
 <div class="row">

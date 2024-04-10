@@ -20,29 +20,6 @@ use function App\Helpers\getOrganisations;
     <p>
         Hier werden alle Organisationen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
     </p>
-
-    <?php $errors = session('error');
-    if ($errors): ?>
-        <div class="col-md-12">
-            <div class="alert alert-danger">
-                <?php if (is_array($errors)): ?>
-                    <?php foreach ($errors as $error): ?>
-                        <?= esc($error) ?><br>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <?= $errors ?>
-                <?php endif; ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($success = session('success')): ?>
-        <div class="col-md-12">
-            <div class="alert alert-success">
-                <?= $success ?>
-            </div>
-        </div>
-    <?php endif; ?>
 </div>
 
 <div class="row">
