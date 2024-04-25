@@ -66,15 +66,18 @@ use function App\Helpers\getCurrentUser;
                         <i class="fa fa-user"></i> <?= $user->getName() ?>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <a class="dropdown-item" href="<?= base_url('user/settings') ?>">
-                            Einstellungen
-                        </a>
                         <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
-                            Profil bearbeiten
+                            <i class="fas fa-user-edit"></i> Profil bearbeiten
+                        </a>
+                        <a class="dropdown-item" href="<?= base_url('user/settings') ?>">
+                            <i class="fas fa-cogs"></i> Einstellungen
+                        </a>
+                        <a class="dropdown-item" href="<?= base_url('user/security') ?>">
+                            <i class="fas fa-shield"></i> Sicherheit
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="<?= base_url('logout') ?>">
-                            Abmelden
+                            <i class="fas fa-sign-out"></i> Abmelden
                         </a>
                     </div>
                 </li>

@@ -30,11 +30,15 @@ $routes->post('/user/profile/resend', 'UserController::handleProfileResendConfir
 $routes->get('/user/settings', 'UserController::settings', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/settings', 'UserController::handleSettings', ['filter' => LoggedInFilter::class]);
 
+$routes->get('/user/security', 'UserController::security', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/security', 'UserController::handleSecurity', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/security/totp', 'UserController::handleTOTPEnable', ['filter' => LoggedInFilter::class]);
+
 $routes->get('/user/confirm', 'UserController::handleConfirm');
 
 $routes->get('/organisations', 'OrganisationController::list', ['filter' => LoggedInFilter::class]);
-$routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', ['filter' => LoggedInFilter::class]);
 
+$routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/join', 'OrganisationController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/leave', 'OrganisationController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/organisation/(:num)/add_member', 'OrganisationController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);

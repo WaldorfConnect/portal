@@ -6,6 +6,8 @@ use CodeIgniter\HTTP\RedirectResponse;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use lfkeitel\phptotp\Base32;
+use lfkeitel\phptotp\Totp;
 use function App\Helpers\checkSSHA;
 use function App\Helpers\createMembershipRequest;
 use function App\Helpers\createAndInsertUser;
@@ -35,10 +37,12 @@ class AuthenticationController extends BaseController
         return $this->render('auth/RegisterView', [], false);
     }
 
-    public function handleLogin(): RedirectResponse
+    public function handleLogin(): string|RedirectResponse
     {
         $username = trim($this->request->getPost('username'));
         $password = trim($this->request->getPost('password'));
+        $totp = trim($this->request->getPost('totp'));
+
         $user = getUserByUsername($username);
 
         $returnUrl = $this->request->getPost('return');
@@ -57,6 +61,17 @@ class AuthenticationController extends BaseController
         // Check if password is correct
         if (!checkSSHA($password, $user->getPassword())) {
             return $redirect->with('error', 'Passwort ungültig!');
+        }
+
+        if ($user->getTOTPSecret()) {
+            if (!$totp) {
+                return $this->render('auth/TOTPView', ['username' => $username, 'password' => $password, 'return' => $returnUrl], false);
+            }
+
+            $currentKey = (new Totp())->GenerateToken(Base32::decode($user->getTOTPSecret()));
+            if ($currentKey != $totp) {
+                return $this->render('auth/TOTPView', ['username' => $username, 'password' => $password, 'return' => $returnUrl, 'error' => 1], false);
+            }
         }
 
         // Check if logging is blocked by current status

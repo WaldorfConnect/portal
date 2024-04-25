@@ -46,6 +46,7 @@ class User extends Entity
         'email_notification' => 'boolean',
         'email_newsletter' => 'boolean',
         'token' => 'string',
+        'totp_secret' => 'string',
         'registration_date' => 'timestamp',
         'accept_date' => 'timestamp',
         'last_login_date' => 'timestamp',
@@ -364,6 +365,16 @@ class User extends Entity
     public function setEmailNewsletter(bool $newsletter): void
     {
         $this->attributes['email_newsletter'] = $newsletter;
+    }
+
+    public function getTOTPSecret(): ?string
+    {
+        return $this->attributes['totp_secret'];
+    }
+
+    public function setTOTPSecret(?string $secret): void
+    {
+        $this->attributes['totp_secret'] = $secret;
     }
 
     public function getRegistrationDate(): ?DateTime

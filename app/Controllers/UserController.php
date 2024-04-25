@@ -4,7 +4,10 @@ namespace App\Controllers;
 
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use lfkeitel\phptotp\Base32;
+use lfkeitel\phptotp\Totp;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createNotification;
 use function App\Helpers\deleteImage;
@@ -32,8 +35,6 @@ class UserController extends BaseController
         $firstName = trim($this->request->getPost('firstName'));
         $lastName = trim($this->request->getPost('lastName'));
         $email = mb_strtolower(trim($this->request->getPost('email')));
-        $password = trim($this->request->getPost('password'));
-        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
 
         if (!$this->validate(createImageValidationRule('image'))) {
             return redirect('user/profile')->with('error', join(" ", $this->validator->getErrors()));
@@ -67,19 +68,8 @@ class UserController extends BaseController
                 }
             }
 
-            // Check if user wants to change password
-            if (strlen($password) > 0) {
-                // Ensure matching
-                if ($password != $confirmedPassword) {
-                    return redirect('user/profile')->with('error', 'Passwörter stimmen nicht überein.');
-                }
-
-                $user->setPassword(hashSSHA($password));
-                queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
-            }
-
             saveUser($user);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('user/profile')->with('error', $e);
         }
 
@@ -92,7 +82,7 @@ class UserController extends BaseController
         $user = getUserById($userId);
         try {
             queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('user/profile')->with('error', $e);
         }
         return redirect('user/profile')->with('success', 1)->with('resendSuccess', 1);
@@ -224,5 +214,69 @@ class UserController extends BaseController
         } catch (Exception $e) {
             return redirect('user/settings')->with('error', $e);
         }
+    }
+
+    public function security(): string
+    {
+        return $this->render('user/SecurityView', ['user' => getCurrentUser()]);
+    }
+
+    public function handleSecurity(): string|RedirectResponse
+    {
+        $user = getCurrentUser();
+
+        $password = trim($this->request->getPost('password'));
+        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
+        $totp = $this->request->getPost('totp');
+
+        try {
+            // Check if user wants to change password
+            if (strlen($password) > 0) {
+                // Ensure matching
+                if ($password != $confirmedPassword) {
+                    return redirect('user/security')->with('error', 'Passwörter stimmen nicht überein.');
+                }
+
+                $user->setPassword(hashSSHA($password));
+                queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
+            }
+
+            if ($totp && !$user->getTOTPSecret()) {
+                $secret = Totp::GenerateSecret();
+
+                return $this->render('user/SecurityTOTPView', ['user' => getCurrentUser(), 'secret' => Base32::encode($secret)]);
+            } else if (!$totp && $user->getTOTPSecret()) {
+                $user->setTOTPSecret(null);
+            }
+
+            saveUser($user);
+        } catch (Throwable $t) {
+            return redirect('user/security')->with('error', $t);
+        }
+
+        return redirect('user/security')->with('success', 'Einstellungen gespeichert.');
+    }
+
+    public function handleTOTPEnable(): RedirectResponse
+    {
+        $user = getCurrentUser();
+
+        $secret = $this->request->getPost('secret');
+        $key = $this->request->getPost('key');
+
+        $currentKey = (new Totp())->GenerateToken(Base32::decode($secret));
+
+        if ($currentKey == $key) {
+            try {
+                $user->setTOTPSecret($secret);
+                saveUser($user);
+
+                return redirect('user/security')->with('success', 'Einstellungen gespeichert.');
+            } catch (Throwable $t) {
+                return redirect('user/security')->with('error', $t);
+            }
+        }
+
+        return redirect('user/security')->with('error', 'Authentifizierungscode ungültig.');
     }
 }

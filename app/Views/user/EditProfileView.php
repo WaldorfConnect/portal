@@ -69,25 +69,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
-        <label for="inputPassword" class="col-form-label col-md-4 col-lg-3">Passwort</label>
-        <div class="col-md-8 col-lg-9">
-            <input type="password" class="form-control" id="inputPassword" name="password"
-                   autocomplete="new-password" aria-describedby="passwordHelp">
-            <small id="passwordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn das Passwort
-                geändert werden soll.</small>
-        </div>
-    </div>
 
-    <div class="form-group row mb-3">
-        <label for="inputConfirmedPassword" class="col-form-label col-md-4 col-lg-3">Passwort wiederholen</label>
-        <div class="col-md-8 col-lg-9">
-            <input type="password" class="form-control" id="inputConfirmedPassword" name="confirmedPassword"
-                   autocomplete="new-password" aria-describedby="confirmedPasswordHelp">
-            <small id="confirmedPasswordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn das
-                Passwort geändert werden soll.</small>
-        </div>
-    </div>
 
     <button class="btn btn-primary btn-block" type="submit">Speichern</button>
 <?= form_close() ?>

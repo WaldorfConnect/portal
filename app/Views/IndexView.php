@@ -3,7 +3,18 @@
 use function App\Helpers\getCurrentUser;
 
 ?>
-<h1 class="header">Willkommen <?= ($user = getCurrentUser())->getName() ?></h1>
+
+<?php if (!($user = getCurrentUser())->getTOTPSecret()): ?>
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <b>Sicherheitshinweis!</b> Du hast die Zwei-Faktor-Authentifizierung noch nicht aktiviert.<br>Wir empfehlen
+            dir, dein Konto mit einem <a href="<?= base_url('user/security') ?>">zweiten Authentifizierungsweg</a> zu
+            schützen!
+        </div>
+    </div>
+<?php endif; ?>
+
+<h1 class="header">Willkommen <?= $user->getName() ?></h1>
 
 <div class="row justify-content-center">
     <div class="col-lg-5 col-sm-12">
