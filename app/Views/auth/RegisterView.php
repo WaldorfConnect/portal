@@ -62,13 +62,13 @@ use function App\Helpers\getRegions;
 
                     <div class="mb-3">
                         <label for="inputFirstName" class="sr-only">Vorname(n)</label>
-                        <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
+                        <input class="form-control" id="inputFirstName" name="firstName" autocomplete="given-name"
                                placeholder="Vorname" value="<?= old('firstName') ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="inputLastName" class="sr-only">Nachname</label>
-                        <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
+                        <input class="form-control" id="inputLastName" name="lastName" autocomplete="family-name"
                                placeholder="Nachname" value="<?= old('lastName') ?>" required>
                     </div>
 
@@ -95,7 +95,8 @@ use function App\Helpers\getRegions;
 
                     <div class="mb-3">
                         <label for="inputOrganisations" class="form-label">Organisationen/Gruppen</label>
-                        <select class="form-select" id="inputOrganisations" name="organisations[]" aria-describedby="organisationsHelp"
+                        <select class="form-select" id="inputOrganisations" name="organisations[]"
+                                aria-describedby="organisationsHelp"
                                 multiple
                                 required>
                             <?php foreach (getRegions() as $region): ?>

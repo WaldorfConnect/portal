@@ -21,7 +21,7 @@
 
                 <div class="mb-3">
                     <label for="inputUsername" class="sr-only">Benutzername</label>
-                    <input class="form-control" id="inputUsername" name="username" aria-describedby="usernameHelp"
+                    <input class="form-control" id="inputUsername" name="username"
                            value="<?= old('username') ?>" autocomplete="username"
                            placeholder="Benutzername" required autofocus>
                 </div>
@@ -29,7 +29,7 @@
                 <div class="mb-3">
                     <label for="inputPassword" class="sr-only">Passwort</label>
                     <input type="password" class="form-control" id="inputPassword" name="password"
-                           aria-describedby="passwordHelp" autocomplete="current-password"
+                           autocomplete="current-password"
                            placeholder="Passwort" required>
                 </div>
             </div>
