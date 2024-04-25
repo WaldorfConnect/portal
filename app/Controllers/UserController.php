@@ -73,7 +73,7 @@ class UserController extends BaseController
             return redirect('user/profile')->with('error', $e);
         }
 
-        return redirect('user/profile')->with('success', 1);
+        return redirect('user/profile')->with('success', 'Profil gespeichert.');
     }
 
     public function handleProfileResendConfirmationEmail(): RedirectResponse
@@ -85,7 +85,7 @@ class UserController extends BaseController
         } catch (Throwable $e) {
             return redirect('user/profile')->with('error', $e);
         }
-        return redirect('user/profile')->with('success', 1)->with('resendSuccess', 1);
+        return redirect('user/profile')->with('success', 'Profil gespeichert.')->with('resendSuccess', 1);
     }
 
     public function resetPassword(): string
@@ -125,7 +125,7 @@ class UserController extends BaseController
                 try {
                     saveUser($user);
                     queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     return $this->render('user/PasswordSetView', ['user' => $user, 'error' => $e], false);
                 }
 
@@ -143,12 +143,12 @@ class UserController extends BaseController
             try {
                 saveUser($user);
                 queueMail($user->getId(), 'Passwort vergessen', view('mail/ResetPassword', ['user' => $user]));
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return redirect('user/reset_password')->with('error', $e);
             }
         }
 
-        return redirect('user/reset_password')->with('success', 1);
+        return redirect('user/reset_password')->with('success', 'Passwort zurückgesetzt.');
     }
 
     public function handleConfirm(): string|RedirectResponse
@@ -168,7 +168,7 @@ class UserController extends BaseController
         $user->setEmailConfirmed(true);
         try {
             saveUser($user);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('login')->with('error', $e);
         }
 
@@ -183,7 +183,7 @@ class UserController extends BaseController
                         createNotification($target->getId(), 'Neuer Benutzer', $user->getName() . ' hat sich erfolgreich registriert und wartet auf Freigabe.');
                     }
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return redirect('login')->with('error', $e);
             }
             return $this->render('user/ConfirmView', [], false);
@@ -211,7 +211,7 @@ class UserController extends BaseController
         try {
             saveUser($self);
             return redirect('user/settings')->with('success', 'Einstellungen gespeichert.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('user/settings')->with('error', $e);
         }
     }

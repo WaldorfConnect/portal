@@ -8,6 +8,7 @@ use Exception;
 use InvalidArgumentException;
 use lfkeitel\phptotp\Base32;
 use lfkeitel\phptotp\Totp;
+use Throwable;
 use function App\Helpers\checkSSHA;
 use function App\Helpers\createMembershipRequest;
 use function App\Helpers\createAndInsertUser;
@@ -87,7 +88,7 @@ class AuthenticationController extends BaseController
         try {
             $user->setLastLoginDate(new DateTime());
             saveUser($user);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $redirect->with('error', $e);
         }
 
@@ -144,7 +145,7 @@ class AuthenticationController extends BaseController
                 createMembershipRequest($user->getId(), $organisationId);
             }
             queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('register')->withInput()->with('error', $e);
         }
 
@@ -158,7 +159,7 @@ class AuthenticationController extends BaseController
 
         try {
             queueMail($userId, 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('register')->with('success', 1)->with('resend', 'failure')->with('userId', $userId)->with('email', $user->getEmail());
         }
         return redirect('register')->with('success', 1)->with('resend', 'success')->with('userId', $userId)->with('email', $user->getEmail());

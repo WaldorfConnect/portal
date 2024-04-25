@@ -10,7 +10,7 @@ $self = getCurrentUser();
     </div>
 
 <?= form_open_multipart('user/profile') ?>
-    <div class="form-group row align-items-end mb-3">
+    <div class="input-group row align-items-end mb-3">
         <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Profilbild</label>
         <div class="col-md-2">
             <img class="img-thumbnail"
@@ -25,7 +25,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="inputUsername" class="col-form-label col-md-4 col-lg-3">Benutzername</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputUsername" name="username"
@@ -33,7 +33,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="inputFirstName" class="col-form-label col-md-4 col-lg-3">Vorname(n)</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
@@ -41,7 +41,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="lastName" class="col-form-label col-md-4 col-lg-3">Nachname</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
@@ -49,7 +49,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="inputEmail" class="col-form-label col-md-4 col-lg-3">E-Mail</label>
         <div class="col-md-8 col-lg-9">
             <input type="email" class="form-control" id="inputEmail" name="email" autocomplete="email"
@@ -68,8 +68,6 @@ $self = getCurrentUser();
             <?php endif; ?>
         </div>
     </div>
-
-
 
     <button class="btn btn-primary btn-block" type="submit">Speichern</button>
 <?= form_close() ?>

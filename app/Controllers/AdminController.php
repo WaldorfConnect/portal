@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\HTTP\RedirectResponse;
 use DateTime;
 use Exception;
+use Throwable;
 use function App\Helpers\insertOrganisation;
 use function App\Helpers\saveImage;
 use function App\Helpers\createOrganisation;
@@ -55,7 +56,7 @@ class AdminController extends BaseController
         try {
             saveUser($user);
             queueMail($user->getId(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/users')->with('error', $e);
         }
 
@@ -138,7 +139,7 @@ class AdminController extends BaseController
         try {
             saveUser($user);
             return redirect('admin/users')->with('success', 'Benutzer bearbeitet.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/users')->with('error', $e);
         }
     }
@@ -156,7 +157,7 @@ class AdminController extends BaseController
         try {
             deleteUser($userId);
             return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/users')->with('error', $e);
         }
     }
@@ -218,7 +219,7 @@ class AdminController extends BaseController
             insertOrganisation($organisation);
 
             return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect()->back()->withInput()->with('error', $e);
         }
     }
@@ -240,7 +241,7 @@ class AdminController extends BaseController
         try {
             deleteOrganisation($organisationId);
             return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/organisations')->with('error', $e);
         }
     }
@@ -263,7 +264,7 @@ class AdminController extends BaseController
             createAndInsertRegion($name);
 
             return redirect('admin/regions')->with('success', 'Region erstellt.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/regions')->with('error', $e);
         }
     }
@@ -280,7 +281,7 @@ class AdminController extends BaseController
         try {
             deleteRegion($regionId);
             return redirect('admin/regions')->with('success', 'Region gelöscht.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/regions')->with('error', $e);
         }
     }
@@ -313,7 +314,7 @@ class AdminController extends BaseController
         try {
             saveRegion($region);
             return redirect('admin/regions')->with('success', 'Region bearbeitet.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('admin/regions')->with('error', $e);
         }
     }

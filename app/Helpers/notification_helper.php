@@ -8,6 +8,7 @@ use CodeIgniter\CLI\CLI;
 use DateTime;
 use DateTimeImmutable;
 use Exception;
+use Throwable;
 
 /**
  * Queues notifications mails.
@@ -38,7 +39,7 @@ function queueNotificationMails(): void
                     getNotificationModel()->save($notification);
 
                     $mail = true;
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     // TODO handle exception
                 }
             }
@@ -56,7 +57,7 @@ function queueNotificationMails(): void
                     view('mail/UnreadNotifications', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
 
                 CLI::write("Queueing notification mail for {$user->getUsername()} ...");
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // TODO handle exception
             }
         }
@@ -114,7 +115,7 @@ function createNotification(int $userId, string $subject, string $body): void
 
     try {
         getNotificationModel()->insert($notification);
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         // TODO handle exception
     }
 }
@@ -137,7 +138,7 @@ function readNotifications(array $notifications): void
         $clonedNotification->setReadDate($now);
         try {
             getNotificationModel()->save($clonedNotification);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // TODO handle exception
         }
     }

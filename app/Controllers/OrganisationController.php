@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Entities\MembershipStatus;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use Throwable;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
@@ -60,7 +61,7 @@ class OrganisationController extends BaseController
                 'Beitrittsanfrage',
                 "{$currentUser->getName()} möchte %s beitreten.</a>",
                 MembershipStatus::ADMIN);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('organisations')->with('error', $e);
         }
 
@@ -106,7 +107,7 @@ class OrganisationController extends BaseController
         foreach ($members as $member) {
             try {
                 createMembership($member, $organisationId);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
             }
 
@@ -146,7 +147,7 @@ class OrganisationController extends BaseController
             createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
 
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
         }
     }
@@ -244,7 +245,7 @@ class OrganisationController extends BaseController
             saveOrganisation($organisation);
 
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Organisation bearbeitet.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
         }
     }
@@ -277,7 +278,7 @@ class OrganisationController extends BaseController
 
         try {
             saveMembership($membership);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('organisations')->with('error', $e);
         }
 
@@ -328,7 +329,7 @@ class OrganisationController extends BaseController
                 [$membership->getUserId()]);
 
             createNotification($membership->getUserId(), 'Beitrittsanfrage abgelehnt', "Deine Anfrage an {$organisation->getUrl()} wurde abgelehnt.");
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('organisations')->with('error', $e);
         }
 
@@ -373,7 +374,7 @@ class OrganisationController extends BaseController
             createNotification($membership->getUserId(), 'Organisationsrolle geändert', "Deine Rolle in {$organisation->getUrl()} wurde zu {$statusEnum->displayName()} geändert.");
 
             saveMembership($membership);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('organisations')->with('error', $e);
         }
 
@@ -420,7 +421,7 @@ class OrganisationController extends BaseController
                 [$membership->getUserId()]);
 
             createNotification($membership->getUserId(), 'Aus Organisation entfernt', "Du wurdest aus {$organisation->getUrl()} entfernt.");
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect('organisations')->with('error', $e);
         }
 
@@ -449,7 +450,7 @@ class OrganisationController extends BaseController
             createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$organisation->getName()} in %s gelöscht.");
             deleteOrganisation($organisationId);
             return redirect()->to(base_url('organisation/' . $parent->getId()))->with('success', 'Arbeitsgruppe gelöscht.');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', $e);
         }
     }

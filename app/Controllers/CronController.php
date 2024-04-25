@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\CLI\CLI;
 use Exception;
+use Throwable;
 use function App\Helpers\openLDAPConnection;
 use function App\Helpers\queueNotificationMails;
 use function App\Helpers\syncLDAPOrganisations;
@@ -24,7 +25,7 @@ class CronController extends BaseController
         try {
             CLI::write('Working mail queue ...');
             workMailQueue();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             CLI::error("Error working mail queue: {$e}");
         } finally {
             $this->releaseLock('mail');
@@ -42,7 +43,7 @@ class CronController extends BaseController
         try {
             CLI::write('Queueing notification mails...');
             queueNotificationMails();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             CLI::error("Error queueing notification mails: {$e}");
         } finally {
             $this->releaseLock('notifications');
@@ -77,7 +78,7 @@ class CronController extends BaseController
 
             CLI::write('Synchronizing LDAP organisations ...');
             syncLDAPOrganisations();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             CLI::error("Error synchronizing with LDAP: {$e}");
         } finally {
             $this->releaseLock('ldap');
@@ -106,7 +107,7 @@ class CronController extends BaseController
 
             CLI::write('Synchronizing Nextcloud folders ...');
             syncOrganisationFolders();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             CLI::error("Error synchronizing folders: {$e}");
         } finally {
             $this->releaseLock('nextcloud');

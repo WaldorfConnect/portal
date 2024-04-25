@@ -12,7 +12,7 @@ $self = getCurrentUser();
 <?= form_open_multipart('user/security') ?>
     <h3 class="subheader">Passwort</h3>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="inputPassword" class="col-form-label col-md-4 col-lg-3">Passwort</label>
         <div class="col-md-8 col-lg-9">
             <input type="password" class="form-control" id="inputPassword" name="password"
@@ -22,7 +22,7 @@ $self = getCurrentUser();
         </div>
     </div>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <label for="inputConfirmedPassword" class="col-form-label col-md-4 col-lg-3">Passwort wiederholen</label>
         <div class="col-md-8 col-lg-9">
             <input type="password" class="form-control" id="inputConfirmedPassword" name="confirmedPassword"
@@ -34,7 +34,7 @@ $self = getCurrentUser();
 
     <h3 class="subheader">Zwei-Faktor-Authentifizierung (2FA)</h3>
 
-    <div class="form-group row mb-3">
+    <div class="input-group row mb-3">
         <div class="col-10">
             <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="inputTOTP" name="totp"
