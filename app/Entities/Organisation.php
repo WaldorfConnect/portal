@@ -24,6 +24,7 @@ class Organisation extends Entity
         'image_id' => null,
         'logo_id' => null,
         'folder_id' => null,
+        'chat_id' => null
     ];
 
     protected $casts = [
@@ -39,7 +40,8 @@ class Organisation extends Entity
         'phone' => 'string',
         'image_id' => 'string',
         'logo_id' => 'string',
-        'folder_id' => 'integer'
+        'folder_id' => 'integer',
+        'chat_id' => 'string'
     ];
 
     /**
@@ -233,6 +235,16 @@ class Organisation extends Entity
     {
         $parent = $this->getParent();
         return ($parent ? $parent->getName() . '/' : '') . $this->getName();
+    }
+
+    public function getChatId(): ?string
+    {
+        return $this->attributes['chat_id'];
+    }
+
+    public function setChatId(string $chatId): void
+    {
+        $this->attributes['chat_id'] = $chatId;
     }
 
     /**

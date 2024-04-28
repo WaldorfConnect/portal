@@ -111,3 +111,4 @@ const OIDC_CLIENTS = PREFIX . 'oidc_clients';
 const OIDC_REFRESH_TOKENS = PREFIX . 'oidc_refresh_tokens';
 
 const FOLDERS_API = "https://cloud.waldorfconnect.de/apps/groupfolders";
+const TALK_API = "https://cloud.waldorfconnect.de/ocs/v2.php/apps/spreed/api/v4";

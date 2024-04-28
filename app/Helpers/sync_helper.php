@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Entities\LDAPOrganisation;
 use App\Entities\Membership;
+use App\Entities\MembershipStatus;
 use App\Entities\Organisation;
 use App\Entities\User;
 use CodeIgniter\CLI\CLI;
@@ -184,6 +185,89 @@ function syncOrganisationFolders(): void
     }
 }
 
+function syncOrganisationChats(): void
+{
+    $client = new Client([
+        RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
+        RequestOptions::AUTH => [
+            getenv('nextcloud.username'),
+            getenv('nextcloud.password')
+        ],
+        RequestOptions::HEADERS => [
+            'Accept' => 'application/json',
+            'OCS-APIRequest' => 'true'
+        ]
+    ]);
+
+    $organisations = getOrganisations();
+    foreach ($organisations as $organisation) {
+        $members = $organisation->getMemberships();
+        if (empty($members)) {
+            CLI::write('Skipping chat creation for empty organisation ' . $organisation->getDisplayName());
+            continue;
+        }
+
+        $chatId = $organisation->getChatId();
+        if (!$chatId) {
+            CLI::write('debug: no chat for ' . $organisation->getDisplayName() . ': create...');
+            $chatId = createOrganisationChat($client, $organisation->getDisplayName());
+
+            if ($chatId) {
+                CLI::write('debug: successfully created for ' . $organisation->getDisplayName() . ': id ' . $chatId);
+
+                try {
+                    $organisation->setChatId($chatId);
+                    saveOrganisation($organisation);
+
+                    CLI::write('Created chat for organisation ' . $organisation->getDisplayName() . ' on Nextcloud');
+                } catch (DatabaseException|ReflectionException $e) {
+                    CLI::error($e);
+                }
+            }
+        }
+
+        if (!$chatId) {
+            CLI::write('debug: no chat id after creation for ' . $organisation->getDisplayName());
+            continue;
+        }
+
+        $participants = getOrganisationChatParticipants($client, $chatId);
+        foreach ($participants as $participant) {
+            if ($participant->actorType != 'users') {
+                continue;
+            }
+
+            $attendeeId = $participant->attendeeId;
+            $username = $participant->actorId;
+            $user = getUserByUsername($username);
+            if (!$user) {
+                CLI::write('debug: invalid user ' . $username);
+
+                continue;
+            }
+
+            $userId = $user->getId();
+            $isModerator = $participant->participantType == 2;
+
+            foreach ($members as $member) {
+                if ($member->getId() != $userId) {
+                    continue;
+                }
+
+                if ($member->getStatus() == MembershipStatus::ADMIN && !$isModerator) {
+                    CLI::write('debug: promote ' . $user->getUsername());
+
+                    promoteChatUser($client, $chatId, $attendeeId);
+                } else if ($member->getStatus() == MembershipStatus::USER && $isModerator) {
+                    CLI::write('debug: demote ' . $user->getUsername());
+
+                    demoteChatUser($client, $chatId, $attendeeId);
+                }
+            }
+        }
+    }
+}
+
 /**
  * @throws LdapRecordException
  */
@@ -347,6 +431,64 @@ function deleteOrganisationFolder(Client $client, int $id): void
 {
     try {
         $client->delete(FOLDERS_API . '/folders/' . $id);
+    } catch (GuzzleException $e) {
+        CLI::error($e);
+    }
+}
+
+function createOrganisationChat(Client $client, string $groupName): ?string
+{
+    try {
+        $response = $client->post(TALK_API . '/room', [
+            'json' => [
+                'roomType' => 2,
+                'invite' => $groupName,
+                'source' => 'portal'
+            ]
+        ]);
+
+        $decodedResponse = json_decode($response->getBody()->getContents());
+        return $decodedResponse->ocs->data->token;
+    } catch (GuzzleException $e) {
+        CLI::error($e);
+        return null;
+    }
+}
+
+function getOrganisationChatParticipants(Client $client, string $chatId): array
+{
+    try {
+        $response = $client->get(TALK_API . '/room/' . $chatId . '/participants');
+        $decodedResponse = json_decode($response->getBody()->getContents());
+
+        return $decodedResponse->ocs->data;
+    } catch (GuzzleException $e) {
+        CLI::error($e);
+        return [];
+    }
+}
+
+function promoteChatUser(Client $client, string $chatId, int $attendeeId): void
+{
+    try {
+        $client->post(TALK_API . '/room/' . $chatId . '/moderators', [
+            'json' => [
+                'attendeeId' => $attendeeId
+            ]
+        ]);
+    } catch (GuzzleException $e) {
+        CLI::error($e);
+    }
+}
+
+function demoteChatUser(Client $client, string $chatId, int $attendeeId): void
+{
+    try {
+        $client->delete(TALK_API . '/room/' . $chatId . '/moderators', [
+            'json' => [
+                'attendeeId' => $attendeeId
+            ]
+        ]);
     } catch (GuzzleException $e) {
         CLI::error($e);
     }

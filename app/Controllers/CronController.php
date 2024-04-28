@@ -9,6 +9,7 @@ use function App\Helpers\openLDAPConnection;
 use function App\Helpers\queueNotificationMails;
 use function App\Helpers\syncLDAPOrganisations;
 use function App\Helpers\syncLDAPUsers;
+use function App\Helpers\syncOrganisationChats;
 use function App\Helpers\syncOrganisationFolders;
 use function App\Helpers\workMailQueue;
 
@@ -105,8 +106,9 @@ class CronController extends BaseController
                 }
             }
 
-            CLI::write('Synchronizing Nextcloud folders ...');
+            CLI::write('Synchronizing Nextcloud folders and chats ...');
             syncOrganisationFolders();
+            // syncOrganisationChats();
         } catch (Throwable $e) {
             CLI::error("Error synchronizing folders: {$e}");
         } finally {
