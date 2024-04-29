@@ -46,7 +46,7 @@ class AuthenticationController extends BaseController
 
         $user = getUserByUsername($username);
 
-        $returnUrl = $this->request->getPost('return');
+        $returnUrl = trim($this->request->getPost('return'));
         $loginUrl = site_url('login');
         if ($returnUrl) {
             $loginUrl = $loginUrl . '?return=' . urlencode($returnUrl);

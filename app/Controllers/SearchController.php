@@ -16,7 +16,8 @@ class SearchController extends BaseController
 {
     public function index(): string
     {
-        $query = trim($this->request->getGet('query'));
-        return $this->render('search/SearchView', ['query' => esc($query)]);
+        $query = esc(trim($this->request->getGet('query')));
+
+        return $this->render('search/SearchView', ['query' => $query]);
     }
 }

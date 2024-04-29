@@ -227,7 +227,7 @@ class UserController extends BaseController
 
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
-        $totp = $this->request->getPost('totp');
+        $totp = trim($this->request->getPost('totp'));
 
         try {
             // Check if user wants to change password

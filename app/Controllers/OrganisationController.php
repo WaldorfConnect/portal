@@ -129,7 +129,7 @@ class OrganisationController extends BaseController
         $self = getCurrentUser();
         $organisation = getOrganisationById($organisationId);
 
-        $name = $this->request->getPost('name');
+        $name = trim($this->request->getPost('name'));
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
@@ -181,11 +181,11 @@ class OrganisationController extends BaseController
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
         }
 
-        $name = $this->request->getPost('name');
-        $address = $this->request->getPost('address');
-        $website = $this->request->getPost('website');
-        $email = $this->request->getPost('email');
-        $phone = $this->request->getPost('phone');
+        $name = trim($this->request->getPost('name'));
+        $address = trim($this->request->getPost('address'));
+        $website = trim($this->request->getPost('website'));
+        $email = trim($this->request->getPost('email'));
+        $phone = trim($this->request->getPost('phone'));
         $regionId = $this->request->getPost('region');
         $description = $this->request->getPost('description');
 
@@ -226,10 +226,10 @@ class OrganisationController extends BaseController
         }
 
         $logoFile = $this->request->getFile('logo');
-        $logoAuthor = $this->request->getPost('logoAuthor');
+        $logoAuthor = trim($this->request->getPost('logoAuthor'));
 
         $imageFile = $this->request->getFile('image');
-        $imageAuthor = $this->request->getPost('imageAuthor');
+        $imageAuthor = trim($this->request->getPost('imageAuthor'));
 
         // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {

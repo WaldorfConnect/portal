@@ -116,11 +116,11 @@ class AdminController extends BaseController
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
-        $firstName = $this->request->getPost('firstName');
-        $lastName = $this->request->getPost('lastName');
-        $email = $this->request->getPost('email');
-        $password = $this->request->getPost('password');
-        $confirmedPassword = $this->request->getPost('confirmedPassword');
+        $firstName = trim($this->request->getPost('firstName'));
+        $lastName = trim($this->request->getPost('lastName'));
+        $email = trim($this->request->getPost('email'));
+        $password = trim($this->request->getPost('password'));
+        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
 
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
@@ -201,10 +201,10 @@ class AdminController extends BaseController
             }
 
             $logoFile = $this->request->getFile('logo');
-            $logoAuthor = $this->request->getPost('logoAuthor');
+            $logoAuthor = trim($this->request->getPost('logoAuthor'));
 
             $imageFile = $this->request->getFile('image');
-            $imageAuthor = $this->request->getPost('imageAuthor');
+            $imageAuthor = trim($this->request->getPost('imageAuthor'));
 
             // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
             if ($logoFile->isValid()) {
@@ -258,7 +258,7 @@ class AdminController extends BaseController
 
     public function handleCreateRegion(): RedirectResponse
     {
-        $name = $this->request->getPost('name');
+        $name = trim($this->request->getPost('name'));
 
         try {
             createAndInsertRegion($name);
@@ -305,11 +305,9 @@ class AdminController extends BaseController
             return redirect('admin/regions')->with('error', 'Unbekannte Region.');
         }
 
-        $name = $this->request->getPost('name');
-        $iso = $this->request->getPost('iso');
+        $name = trim($this->request->getPost('name'));
 
         $region->setName($name);
-        $region->setIsoCode($iso);
 
         try {
             saveRegion($region);
