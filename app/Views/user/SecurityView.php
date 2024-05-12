@@ -13,22 +13,32 @@ $self = getCurrentUser();
     <h3 class="subheader">Passwort</h3>
 
     <div class="input-group row mb-3">
-        <label for="inputPassword" class="col-form-label col-md-4 col-lg-3">Passwort</label>
+        <label for="inputCurrentPassword" class="col-form-label col-md-4 col-lg-3">Aktuelles Passwort</label>
         <div class="col-md-8 col-lg-9">
-            <input type="password" class="form-control" id="inputPassword" name="password"
-                   autocomplete="new-password" aria-describedby="passwordHelp">
-            <small id="passwordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn das Passwort
-                geändert werden soll.</small>
+            <input type="password" class="form-control" id="inputCurrentPassword" name="currentPassword"
+                   autocomplete="current-password" aria-describedby="currentPasswordHelp">
+            <small id="currentPasswordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn du
+                dein Passwort ändern möchtest.</small>
         </div>
     </div>
 
     <div class="input-group row mb-3">
-        <label for="inputConfirmedPassword" class="col-form-label col-md-4 col-lg-3">Passwort wiederholen</label>
+        <label for="inputNewPassword" class="col-form-label col-md-4 col-lg-3">Neues Passwort</label>
         <div class="col-md-8 col-lg-9">
-            <input type="password" class="form-control" id="inputConfirmedPassword" name="confirmedPassword"
-                   autocomplete="new-password" aria-describedby="confirmedPasswordHelp">
-            <small id="confirmedPasswordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn das
-                Passwort geändert werden soll.</small>
+            <input type="password" class="form-control" id="inputNewPassword" name="newPassword"
+                   autocomplete="new-password" aria-describedby="newPasswordHelp">
+            <small id="newPasswordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn du
+                dein Passwort ändern möchtest.</small>
+        </div>
+    </div>
+
+    <div class="input-group row mb-3">
+        <label for="inputConfirmedNewPassword" class="col-form-label col-md-4 col-lg-3">Neues Passwort wiederholen</label>
+        <div class="col-md-8 col-lg-9">
+            <input type="password" class="form-control" id="inputConfirmedNewPassword" name="confirmedNewPassword"
+                   autocomplete="new-password" aria-describedby="confirmedNewPasswordHelp">
+            <small id="confirmedNewPasswordHelp" class="form-text text-muted">Dieses Feld muss nur gesetzt werden, wenn du
+                dein Passwort ändern möchtest.</small>
         </div>
     </div>
 

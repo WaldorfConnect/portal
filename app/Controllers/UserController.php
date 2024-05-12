@@ -8,6 +8,7 @@ use lfkeitel\phptotp\Base32;
 use lfkeitel\phptotp\Totp;
 use Ramsey\Uuid\Uuid;
 use Throwable;
+use function App\Helpers\checkSSHA;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createNotification;
 use function App\Helpers\deleteImage;
@@ -225,19 +226,26 @@ class UserController extends BaseController
     {
         $user = getCurrentUser();
 
-        $password = trim($this->request->getPost('password'));
-        $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
+        $currentPassword = trim($this->request->getPost('currentPassword'));
+        $newPassword = trim($this->request->getPost('newPassword'));
+        $confirmedNewPassword = trim($this->request->getPost('confirmedNewPassword'));
+
         $totp = trim($this->request->getPost('totp'));
 
         try {
             // Check if user wants to change password
-            if (strlen($password) > 0) {
-                // Ensure matching
-                if ($password != $confirmedPassword) {
+            if (strlen($currentPassword) > 0 && strlen($newPassword) > 0 && strlen($confirmedNewPassword) > 0) {
+                // Check if current password is correct
+                if (!checkSSHA($currentPassword, $user->getPassword())) {
+                    return redirect('user/security')->with('error', 'Aktuelles Passwort ungültig.');
+                }
+
+                // Ensure that confirmation matches
+                if ($newPassword != $confirmedNewPassword) {
                     return redirect('user/security')->with('error', 'Passwörter stimmen nicht überein.');
                 }
 
-                $user->setPassword(hashSSHA($password));
+                $user->setPassword(hashSSHA($newPassword));
                 queueMail($user->getId(), 'Passwort geändert', view('mail/PasswordChanged', ['user' => $user]));
             }
 
