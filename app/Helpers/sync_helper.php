@@ -40,32 +40,34 @@ function syncLDAPUsers(): void
             // Remove from list if found
             unset($users[$wantedUserIndex]);
 
+            // Update properties on LDAP server
             try {
-                // Update properties on LDAP server
                 updateLDAPUser($ldapUser, $wantedUser);
-                CLI::write('Updated user ' . $wantedUser->getUsername() . ' on LDAP server');
+                log_message('info', 'LDAP: Updated user ' . $wantedUser->getUsername());
             } catch (LdapRecordException $e) {
-                CLI::error($e);
+                log_message('error', 'LDAP: Unable to update user ' . $wantedUser->getUsername() . ': {exception}', ['exception' => $e]);
             }
         } else {
+            $uid = $ldapUser->uid[0];
+
+            // Delete from LDAP server
             try {
-                $uid = $ldapUser->uid[0];
-                // Delete from LDAP server if no longer in database
                 $ldapUser->delete();
-                CLI::write('Deleted user ' . $uid . ' on LDAP server');
+                log_message('info', 'LDAP: Deleted user ' . $uid);
             } catch (LdapRecordException $e) {
-                CLI::error($e);
+                log_message('error', 'LDAP: Unable to delete user ' . $uid . ': {exception}', ['exception' => $e]);
             }
         }
     }
 
     foreach ($users as $user) {
+        // Create user on LDAP server
         try {
-            // Create user on LDAP server is inexistent
             createLDAPUser($user);
-            CLI::write('Created user ' . $user->getUsername() . ' on LDAP server');
+
+            log_message('info', 'LDAP: Created user ' . $user->getUsername());
         } catch (LdapRecordException $e) {
-            CLI::error($e);
+            log_message('error', 'LDAP: Unable to create user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
         }
     }
 }
@@ -91,51 +93,42 @@ function syncLDAPOrganisations(): void
             // Remove from list if found
             unset($organisations[$wantedOrganisationIndex]);
 
+            // Update properties on LDAP server
             try {
-                // Update properties on LDAP server
                 updateLDAPOrganisation($ldapOrganisation, $wantedOrganisation);
-                CLI::write('Updated organisation ' . $wantedOrganisation->getDisplayName() . ' on LDAP server');
+
+                log_message('info', 'LDAP: Updated organisation ' . $wantedOrganisation->getName());
             } catch (LdapRecordException $e) {
-                CLI::error($e);
+                log_message('error', 'LDAP: Unable to update organisation ' . $wantedOrganisation->getName() . ': {exception}', ['exception' => $e]);
             }
         } else {
-            try {
-                $displayName = $ldapOrganisation->cn[0];
+            $displayName = $ldapOrganisation->cn[0];
 
-                // Delete from LDAP server if no longer in database
+            // Delete organisation on LDAP server
+            try {
                 $ldapOrganisation->delete();
-                CLI::write('Deleted organisation ' . $displayName . ' on LDAP server');
+
+                log_message('info', 'LDAP: Deleted organisation ' . $displayName);
             } catch (LdapRecordException $e) {
-                CLI::error($e);
+                log_message('error', 'LDAP: Unable to delete organisation ' . $displayName . ': {exception}', ['exception' => $e]);
             }
         }
     }
 
+    // Create organisations missing on LDAP server
     foreach ($organisations as $organisation) {
         try {
-            // Create user on LDAP server is inexistent
             createLDAPOrganisation($organisation);
-            CLI::write('Created organisation ' . $organisation->getDisplayName() . ' on LDAP server');
+            log_message('info', 'LDAP: Created organisation ' . $organisation->getDisplayName());
         } catch (LdapRecordException $e) {
-            CLI::error($e);
+            log_message('error', 'LDAP: Unable to create organisation ' . $organisation->getDisplayName() . ': {exception}', ['exception' => $e]);
         }
     }
 }
 
 function syncOrganisationFolders(): void
 {
-    $client = new Client([
-        RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
-        RequestOptions::AUTH => [
-            getenv('nextcloud.username'),
-            getenv('nextcloud.password')
-        ],
-        RequestOptions::HEADERS => [
-            'Accept' => 'application/json',
-            'OCS-APIRequest' => 'true'
-        ]
-    ]);
-
+    $client = createAPIClient();
     $organisations = getOrganisations();
 
     foreach (getOrganisationFolders($client) as $folder) {
@@ -160,11 +153,11 @@ function syncOrganisationFolders(): void
 
             // Update folder on Nextcloud
             updateOrganisationFolder($client, $wantedOrganisation, $folder);
-            CLI::write('Updated folder ' . $wantedOrganisation->getDisplayName() . ' on Nextcloud');
+            log_message('info', 'NC: Updated folder ' . $wantedOrganisation->getFolderMountPoint());
         } else {
             // Delete folder on Nextcloud
             deleteOrganisationFolder($client, $folder->id);
-            CLI::write('Deleted folder ' . $folder->mount_point . ' on Nextcloud');
+            log_message('info', 'NC: Deleted folder ' . $folder->mount_point);
         }
     }
 
@@ -177,9 +170,9 @@ function syncOrganisationFolders(): void
                 $organisation->setFolderId($id);
                 saveOrganisation($organisation);
 
-                CLI::write('Created folder ' . $organisation->getDisplayName() . ' on Nextcloud');
+                log_message('info', 'NC: Created folder ' . $organisation->getFolderMountPoint());
             } catch (DatabaseException|ReflectionException $e) {
-                CLI::error($e);
+                log_message('error', 'NC: Unable to create folder ' . $organisation->getFolderMountPoint() . ': {exception}', ['exception' => $e]);
             }
         }
     }
@@ -187,47 +180,34 @@ function syncOrganisationFolders(): void
 
 function syncOrganisationChats(): void
 {
-    $client = new Client([
-        RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
-        RequestOptions::AUTH => [
-            getenv('nextcloud.username'),
-            getenv('nextcloud.password')
-        ],
-        RequestOptions::HEADERS => [
-            'Accept' => 'application/json',
-            'OCS-APIRequest' => 'true'
-        ]
-    ]);
-
+    $client = createAPIClient();
     $organisations = getOrganisations();
+
     foreach ($organisations as $organisation) {
         $members = $organisation->getMemberships();
         if (empty($members)) {
-            CLI::write('Skipping chat creation for empty organisation ' . $organisation->getDisplayName());
+            log_message('info', 'NC: Skipping chat creation for empty organisation ' . $organisation->getDisplayName());
             continue;
         }
 
         $chatId = $organisation->getChatId();
         if (!$chatId) {
-            CLI::write('debug: no chat for ' . $organisation->getDisplayName() . ': create...');
             $chatId = createOrganisationChat($client, $organisation->getDisplayName());
 
             if ($chatId) {
-                CLI::write('debug: successfully created for ' . $organisation->getDisplayName() . ': id ' . $chatId);
-
                 try {
                     $organisation->setChatId($chatId);
                     saveOrganisation($organisation);
 
-                    CLI::write('Created chat for organisation ' . $organisation->getDisplayName() . ' on Nextcloud');
+                    log_message('info', 'NC: Created chat ' . $organisation->getDisplayName());
                 } catch (DatabaseException|ReflectionException $e) {
-                    CLI::error($e);
+                    log_message('error', 'NC: Unable to create chat ' . $organisation->getDisplayName() . ': {exception}', ['exception' => $e]);
                 }
             }
         }
 
         if (!$chatId) {
-            CLI::write('debug: no chat id after creation for ' . $organisation->getDisplayName());
+            log_message('debug', 'NC: No chat id after creation for ' . $organisation->getDisplayName());
             continue;
         }
 
@@ -241,8 +221,7 @@ function syncOrganisationChats(): void
             $username = $participant->actorId;
             $user = getUserByUsername($username);
             if (!$user) {
-                CLI::write('debug: invalid user ' . $username);
-
+                log_message('debug', 'NC: Invalid user ' . $username);
                 continue;
             }
 
@@ -255,11 +234,11 @@ function syncOrganisationChats(): void
                 }
 
                 if ($member->getStatus() == MembershipStatus::ADMIN && !$isModerator) {
-                    CLI::write('debug: promote ' . $user->getUsername());
+                    log_message('debug', 'NC: Promote ' . $user->getUsername());
 
                     promoteChatUser($client, $chatId, $attendeeId);
                 } else if ($member->getStatus() == MembershipStatus::USER && $isModerator) {
-                    CLI::write('debug: demote ' . $user->getUsername());
+                    log_message('debug', 'NC: Demote ' . $user->getUsername());
 
                     demoteChatUser($client, $chatId, $attendeeId);
                 }
@@ -283,6 +262,8 @@ function createLDAPUser(User $user): void
 }
 
 /**
+ * Updates the LDAP entry for a given user
+ *
  * @throws LdapRecordException
  */
 function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user): void
@@ -310,6 +291,8 @@ function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user):
 }
 
 /**
+ * Creates a new LDAP entry for a given organisation
+ *
  * @param Organisation $organisation
  * @return void
  * @throws LdapRecordException
@@ -326,35 +309,36 @@ function createLDAPOrganisation(Organisation $organisation): void
     $ldapOrganisation->save();
 }
 
+/**
+ * Creates a group folder on the NC server for the given organisation
+ *
+ * @throws GuzzleException
+ */
 function createOrganisationFolder(Client $client, Organisation $organisation): int
 {
-    try {
-        $response = $client->post(FOLDERS_API . '/folders', [
-            'json' => [
-                'mountpoint' => $organisation->getFolderMountPoint()
-            ]
-        ]);
+    $response = $client->post(FOLDERS_API . '/folders', [
+        'json' => [
+            'mountpoint' => $organisation->getFolderMountPoint()
+        ]
+    ]);
 
-        $decodedResponse = json_decode($response->getBody()->getContents());
-        $data = $decodedResponse->ocs->data;
+    $decodedResponse = json_decode($response->getBody()->getContents());
+    $data = $decodedResponse->ocs->data;
 
-        $client->post(FOLDERS_API . '/folders/' . $data->id . '/groups', [
-            'json' => [
-                'group' => $organisation->getDisplayName()
-            ]
-        ]);
+    $client->post(FOLDERS_API . '/folders/' . $data->id . '/groups', [
+        'json' => [
+            'group' => $organisation->getDisplayName()
+        ]
+    ]);
 
-        return $data->id;
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
-
-    return -1;
+    return $data->id;
 }
 
 /**
- * @param LDAPOrganisation $ldapOrganisation
- * @param Organisation $organisation
+ * Updates the LDAP entry for a given organisation
+ *
+ * @param LDAPOrganisation $ldapOrganisation LDAP entry to be changed
+ * @param Organisation $organisation updated organisation
  * @return void
  * @throws LdapRecordException
  */
@@ -385,7 +369,7 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Organisation
         } else {
             // Remove member from LDAP server
             $ldapOrganisation->members()->detach($ldapMember);
-            CLI::write('Removed ' . $ldapMember->uid[0] . ' from ' . $organisation->getDisplayName());
+            log_message('info', 'LDAP: Removed ' . $ldapMember->uid[0] . ' from ' . $organisation->getDisplayName());
         }
     }
 
@@ -394,104 +378,116 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Organisation
 
         // Add member to ldap server
         $ldapOrganisation->members()->attach($ldapUser);
-        CLI::write('Added ' . $ldapUser->uid[0] . ' to ' . $organisation->getDisplayName());
+        log_message('info', 'LDAP: Added ' . $ldapUser->uid[0] . ' to ' . $organisation->getDisplayName());
     }
 
     $ldapOrganisation->save();
 }
 
+/**
+ * Updates a given organisations' NC group folder
+ *
+ * @throws GuzzleException
+ */
 function updateOrganisationFolder(Client $client, Organisation $organisation, object $folder): void
 {
-    try {
-        $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/mountpoint', [
-            'json' => [
-                'mountpoint' => $organisation->getFolderMountPoint()
-            ]
-        ]);
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
+    $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/mountpoint', [
+        'json' => [
+            'mountpoint' => $organisation->getFolderMountPoint()
+        ]
+    ]);
 
     // Add group as member of folder
     $groups = $folder->groups;
     if (empty($groups) || !array_key_exists($organisation->getDisplayName(), get_object_vars($groups))) {
-        try {
-            $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/groups', [
-                'json' => [
-                    'group' => $organisation->getDisplayName()
-                ]
-            ]);
-        } catch (GuzzleException $e) {
-            CLI::error($e);
-        }
+        $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/groups', [
+            'json' => [
+                'group' => $organisation->getDisplayName()
+            ]
+        ]);
     }
 }
 
+/**
+ * Deletes a given organisations' NC group folder
+ *
+ * @throws GuzzleException
+ */
 function deleteOrganisationFolder(Client $client, int $id): void
 {
-    try {
-        $client->delete(FOLDERS_API . '/folders/' . $id);
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
+    $client->delete(FOLDERS_API . '/folders/' . $id);
 }
 
+/**
+ * @throws GuzzleException
+ */
 function createOrganisationChat(Client $client, string $groupName): ?string
 {
-    try {
-        $response = $client->post(TALK_API . '/room', [
-            'json' => [
-                'roomType' => 2,
-                'invite' => $groupName,
-                'source' => 'portal'
-            ]
-        ]);
+    $response = $client->post(TALK_API . '/room', [
+        'json' => [
+            'roomType' => 2,
+            'invite' => $groupName,
+            'source' => 'portal'
+        ]
+    ]);
 
-        $decodedResponse = json_decode($response->getBody()->getContents());
-        return $decodedResponse->ocs->data->token;
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-        return null;
-    }
+    $decodedResponse = json_decode($response->getBody()->getContents());
+    return $decodedResponse->ocs->data->token;
 }
 
+/**
+ * @throws GuzzleException
+ */
 function getOrganisationChatParticipants(Client $client, string $chatId): array
 {
-    try {
-        $response = $client->get(TALK_API . '/room/' . $chatId . '/participants');
-        $decodedResponse = json_decode($response->getBody()->getContents());
+    $response = $client->get(TALK_API . '/room/' . $chatId . '/participants');
+    $decodedResponse = json_decode($response->getBody()->getContents());
 
-        return $decodedResponse->ocs->data;
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-        return [];
-    }
+    return $decodedResponse->ocs->data;
 }
 
+/**
+ * @throws GuzzleException
+ */
 function promoteChatUser(Client $client, string $chatId, int $attendeeId): void
 {
-    try {
-        $client->post(TALK_API . '/room/' . $chatId . '/moderators', [
-            'json' => [
-                'attendeeId' => $attendeeId
-            ]
-        ]);
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
+    $client->post(TALK_API . '/room/' . $chatId . '/moderators', [
+        'json' => [
+            'attendeeId' => $attendeeId
+        ]
+    ]);
 }
 
+/**
+ * @throws GuzzleException
+ */
 function demoteChatUser(Client $client, string $chatId, int $attendeeId): void
 {
-    try {
-        $client->delete(TALK_API . '/room/' . $chatId . '/moderators', [
-            'json' => [
-                'attendeeId' => $attendeeId
-            ]
-        ]);
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
+    $client->delete(TALK_API . '/room/' . $chatId . '/moderators', [
+        'json' => [
+            'attendeeId' => $attendeeId
+        ]
+    ]);
+}
+
+/**
+ * Returns an HTTP client for the Nextcloud REST-API
+ *
+ * @return Client
+ */
+function createAPIClient(): Client
+{
+    return new Client([
+        RequestOptions::VERIFY => CaBundle::getSystemCaRootBundlePath(),
+        RequestOptions::AUTH => [
+            getenv('nextcloud.username'),
+            getenv('nextcloud.password')
+        ],
+        RequestOptions::HEADERS => [
+            'Accept' => 'application/json',
+            'OCS-APIRequest' => 'true'
+        ]
+    ]);
 }
 
 /**
@@ -534,17 +530,14 @@ function getPortalUserDistinguishedName(): string
     return getenv('ldap.portalUserDN');
 }
 
+/**
+ * @throws GuzzleException
+ */
 function getOrganisationFolders(Client $client): array
 {
-    $dataArray = [];
-    try {
-        $response = $client->get(FOLDERS_API . '/folders');
-        $decodedResponse = json_decode($response->getBody()->getContents());
-        $data = $decodedResponse->ocs->data;
+    $response = $client->get(FOLDERS_API . '/folders');
+    $decodedResponse = json_decode($response->getBody()->getContents());
+    $data = $decodedResponse->ocs->data;
 
-        return get_object_vars($data);
-    } catch (GuzzleException $e) {
-        CLI::error($e);
-    }
-    return $dataArray;
+    return get_object_vars($data);
 }

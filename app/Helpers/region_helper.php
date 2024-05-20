@@ -8,6 +8,8 @@ use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;
 
 /**
+ * Returns all regions
+ *
  * @return Region[]
  * @throws DatabaseException
  */
@@ -17,7 +19,9 @@ function getRegions(): array
 }
 
 /**
- * @param int $id
+ * Returns a region by its id
+ *
+ * @param int $id the region id
  * @return ?Region
  */
 function getRegionById(int $id): ?object
@@ -26,6 +30,8 @@ function getRegionById(int $id): ?object
 }
 
 /**
+ * Saves the changes to a region to the database
+ *
  * @param Region $region
  * @return void
  * @throws ReflectionException
@@ -40,6 +46,9 @@ function saveRegion(Region $region): void
 }
 
 /**
+ * Create and insert a new region
+ *
+ * @param string $name The name of the new region
  * @throws ReflectionException
  */
 function createAndInsertRegion(string $name): Region

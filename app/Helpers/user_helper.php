@@ -102,6 +102,8 @@ function getUserByToken(string $token): ?object
 }
 
 /**
+ * Saves given user to database
+ *
  * @param User $user
  * @return void
  * @throws ReflectionException
@@ -117,11 +119,13 @@ function saveUser(User $user): void
 }
 
 /**
- * @param string $username
- * @param string $email
- * @param string $firstName
- * @param string $lastName
- * @param string $password
+ * Create a new user and insert into the database
+ *
+ * @param string $username the username
+ * @param string $email the user's email
+ * @param string $firstName the user's first name
+ * @param string $lastName the user's last name
+ * @param string $password the password
  * @return User
  * @throws ReflectionException
  */
@@ -142,6 +146,12 @@ function createAndInsertUser(string $username, string $firstName, string $lastNa
     return $user;
 }
 
+/**
+ * Delete a user by its id
+ *
+ * @param int $id the users id
+ * @return void
+ */
 function deleteUser(int $id): void
 {
     getUserModel()->delete($id);
@@ -156,13 +166,15 @@ function getUserModel(): UserModel
 }
 
 /**
- * @param $firstName
- * @param $lastName
+ * Generate a username from a user's first and last name
+ *
+ * @param string $firstName
+ * @param string $lastName
  *
  * @return string
  * @throws InvalidArgumentException
  */
-function generateUsername($firstName, $lastName): string
+function generateUsername(string $firstName, string $lastName): string
 {
     $firstLetterFirstName = substr($firstName, 0, 1);
     $username = mb_strtolower($firstLetterFirstName . $lastName);
@@ -170,20 +182,33 @@ function generateUsername($firstName, $lastName): string
     return preg_replace("/[^\p{L}]+/", '', $username);
 }
 
-function hashSSHA($text): string
+/**
+ * Hash a given plain text
+ *
+ * @param string $plainText plain text
+ * @return string
+ */
+function hashSSHA(string $plainText): string
 {
     $salt = "";
     for ($i = 1; $i <= 10; $i++) {
         $salt .= substr('0123456789abcdef', rand(0, 15), 1);
     }
-    return "{SSHA}" . base64_encode(pack("H*", sha1($text . $salt)) . $salt);
+    return "{SSHA}" . base64_encode(pack("H*", sha1($plainText . $salt)) . $salt);
 }
 
-function checkSSHA($text, $hash): bool
+/**
+ * Check if a given hash matches a given plain text
+ *
+ * @param string $plainText plain text
+ * @param string $hash hash value
+ * @return bool
+ */
+function checkSSHA(string $plainText, string $hash): bool
 {
     $originalHash = base64_decode(substr($hash, 6));
     $salt = substr($originalHash, 20);
     $originalHash = substr($originalHash, 0, 20);
-    $newHash = pack("H*", sha1($text . $salt));
+    $newHash = pack("H*", sha1($plainText . $salt));
     return $originalHash == $newHash;
 }

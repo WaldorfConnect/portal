@@ -47,6 +47,7 @@ class AdminController extends BaseController
         $user = getUserById($userId);
 
         if ($user->isAccepted()) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to accept already accepted user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
         }
 
@@ -57,6 +58,7 @@ class AdminController extends BaseController
             saveUser($user);
             queueMail($user->getId(), 'Konto freigegeben', view('mail/AccountAccepted', ['user' => $user]));
         } catch (Throwable $e) {
+            log_message('error', 'Unable to accept user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
             return redirect('admin/users')->with('error', $e);
         }
 
@@ -69,10 +71,19 @@ class AdminController extends BaseController
         $user = getUserById($userId);
 
         if ($user->isActive()) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to activate already active user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits aktiv.');
         }
 
         $user->setActive(true);
+
+        try {
+            saveUser($user);
+        } catch (Throwable $e) {
+            log_message('error', 'Unable to activate user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
+            return redirect('admin/users')->with('error', $e);
+        }
+
         return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich aktiviert!');
     }
 
@@ -80,12 +91,20 @@ class AdminController extends BaseController
     {
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
-
         if (!$user->isActive()) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to deactivate already inactive user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits deaktiviert.');
         }
 
         $user->setActive(false);
+
+        try {
+            saveUser($user);
+        } catch (Throwable $e) {
+            log_message('error', 'Unable to deactivate user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
+            return redirect('admin/users')->with('error', $e);
+        }
+
         return redirect('admin/users')->with('success', $user->getName() . ' erfolgreich deaktiviert!');
     }
 
@@ -96,10 +115,9 @@ class AdminController extends BaseController
 
     public function editUser(int $userId): string|RedirectResponse
     {
-        $self = getCurrentUser();
         $user = getUserById($userId);
-
         if (!$user) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
@@ -108,11 +126,11 @@ class AdminController extends BaseController
 
     public function handleEditUser(): RedirectResponse
     {
-        $self = getCurrentUser();
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
 
         if (!$user) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
@@ -130,6 +148,7 @@ class AdminController extends BaseController
         if (strlen($password) > 0) {
             // Ensure matching
             if ($password != $confirmedPassword) {
+                log_message('warn', getCurrentUser()->getUsername() . ' entered unequal passwords upon updating ' . $user->getUsername());
                 return redirect()->to('admin/user/edit/' . $userId)->with('error', 'Passwörter stimmen nicht überein.');
             }
 
@@ -138,26 +157,31 @@ class AdminController extends BaseController
 
         try {
             saveUser($user);
+
+            log_message('info', getCurrentUser()->getUsername() . ' edited ' . $user->getUsername());
             return redirect('admin/users')->with('success', 'Benutzer bearbeitet.');
         } catch (Throwable $e) {
+            log_message('error', 'Unable to edit user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
             return redirect('admin/users')->with('error', $e);
         }
     }
 
     public function handleDeleteUser(): RedirectResponse
     {
-        $self = getCurrentUser();
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
-
         if (!$user) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to delete invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
         try {
             deleteUser($userId);
+
+            log_message('info', getCurrentUser()->getUsername() . ' deleted ' . $user->getUsername());
             return redirect('admin/users')->with('success', 'Benutzer gelöscht.');
         } catch (Throwable $e) {
+            log_message('error', 'Unable to delete user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
             return redirect('admin/users')->with('error', $e);
         }
     }
@@ -181,10 +205,12 @@ class AdminController extends BaseController
         $region = getRegionById($regionId);
 
         if (str_contains($name, '/') || str_contains($shortName, '/')) {
+            log_message('warn', getCurrentUser()->getUsername() . ' used invalid characters in organisation name');
             return redirect()->back()->withInput()->with('error', 'Ungültige Zeichen im Organisationsnamen.');
         }
 
         if (!$region) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to created organisation in invalid region ' . $regionId);
             return redirect()->back()->withInput()->with('error', 'Unbekannte Region.');
         }
 
@@ -217,9 +243,11 @@ class AdminController extends BaseController
             }
 
             insertOrganisation($organisation);
+            log_message('info', getCurrentUser()->getUsername() . ' created organisation ' . $organisation->getDisplayName());
 
-            return redirect('admin/organisations')->with('success', 'Gruppe erstellt.');
+            return redirect('admin/organisations')->with('success', 'Organisation erstellt.');
         } catch (Throwable $e) {
+            log_message('error', 'Unable to create organisation ' . $organisation->getDisplayName() . ': {exception}', ['exception' => $e]);
             return redirect()->back()->withInput()->with('error', $e);
         }
     }
@@ -231,18 +259,22 @@ class AdminController extends BaseController
         $organisation = getOrganisationById($organisationId);
 
         if (!$organisation) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to delete invalid organisation ' . $organisationId);
             return redirect('admin/organisations')->with('error', 'Unbekannte Organisation.');
         }
 
         if (!$organisation->isManageableBy($self)) {
+            log_message('warn', getCurrentUser()->getUsername() . ' tried to delete foreign organisation ' . $organisation->getDisplayName());
             return redirect('admin/organisations')->with('error', 'Du darfst diese Organisation nicht löschen.');
         }
 
         try {
             deleteOrganisation($organisationId);
+
+            log_message('info', getCurrentUser()->getUsername() . ' deleted organisation ' . $organisation->getDisplayName());
             return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');
         } catch (Throwable $e) {
-            return redirect('admin/organisations')->with('error', $e);
+            return $this->handleException('Unable to delete organisation', $e, 'admin/organisations');
         }
     }
 
@@ -265,7 +297,7 @@ class AdminController extends BaseController
 
             return redirect('admin/regions')->with('success', 'Region erstellt.');
         } catch (Throwable $e) {
-            return redirect('admin/regions')->with('error', $e);
+            return $this->handleException('Unable to create region', $e, 'admin/regions');
         }
     }
 
@@ -282,7 +314,7 @@ class AdminController extends BaseController
             deleteRegion($regionId);
             return redirect('admin/regions')->with('success', 'Region gelöscht.');
         } catch (Throwable $e) {
-            return redirect('admin/regions')->with('error', $e);
+            return $this->handleException('Unable to delete region', $e, 'admin/regions');
         }
     }
 
@@ -300,20 +332,18 @@ class AdminController extends BaseController
     {
         $regionId = $this->request->getPost('id');
         $region = getRegionById($regionId);
-
         if (!$region) {
             return redirect('admin/regions')->with('error', 'Unbekannte Region.');
         }
 
         $name = trim($this->request->getPost('name'));
-
         $region->setName($name);
 
         try {
             saveRegion($region);
             return redirect('admin/regions')->with('success', 'Region bearbeitet.');
         } catch (Throwable $e) {
-            return redirect('admin/regions')->with('error', $e);
+            return $this->handleException('Unable to update region', $e, 'admin/regions');
         }
     }
 }

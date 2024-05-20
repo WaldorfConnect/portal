@@ -18,6 +18,7 @@ use Throwable;
 function queueNotificationMails(): void
 {
     $now = new DateTimeImmutable();
+
     foreach (getUsers() as $user) {
         // Skip if users has email notifications disabled
         if (!$user->wantsEmailNotification())
@@ -105,6 +106,9 @@ function countUnreadNotificationsByUserId(int $userId): int
 /**
  * Create a new notification.
  *
+ * @param int $userId
+ * @param string $subject
+ * @param string $body
  */
 function createNotification(int $userId, string $subject, string $body): void
 {

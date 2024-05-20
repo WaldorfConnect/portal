@@ -5,11 +5,15 @@ namespace App\Helpers;
 use App\Entities\Mail;
 use App\Models\MailModel;
 use CodeIgniter\CLI\CLI;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use ReflectionException;
 
 /**
  * Retrieve, send and delete mails in queue.
+ *
+ * @return void
+ * @throws Exception
  */
 function workMailQueue(): void
 {
@@ -96,6 +100,12 @@ function getMailModel(): MailModel
     return new MailModel();
 }
 
+/**
+ * Create a new mailer instance.
+ *
+ * @return PHPMailer
+ * @throws Exception
+ */
 function createMailer(): PHPMailer
 {
     $mailer = new PHPMailer();

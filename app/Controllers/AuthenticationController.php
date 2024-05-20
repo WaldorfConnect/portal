@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use CodeIgniter\HTTP\RedirectResponse;
 use DateTime;
-use Exception;
 use InvalidArgumentException;
 use lfkeitel\phptotp\Base32;
 use lfkeitel\phptotp\Totp;
@@ -17,7 +16,6 @@ use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByUsername;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\insertUser;
 use function App\Helpers\saveUser;
 use function App\Helpers\queueMail;
 
@@ -54,14 +52,10 @@ class AuthenticationController extends BaseController
 
         $redirect = redirect()->to($loginUrl)->withInput()->with('name', $username);
 
-        // Check if user exists
-        if (!$user) {
-            return $redirect->with('error', 'Benutzername ungültig!');
-        }
-
         // Check if password is correct
-        if (!checkSSHA($password, $user->getPassword())) {
-            return $redirect->with('error', 'Passwort ungültig!');
+        if (!$user || !checkSSHA($password, $user->getPassword())) {
+            log_message('warn', 'Failed login for user ' . $username);
+            return $redirect->with('error', 'Zugangsdaten ungültig!');
         }
 
         if ($user->getTOTPSecret()) {
@@ -77,6 +71,7 @@ class AuthenticationController extends BaseController
 
         // Check if logging is blocked by current status
         if (!$user->isActive()) {
+            log_message('info', 'Failed login for disabled user ' . $user->getUsername());
             return $redirect->with('error', 'Benutzer ist nicht aktiv.');
         }
 
@@ -89,6 +84,7 @@ class AuthenticationController extends BaseController
             $user->setLastLoginDate(new DateTime());
             saveUser($user);
         } catch (Throwable $e) {
+            log_message('error', 'Unable to update login date for user ' . $user->getUsername() . ': {exception}', ['exception' => $e]);
             return $redirect->with('error', $e);
         }
 

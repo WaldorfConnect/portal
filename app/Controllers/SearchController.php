@@ -9,7 +9,7 @@ use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\Response;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use function App\Helpers\getAuthorizationServer;
+use function App\Helpers\createAuthorizationServer;
 use function App\Helpers\getCurrentUser;
 
 class SearchController extends BaseController

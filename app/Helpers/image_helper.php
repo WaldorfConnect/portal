@@ -8,14 +8,14 @@ use CodeIgniter\Files\File;
 use Ramsey\Uuid\Uuid;
 
 /**
+ * Having omitted the 'uploaded[$inputName]' rule, it is optional that with the given input a file as been uploaded.
+ * Size is limited to 2MB, which is also the `upload_max_filesize` of the Apache (see `/etc/php/8.2/apache2/php.ini`)
+ * @see https://codeigniter.com/user_guide/libraries/validation.html?highlight=validation#rules-for-file-uploads
+ *
  * @param $inputName string the name attribute value of the <input type="file" name="...">
  * @param int $maxFileSizeKb int the maximum file size of the image
  * @param bool $svgAllowed whether the svg format is allowed or not
  * @return array an image validation rule, ensuring it is a common image format
- * Docs: https://codeigniter.com/user_guide/libraries/validation.html?highlight=validation#rules-for-file-uploads
- *
- * Having omitted the 'uploaded[$inputName]' rule, it is optional that with the given input a file as been uploaded.
- * Size is limited to 2MB, which is also the `upload_max_filesize` of the Apache (see `/etc/php/8.2/apache2/php.ini`)
  */
 function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000, bool $svgAllowed = false): array
 {
@@ -32,14 +32,15 @@ function createImageValidationRule(string $inputName, int $maxFileSizeKb = 2000,
 }
 
 /**
- * @param File $file an image file of either one of the allowed formats (see above function)
- * @param string $outputDir
- * @param string $newName the new name of the file without extension
- * @param int $quality of the resulting image
- * @return void
- *
  * Convert the image to WEBP format and save it under the specified imageId
- * Docs: https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
+ * @see https://www.php.net/manual/de/function.exif-imagetype.php | https://www.php.net/manual/de/function.imagewebp.php
+ *
+ * @param File $file an image file of either one of the allowed formats (see above function)
+ * @param string $author
+ * @param int $quality of the resulting image
+ * @param int $newWidth
+ * @param int $newHeight
+ * @return string
  */
 function saveImage(File $file, string $author = '', int $quality = 100, int $newWidth = 0, int $newHeight = 0): string
 {

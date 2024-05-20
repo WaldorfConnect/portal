@@ -10,6 +10,9 @@ use LdapRecord\Container;
 use LdapRecord\LdapRecordException;
 
 /**
+ * Create LDAP connection
+ *
+ * @return Connection
  * @throws LDAPException
  */
 function createLDAPConnection(): Connection
@@ -22,11 +25,14 @@ function createLDAPConnection(): Connection
             'password' => getenv('ldap.admin.password')
         ]);
     } catch (ConfigurationException $e) {
-        throw new LDAPException('Error while creating ldap connection', $e);
+        log_message('error', 'Error while creating LDAP connection {exception}', ['exception' => $e]);
+        throw new LDAPException('Error while creating LDAP connection');
     }
 }
 
 /**
+ * Open LDAP connection
+ *
  * @throws LDAPException
  */
 function openLDAPConnection(): Connection
@@ -41,7 +47,8 @@ function openLDAPConnection(): Connection
     try {
         $connection->connect();
     } catch (BindException|LdapRecordException $e) {
-        throw new LDAPException('Error binding to ldap server', $e);
+        log_message('error', 'Error binding to LDAP server {exception}', ['exception' => $e]);
+        throw new LDAPException('Error binding to LDAP server');
     }
     Container::addConnection($connection, Container::getDefaultConnectionName());
 

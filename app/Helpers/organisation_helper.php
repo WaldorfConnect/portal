@@ -11,7 +11,7 @@ use CodeIgniter\Database\Exceptions\DatabaseException;
 use ReflectionException;
 
 /**
- * Returns all organisations.
+ * Return all organisations
  *
  * @return Organisation[]
  * @throws DatabaseException
@@ -22,9 +22,9 @@ function getOrganisations(): array
 }
 
 /**
- * Returns all organisations where name matches.
+ * Returns all organisations where name matches
  *
- * @param string $name
+ * @param string $name organisation name
  * @return Organisation[]
  */
 function getOrganisationsByName(string $name): array
@@ -33,9 +33,9 @@ function getOrganisationsByName(string $name): array
 }
 
 /**
- * Returns the organisation corresponding to the given id.
+ * Returns the organisation corresponding to the given id
  *
- * @param int $id
+ * @param int $id organisation id
  * @return ?Organisation
  * @throws DatabaseException
  */
@@ -45,7 +45,9 @@ function getOrganisationById(int $id): ?object
 }
 
 /**
- * @param int $parentId
+ * Get an organisation's children by its parent id
+ *
+ * @param int $parentId parent organisation id
  * @return array
  */
 function getChildOrganisationsByParentId(int $parentId): array
@@ -54,23 +56,23 @@ function getChildOrganisationsByParentId(int $parentId): array
 }
 
 /**
- * Saves the given organisation.
+ * Updates a given organisation in the database
  *
- * @param Organisation $group
+ * @param Organisation $organisation the modified organisation
  * @return void
  * @throws ReflectionException
  */
-function saveOrganisation(Organisation $group): void
+function saveOrganisation(Organisation $organisation): void
 {
-    if (!$group->hasChanged()) {
+    if (!$organisation->hasChanged()) {
         return;
     }
 
-    getOrganisationModel()->save($group);
+    getOrganisationModel()->save($organisation);
 }
 
 /**
- * Creates an organisation with the given parameters.
+ * Creates an organisation with the given parameters
  *
  * @param string $name
  * @param string $shortName
@@ -89,7 +91,7 @@ function createOrganisation(string $name, string $shortName, int $regionId, int 
 }
 
 /**
- * Inserts an organisation and returns its newly created id.
+ * Inserts an organisation and returns its newly created id
  *
  * @throws ReflectionException
  */
@@ -101,7 +103,7 @@ function insertOrganisation(Organisation $organisation): string|int
 }
 
 /**
- * Deletes the organisation with the corresponding id.
+ * Deletes the organisation with the corresponding id
  *
  * @param int $id
  * @return void
@@ -112,7 +114,7 @@ function deleteOrganisation(int $id): void
 }
 
 /**
- * Returns the membership (or join request) for a given user in a given organisation.
+ * Returns the membership (or join request) for a given user in a given organisation
  *
  * @param int $userId
  * @param int $organisationId
@@ -124,7 +126,7 @@ function getMembership(int $userId, int $organisationId): ?object
 }
 
 /**
- * Returns the memberships (or join requests) for a given user.
+ * Returns the memberships (or join requests) for a given user
  *
  * @param int $userId
  * @return Membership[]
@@ -135,7 +137,7 @@ function getMembershipsByUserId(int $userId): array
 }
 
 /**
- * Returns the memberships (or join requests) for a given organisation.
+ * Returns the memberships (or join requests) for a given organisation
  *
  * @param int $organisationId
  * @return Membership[]
@@ -146,7 +148,7 @@ function getMembershipsByOrganisationId(int $organisationId): array
 }
 
 /**
- * Returns the members (join requests excluded) for a given organisation.
+ * Returns the members (join requests excluded) for a given organisation
  *
  * @param int $organisationId
  * @return Membership[]
@@ -157,7 +159,7 @@ function getMembers(int $organisationId): array
 }
 
 /**
- * Returns count of members (join requests excluded) for a given organisation.
+ * Returns count of members (join requests excluded) for a given organisation
  *
  * @param int $organisationId
  * @return int
@@ -168,18 +170,7 @@ function countMembers(int $organisationId): int
 }
 
 /**
- * Returns the join requests (members excluded) for a given organisation.
- *
- * @param int $organisationId
- * @return Membership[]
- */
-function getJoinRequests(int $organisationId): array
-{
-    return getMembershipModel()->where('organisation_id', $organisationId)->where('status', MembershipStatus::PENDING->value)->findAll();
-}
-
-/**
- * Returns all organisations in a given region.
+ * Returns all organisations in a given region
  *
  * @param int $regionId
  * @return Organisation[]
@@ -191,7 +182,7 @@ function getOrganisationsByRegionId(int $regionId): array
 }
 
 /**
- * Creates a membership request with the given parameters.
+ * Creates a membership request with the given parameters
  *
  * @param int $userId
  * @param int $organisationId
@@ -209,7 +200,7 @@ function createMembershipRequest(int $userId, int $organisationId): void
 }
 
 /**
- * Create membership with given parameters.
+ * Creates membership with given parameters
  *
  * @param int $userId
  * @param int $organisationId
@@ -226,13 +217,20 @@ function createMembership(int $userId, int $organisationId, MembershipStatus $st
     saveMembership($membership);
 }
 
+/**
+ * Deletes an organisation membership
+ *
+ * @param int $userId
+ * @param int $organisationId
+ * @return void
+ */
 function deleteMembership(int $userId, int $organisationId): void
 {
     getMembershipModel()->where('user_id', $userId)->where('organisation_id', $organisationId)->delete();
 }
 
 /**
- * Saves given membership model.
+ * Saves given membership model
  *
  * @param Membership $membership
  * @return void
@@ -243,6 +241,16 @@ function saveMembership(Membership $membership): void
     getMembershipModel()->save($membership);
 }
 
+/**
+ * Create a notification for all organisation members
+ *
+ * @param int $organisationId
+ * @param string $subject
+ * @param string $body
+ * @param MembershipStatus|null $status
+ * @param array $exceptUsers
+ * @return void
+ */
 function createOrganisationNotification(int $organisationId, string $subject, string $body, MembershipStatus $status = null, array $exceptUsers = []): void
 {
     $organisation = getOrganisationById($organisationId);
@@ -269,7 +277,7 @@ function createOrganisationNotification(int $organisationId, string $subject, st
 }
 
 /**
- * Returns the group table wrapper and query builder.
+ * Returns the group table wrapper and query builder
  *
  * @return OrganisationModel
  */
@@ -279,7 +287,7 @@ function getOrganisationModel(): OrganisationModel
 }
 
 /**
- * Returns the group membership table wrapper and query builder.
+ * Returns the group membership table wrapper and query builder
  *
  * @return MembershipModel
  */

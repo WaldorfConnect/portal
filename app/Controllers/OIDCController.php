@@ -9,14 +9,14 @@ use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\Response;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use function App\Helpers\getAuthorizationServer;
+use function App\Helpers\createAuthorizationServer;
 use function App\Helpers\getCurrentUser;
 
 class OIDCController extends BaseController
 {
     public function authorize(): string|Response
     {
-        $server = getAuthorizationServer();
+        $server = createAuthorizationServer();
 
         $wrappedRequest = new RequestWrapper($this->request);
         $wrappedResponse = new ResponseWrapper(Services::response());
@@ -36,7 +36,7 @@ class OIDCController extends BaseController
 
     public function accessToken(): string|Response
     {
-        $server = getAuthorizationServer();
+        $server = createAuthorizationServer();
 
         $wrappedRequest = new RequestWrapper($this->request);
         $wrappedResponse = new ResponseWrapper(Services::response());
@@ -56,6 +56,7 @@ class OIDCController extends BaseController
     public function logout(): RedirectResponse
     {
         $redirectUri = $this->request->getGet('post_logout_redirect_uri');
+
         session()->remove('user_id');
         return redirect()->to($redirectUri);
     }

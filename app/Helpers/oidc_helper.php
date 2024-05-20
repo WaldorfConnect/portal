@@ -10,11 +10,18 @@ use App\OIDC\Repositories\IdentityRepository;
 use App\OIDC\Repositories\RefreshTokenRepository;
 use App\OIDC\Repositories\ScopeRepository;
 use DateInterval;
+use Exception;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use OpenIDConnectServer\ClaimExtractor;
 
-function getAuthorizationServer(): AuthorizationServer
+/**
+ * Create a new authorization server instance
+ *
+ * @return AuthorizationServer
+ * @throws Exception
+ */
+function createAuthorizationServer(): AuthorizationServer
 {
     $clientRepository = new ClientRepository();
     $scopeRepository = new ScopeRepository();
@@ -24,6 +31,7 @@ function getAuthorizationServer(): AuthorizationServer
 
     $responseType = new CustomIdTokenResponse(new IdentityRepository(), new ClaimExtractor());
 
+    // Create the authorization server with all necessary repositories
     $server = new AuthorizationServer(
         $clientRepository,
         $accessTokenRepository,
