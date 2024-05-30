@@ -8,7 +8,9 @@ use App\OIDC\Http\ResponseWrapper;
 use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\Response;
+use Exception;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Throwable;
 use function App\Helpers\createAuthorizationServer;
 use function App\Helpers\getCurrentUser;
 
@@ -16,7 +18,14 @@ class OIDCController extends BaseController
 {
     public function authorize(): string|Response
     {
-        $server = createAuthorizationServer();
+        try {
+            $server = createAuthorizationServer();
+        } catch (Throwable $e) {
+            log_message('error', 'Failed to create authorization server: {exception}', ['exception' => $e]);
+
+            $this->response->setStatusCode(500);
+            return "Failed to create authorization server";
+        }
 
         $wrappedRequest = new RequestWrapper($this->request);
         $wrappedResponse = new ResponseWrapper(Services::response());
@@ -27,6 +36,7 @@ class OIDCController extends BaseController
             $authRequest->setAuthorizationApproved(true);
             $server->completeAuthorizationRequest($authRequest, $wrappedResponse);
         } catch (OAuthServerException $e) {
+            log_message('error', 'Failed to handle authorization request: {exception}', ['exception' => $e]);
             $e->generateHttpResponse($wrappedResponse);
         }
 
@@ -36,16 +46,22 @@ class OIDCController extends BaseController
 
     public function accessToken(): string|Response
     {
-        $server = createAuthorizationServer();
+        try {
+            $server = createAuthorizationServer();
+        } catch (Throwable $e) {
+            log_message('error', 'Failed to create authorization server: {exception}', ['exception' => $e]);
+
+            $this->response->setStatusCode(500);
+            return "Failed to create authorization server";
+        }
 
         $wrappedRequest = new RequestWrapper($this->request);
         $wrappedResponse = new ResponseWrapper(Services::response());
 
-        log_message('info', print_r($wrappedRequest->getParsedBody(), true));
-
         try {
             $server->respondToAccessTokenRequest($wrappedRequest, $wrappedResponse);
         } catch (OAuthServerException $e) {
+            log_message('error', 'Failed to handle access token request: {exception}', ['exception' => $e]);
             $e->generateHttpResponse($wrappedResponse);
         }
 

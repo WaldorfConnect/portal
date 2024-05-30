@@ -20,21 +20,19 @@ $routes->get('/register', 'AuthenticationController::register', ['filter' => Log
 $routes->post('/register', 'AuthenticationController::handleRegister', ['filter' => LoggedOutFilter::class]);
 $routes->post('/register/resend', 'AuthenticationController::handleRegisterResendConfirmationEmail', ['filter' => LoggedOutFilter::class]);
 
-$routes->get('/user/reset_password', 'UserController::resetPassword', ['filter' => LoggedOutFilter::class]);
-$routes->post('/user/reset_password', 'UserController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
-
-$routes->get('/user/profile', 'UserController::profile', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/profile', 'UserController::handleProfile', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/profile/resend', 'UserController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
-
-$routes->get('/user/settings', 'UserController::settings', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/settings', 'UserController::handleSettings', ['filter' => LoggedInFilter::class]);
-
-$routes->get('/user/security', 'UserController::security', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/security', 'UserController::handleSecurity', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/security/totp', 'UserController::handleTOTPEnable', ['filter' => LoggedInFilter::class]);
-
+$routes->get('/user/profile', 'UserProfileController::profile', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/profile', 'UserProfileController::handleProfile', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/profile/resend', 'UserProfileController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
 $routes->get('/user/confirm', 'UserController::handleConfirm');
+
+$routes->get('/user/settings', 'UserSettingsController::settings', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/settings', 'UserSettingsController::handleSettings', ['filter' => LoggedInFilter::class]);
+
+$routes->get('/user/security', 'UserSecurityController::security', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/security', 'UserSecurityController::handleSecurity', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/security/totp', 'UserSecurityController::handleTOTPEnable', ['filter' => LoggedInFilter::class]);
+$routes->get('/user/security/reset_password', 'UserSecurityController::resetPassword', ['filter' => LoggedOutFilter::class]);
+$routes->post('/user/security/reset_password', 'UserSecurityController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/organisations', 'OrganisationController::list', ['filter' => LoggedInFilter::class]);
 
