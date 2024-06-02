@@ -45,7 +45,7 @@ use function App\Helpers\getCurrentUser;
             _paq.push(['setTrackerUrl', u + 'matomo.php']);
             _paq.push(['setSiteId', '8']);
 
-            <?php if($user = getCurrentUser()): ?>
+            <?php if (function_exists('getCurrentUser') && $user = getCurrentUser()): ?>
             _paq.push(['setUserId', '<?= $user->getUsername() ?>'])
             <?php endif; ?>
 

@@ -1,27 +1,12 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\user;
 
+use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RedirectResponse;
-use Exception;
-use lfkeitel\phptotp\Base32;
-use lfkeitel\phptotp\Totp;
-use Ramsey\Uuid\Uuid;
 use Throwable;
-use function App\Helpers\checkSSHA;
-use function App\Helpers\createImageValidationRule;
-use function App\Helpers\createNotification;
-use function App\Helpers\deleteImage;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getUserByEmail;
-use function App\Helpers\getUserById;
-use function App\Helpers\getUserByToken;
-use function App\Helpers\getUserByUsernameAndEmail;
-use function App\Helpers\getUsers;
-use function App\Helpers\hashSSHA;
-use function App\Helpers\saveImage;
 use function App\Helpers\saveUser;
-use function App\Helpers\queueMail;
 
 class UserSettingsController extends BaseController
 {

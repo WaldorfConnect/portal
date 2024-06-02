@@ -52,25 +52,25 @@ $routes->post('/organisation/(:num)/kick_user', 'OrganisationController::handleK
 $routes->get('/admin', 'AdminController::index', ['filter' => AdminFilter::class]);
 $routes->get('/admin/debug', 'AdminController::debug', ['filter' => AdminFilter::class]);
 
-$routes->get('/admin/users', 'AdminController::users', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/activate', 'AdminController::activateUser', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/deactivate', 'AdminController::deactivateUser', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/accept', 'AdminController::acceptUser', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/delete', 'AdminController::handleDeleteUser', ['filter' => AdminFilter::class]);
-$routes->get('/admin/user/edit/(:num)', 'AdminController::editUser/$1', ['filter' => AdminFilter::class]);
-$routes->post('/admin/user/edit', 'AdminController::handleEditUser', ['filter' => AdminFilter::class]);
+$routes->get('/admin/users', 'AdminUserController::users', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/activate', 'AdminUserController::activateUser', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/deactivate', 'AdminUserController::deactivateUser', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/accept', 'AdminUserController::acceptUser', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/delete', 'AdminUserController::handleDeleteUser', ['filter' => AdminFilter::class]);
+$routes->get('/admin/user/edit/(:num)', 'AdminUserController::editUser/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/user/edit', 'AdminUserController::handleEditUser', ['filter' => AdminFilter::class]);
 
-$routes->get('/admin/organisations', 'AdminController::organisations', ['filter' => AdminFilter::class]);
-$routes->get('/admin/organisation/create', 'AdminController::createOrganisation', ['filter' => AdminFilter::class]);
-$routes->post('/admin/organisation/create', 'AdminController::handleCreateOrganisation', ['filter' => AdminFilter::class]);
-$routes->post('/admin/organisation/delete', 'AdminController::handleDeleteOrganisation', ['filter' => AdminFilter::class]);
+$routes->get('/admin/organisations', 'AdminOrganisationController::organisations', ['filter' => AdminFilter::class]);
+$routes->get('/admin/organisation/create', 'AdminOrganisationController::createOrganisation', ['filter' => AdminFilter::class]);
+$routes->post('/admin/organisation/create', 'AdminOrganisationController::handleCreateOrganisation', ['filter' => AdminFilter::class]);
+$routes->post('/admin/organisation/delete', 'AdminOrganisationController::handleDeleteOrganisation', ['filter' => AdminFilter::class]);
 
-$routes->get('/admin/regions', 'AdminController::regions', ['filter' => AdminFilter::class]);
-$routes->get('/admin/region/create', 'AdminController::createRegion', ['filter' => AdminFilter::class]);
-$routes->post('/admin/region/create', 'AdminController::handleCreateRegion', ['filter' => AdminFilter::class]);
-$routes->post('/admin/region/delete', 'AdminController::handleDeleteRegion', ['filter' => AdminFilter::class]);
-$routes->get('/admin/region/edit/(:num)', 'AdminController::editRegion/$1', ['filter' => AdminFilter::class]);
-$routes->post('/admin/region/edit', 'AdminController::handleEditRegion', ['filter' => AdminFilter::class]);
+$routes->get('/admin/regions', 'AdminRegionController::regions', ['filter' => AdminFilter::class]);
+$routes->get('/admin/region/create', 'AdminRegionController::createRegion', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/create', 'AdminRegionController::handleCreateRegion', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/delete', 'AdminRegionController::handleDeleteRegion', ['filter' => AdminFilter::class]);
+$routes->get('/admin/region/edit/(:num)', 'AdminRegionController::editRegion/$1', ['filter' => AdminFilter::class]);
+$routes->post('/admin/region/edit', 'AdminRegionController::handleEditRegion', ['filter' => AdminFilter::class]);
 
 $routes->get('/oidc/authorize', 'OIDCController::authorize', ['filter' => LoggedInFilter::class]);
 $routes->post('/oidc/access_token', 'OIDCController::accessToken');
