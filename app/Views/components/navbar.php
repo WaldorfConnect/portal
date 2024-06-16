@@ -81,6 +81,20 @@ use function App\Helpers\getCurrentUser;
                         </a>
                     </div>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="helpDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-question-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="helpDropdown">
+                        <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
+                            <i class="fas fa-book-open"></i> Dokumentation
+                        </a>
+                        <a class="dropdown-item" href="<?= base_url('user/settings') ?>">
+                            <i class="fas fa-headset"></i> Support
+                        </a>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
