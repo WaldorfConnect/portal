@@ -5,8 +5,16 @@ use function App\Helpers\getNotificationsByUserId;
 
 $notifications = getNotificationsByUserId(getCurrentUser()->getId(), $limit, null, true);
 ?>
-
 <?php if (count($notifications) > 0): ?>
+    <div class="row">
+        <?= form_open(base_url("notification/delete_all")) ?>
+        <div class="float-end mb-3">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-trash"></i> Alle löschen
+            </button>
+        </div>
+        <?= form_close() ?>
+    </div>
     <ul class="list-group">
         <?php foreach ($notifications as $notification): ?>
             <li class="list-group-item <?= $notification->getReadDate() ? '' : 'notification-unread' ?>">

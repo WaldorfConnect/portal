@@ -77,7 +77,6 @@ use function App\Helpers\getCurrentUser;
                                        href="<?= base_url('organisation') ?>/<?= $organisation->getId() ?>">
                                         Öffnen
                                     </a>
-
                                 </div>
                             </div>
                         </li>
@@ -111,3 +110,76 @@ use function App\Helpers\getCurrentUser;
         </div>
     </div>
 </div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-5">
+    <div class="col mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header text-center">
+                Organisationskarte
+            </div>
+            <div class="card-body">
+                <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+                <link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
+                <div id="osm-map"></div>
+            </div>
+            <div class="card-footer footer-plain">
+                <div class="text-center">
+                    <a class="btn btn-block btn-outline-primary" href="/map">
+                        <i class="fas fa-map-location"></i> Karte im Vollbild anzeigen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header text-center">
+                Deine Favoriten
+            </div>
+            <div class="card-body">
+            </div>
+            <div class="card-footer footer-plain">
+                <div class="text-center">
+                    <a class="btn btn-block btn-outline-primary" href="/favorites">
+                        <i class="fas fa-star"></i> Deine Favoriten verwalten
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header text-center">
+                Online in den letzten 24 Stunden
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Where you want to render the map.
+    var element = document.getElementById('osm-map');
+
+    // Height has to be set. You can do this in CSS too.
+    element.style = 'height:300px;';
+
+    // Create Leaflet map on map element.
+    var map = L.map(element);
+
+    // Add OSM tile layer to the Leaflet map.
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Target's GPS coordinates.
+    var target = L.latLng('48.39533', '10.90671');
+
+    // Set map's center to target with zoom 14.
+    map.setView(target, 18);
+
+    // Place a marker on the same location.
+    L.marker(target).addTo(map);
+</script>
