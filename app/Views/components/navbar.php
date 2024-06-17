@@ -27,25 +27,16 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin') ?>">
                                 Dashboard
                             </a>
-                            <?php if ($user->isAdmin()): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/debug') ?>">
-                                    Debug
-                                </a>
-                            <?php endif; ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer
                             </a>
-                            <?php if ($user->isAdmin()): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
-                                    Organisationen
-                                </a>
-                            <?php endif; ?>
-                            <?php if ($user->isAdmin()): ?>
-                                <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
-                                    Regionen
-                                </a>
-                            <?php endif; ?>
+                            <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
+                                Organisationen
+                            </a>
+                            <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
+                                Regionen
+                            </a>
                         </div>
                     </li>
                 <?php endif; ?>

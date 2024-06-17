@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\admin;
+namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RedirectResponse;
