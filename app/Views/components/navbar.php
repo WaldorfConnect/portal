@@ -87,10 +87,10 @@ use function App\Helpers\getCurrentUser;
                         <i class="fa fa-question-circle"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="helpDropdown">
-                        <a class="dropdown-item" href="<?= base_url('user/profile') ?>">
+                        <a class="dropdown-item" href="https://wiki.waldorfconnect.de/" target="_blank">
                             <i class="fas fa-book-open"></i> Dokumentation
                         </a>
-                        <a class="dropdown-item" href="<?= base_url('user/settings') ?>">
+                        <a class="dropdown-item" href="https://waldorfconnect.de/support" target="_blank">
                             <i class="fas fa-headset"></i> Support
                         </a>
                     </div>
