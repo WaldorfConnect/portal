@@ -6,15 +6,15 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RedirectResponse;
 use Throwable;
 use function App\Helpers\createImageValidationRule;
-use function App\Helpers\createOrganisation;
-use function App\Helpers\deleteOrganisation;
+use function App\Helpers\createGroup;
+use function App\Helpers\deleteGroup;
 use function App\Helpers\deleteUser;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getOrganisationById;
+use function App\Helpers\getGroupById;
 use function App\Helpers\getRegionById;
 use function App\Helpers\getUserById;
 use function App\Helpers\hashSSHA;
-use function App\Helpers\insertOrganisation;
+use function App\Helpers\insertGroup;
 use function App\Helpers\queueMail;
 use function App\Helpers\saveImage;
 use function App\Helpers\saveUser;
@@ -49,7 +49,7 @@ class AdminOrganisationController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Unbekannte Region.');
         }
 
-        $organisation = createOrganisation($name, $shortName, $regionId);
+        $organisation = createGroup($name, $shortName, $regionId);
         $organisation->setWebsite($websiteUrl);
 
         try {
@@ -77,7 +77,7 @@ class AdminOrganisationController extends BaseController
                 $organisation->setImageId($imageId);
             }
 
-            insertOrganisation($organisation);
+            insertGroup($organisation);
             log_message('info', getCurrentUser()->getUsername() . ' created organisation ' . $organisation->getDisplayName());
 
             return redirect('admin/organisations')->with('success', 'Organisation erstellt.');
@@ -91,7 +91,7 @@ class AdminOrganisationController extends BaseController
     {
         $self = getCurrentUser();
         $organisationId = $this->request->getPost('id');
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             log_message('warn', getCurrentUser()->getUsername() . ' tried to delete invalid organisation ' . $organisationId);
@@ -104,7 +104,7 @@ class AdminOrganisationController extends BaseController
         }
 
         try {
-            deleteOrganisation($organisationId);
+            deleteGroup($organisationId);
 
             log_message('info', getCurrentUser()->getUsername() . ' deleted organisation ' . $organisation->getDisplayName());
             return redirect('admin/organisations')->with('success', 'Organisation gelöscht.');

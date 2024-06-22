@@ -4,11 +4,11 @@ namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
 use function App\Helpers\getMembership;
-use function App\Helpers\getOrganisationById;
-use function App\Helpers\getMembershipsByOrganisationId;
+use function App\Helpers\getGroupById;
+use function App\Helpers\getMembershipsByGroupId;
 use function App\Helpers\getRegionById;
 
-class Organisation extends Entity
+class Group extends Entity
 {
     protected $attributes = [
         'id' => null,
@@ -66,12 +66,12 @@ class Organisation extends Entity
     }
 
     /**
-     * @return ?Organisation
+     * @return ?Group
      */
-    public function getParent(): ?Organisation
+    public function getParent(): ?Group
     {
         if (is_null($this->getParentId())) return null;
-        return getOrganisationById($this->getParentId());
+        return getGroupById($this->getParentId());
     }
 
     /**
@@ -252,7 +252,7 @@ class Organisation extends Entity
      */
     public function getMemberships(): array
     {
-        return getMembershipsByOrganisationId($this->getId());
+        return getMembershipsByGroupId($this->getId());
     }
 
     public function getUrl(): string

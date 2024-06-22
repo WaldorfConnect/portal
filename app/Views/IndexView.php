@@ -60,7 +60,7 @@ use function App\Helpers\getCurrentUser;
                         <li class="list-group-item">
                             <div class="flex-container">
                                 <div class="flex-main">
-                                    <?php $organisation = $membership->getOrganisation(); ?>
+                                    <?php $organisation = $membership->getGroup(); ?>
                                     <?php if ($organisation->getParentId()): ?>
                                         <?= $organisation->getParent()->getName() ?>
                                         <br>

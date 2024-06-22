@@ -10,40 +10,40 @@ use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
 use function App\Helpers\createNotification;
-use function App\Helpers\createOrganisation;
-use function App\Helpers\createOrganisationNotification;
+use function App\Helpers\createGroup;
+use function App\Helpers\createGroupNotification;
 use function App\Helpers\deleteMembership;
-use function App\Helpers\deleteOrganisation;
+use function App\Helpers\deleteGroup;
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getOrganisationById;
+use function App\Helpers\getGroupById;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUserById;
-use function App\Helpers\insertOrganisation;
+use function App\Helpers\insertGroup;
 use function App\Helpers\saveImage;
 use function App\Helpers\saveMembership;
-use function App\Helpers\saveOrganisation;
+use function App\Helpers\saveGroup;
 
-class OrganisationController extends BaseController
+class GroupController extends BaseController
 {
     public function list(): string
     {
-        return $this->render('organisation/OrganisationsView');
+        return $this->render('group/GroupsView');
     }
 
-    public function organisation(int $organisationId): RedirectResponse|string
+    public function group(int $groupId): RedirectResponse|string
     {
-        $organisation = getOrganisationById($organisationId);
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        return $this->render('organisation/OrganisationView', ['organisation' => $organisation]);
+        return $this->render('group/GroupView', ['groups' => $group]);
     }
 
     public function handleJoin(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
@@ -57,7 +57,7 @@ class OrganisationController extends BaseController
         try {
             createMembershipRequest($currentUser->getId(), $organisationId);
 
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Beitrittsanfrage',
                 "{$currentUser->getName()} möchte %s beitreten.</a>",
                 MembershipStatus::ADMIN);
@@ -71,7 +71,7 @@ class OrganisationController extends BaseController
     public function handleLeave(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
@@ -83,7 +83,7 @@ class OrganisationController extends BaseController
         }
 
         deleteMembership($currentUser->getId(), $organisationId);
-        createOrganisationNotification($organisationId,
+        createGroupNotification($organisationId,
             'Organisation verlassen',
             "{$currentUser->getName()} hat %s verlassen.</a>");
 
@@ -93,7 +93,7 @@ class OrganisationController extends BaseController
     public function handleAddMember(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
@@ -112,7 +112,7 @@ class OrganisationController extends BaseController
             }
 
             $memberUser = getUserById($member);
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Organisation beigetreten',
                 "{$memberUser->getName()} ist %s beigetreten.</a>",
                 null,
@@ -124,10 +124,10 @@ class OrganisationController extends BaseController
         return redirect()->to(base_url('organisation/' . $organisationId));
     }
 
-    public function handleAddWorkgroup(int $organisationId): RedirectResponse|string
+    public function handleAddSubgroup(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         $name = trim($this->request->getPost('name'));
 
@@ -140,11 +140,11 @@ class OrganisationController extends BaseController
         }
 
         try {
-            $workgroup = createOrganisation($name, $name, $organisation->getRegionId(), $organisation->getId());
-            $id = insertOrganisation($workgroup);
+            $workgroup = createGroup($name, $name, $organisation->getRegionId(), $organisation->getId());
+            $id = insertGroup($workgroup);
 
             createMembership($self->getId(), $id, MembershipStatus::ADMIN);
-            createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
+            createGroupNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
 
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
         } catch (Throwable $e) {
@@ -155,7 +155,7 @@ class OrganisationController extends BaseController
     public function edit(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
@@ -171,7 +171,7 @@ class OrganisationController extends BaseController
     public function handleEdit(int $organisationId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
@@ -242,7 +242,7 @@ class OrganisationController extends BaseController
         }
 
         try {
-            saveOrganisation($organisation);
+            saveGroup($organisation);
 
             return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Organisation bearbeitet.');
         } catch (Throwable $e) {
@@ -255,7 +255,7 @@ class OrganisationController extends BaseController
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
         }
@@ -282,7 +282,7 @@ class OrganisationController extends BaseController
             return redirect('organisations')->with('error', $e);
         }
 
-        createOrganisationNotification($organisationId,
+        createGroupNotification($organisationId,
             'Organisation beigetreten',
             "{$membership->getUser()->getName()} ist %s beigetreten.</a>",
             null,
@@ -300,7 +300,7 @@ class OrganisationController extends BaseController
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
         }
@@ -322,7 +322,7 @@ class OrganisationController extends BaseController
         try {
             deleteMembership($userId, $organisationId);
 
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Beitrittsanfrage abgelehnt',
                 "Anfrage von {$membership->getUser()->getName()} an %s abgelehnt.</a>",
                 MembershipStatus::ADMIN,
@@ -342,7 +342,7 @@ class OrganisationController extends BaseController
         $userId = $this->request->getPost('userId');
         $status = $this->request->getPost('status');
 
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
         }
@@ -365,7 +365,7 @@ class OrganisationController extends BaseController
         $membership->setStatus($statusEnum);
 
         try {
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Organisationsrolle geändert',
                 "Rolle von {$membership->getUser()->getName()} in %s zu {$statusEnum->displayName()} geändert.</a>",
                 MembershipStatus::ADMIN,
@@ -386,7 +386,7 @@ class OrganisationController extends BaseController
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
         }
@@ -408,13 +408,13 @@ class OrganisationController extends BaseController
         try {
             deleteMembership($userId, $organisationId);
 
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Aus Organisation entfernt',
                 "{$membership->getUser()->getName()} von {$currentUser->getName()} aus %s entfernt.</a>",
                 MembershipStatus::ADMIN,
                 [$membership->getUserId()]);
 
-            createOrganisationNotification($organisationId,
+            createGroupNotification($organisationId,
                 'Organisation verlassen',
                 "{$currentUser->getName()} hat %s verlassen.</a>",
                 MembershipStatus::USER,
@@ -431,7 +431,7 @@ class OrganisationController extends BaseController
     public function handleDelete(int $organisationId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getOrganisationById($organisationId);
+        $organisation = getGroupById($organisationId);
 
         if (!$organisation) {
             return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
@@ -447,8 +447,8 @@ class OrganisationController extends BaseController
         }
 
         try {
-            createOrganisationNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$organisation->getName()} in %s gelöscht.");
-            deleteOrganisation($organisationId);
+            createGroupNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$organisation->getName()} in %s gelöscht.");
+            deleteGroup($organisationId);
             return redirect()->to(base_url('organisation/' . $parent->getId()))->with('success', 'Arbeitsgruppe gelöscht.');
         } catch (Throwable $e) {
             return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', $e);

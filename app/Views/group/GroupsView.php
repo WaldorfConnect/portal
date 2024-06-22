@@ -2,19 +2,19 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-            Organisationen
+            Gruppen
         </li>
     </ol>
 </nav>
 
-<h1 class="header">Alle Organisationen</h1>
+<h1 class="header">Alle Gruppen</h1>
 
 <?php use function App\Helpers\countMembers;
-use function App\Helpers\getOrganisationsByRegionId;
+use function App\Helpers\getGroupsByRegionId;
 use function App\Helpers\getRegions;
 
 foreach (getRegions() as $region): ?>
-    <?php $groups = getOrganisationsByRegionId($region->getId()) ?>
+    <?php $groups = getGroupsByRegionId($region->getId()) ?>
     <?php if (empty($groups)): continue; endif; ?>
 
 <div class="accordion accordion-flush" id="region<?= $region->getId() ?>">
@@ -33,7 +33,7 @@ foreach (getRegions() as $region): ?>
                 <ul>
                     <?php foreach ($groups as $group): ?>
                         <li>
-                            <a class="me-2" href="<?= base_url('organisation/' . $group->getId()) ?>">
+                            <a class="me-2" href="<?= base_url('group/' . $group->getId()) ?>">
                                 <?= $group->getName() ?>
                             </a>
                             <?php if (($count = countMembers($group->getId())) == 0): ?>

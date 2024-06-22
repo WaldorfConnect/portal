@@ -1,39 +1,39 @@
 <?php
 
 use App\Entities\MembershipStatus;
-use function App\Helpers\getChildOrganisationsByParentId;
+use function App\Helpers\getChildGroupsByParentId;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getImageAuthorById;
 use function App\Helpers\getImageUrlById;
-use function App\Helpers\getMembershipsByOrganisationId;
+use function App\Helpers\getMembershipsByGroupId;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUsers;
 
 $currentUser = getCurrentUser();
-$ownMembership = getMembership($currentUser->getId(), $organisation->getId());
+$ownMembership = getMembership($currentUser->getId(), $group->getId());
 ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-        <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Organisationen</a></li>
-        <?php if ($parent = $organisation->getParent()): ?>
+        <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Gruppen</a></li>
+        <?php if ($parent = $group->getParent()): ?>
             <li class="breadcrumb-item" aria-current="page">
                 <a href="<?= base_url('/organisation/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                <?= $organisation->getName() ?>
+                <?= $group->getName() ?>
             </li>
         <?php else: ?>
             <li class="breadcrumb-item active" aria-current="page">
-                <?= $organisation->getName() ?>
+                <?= $group->getName() ?>
             </li>
         <?php endif; ?>
     </ol>
 </nav>
 
 <h1 class="header">
-    <?= $organisation->getDisplayName() ?>
-    <?php if (($membership = getMembership(getCurrentUser()->getId(), $organisation->getId()))): ?>
+    <?= $group->getDisplayName() ?>
+    <?php if (($membership = getMembership(getCurrentUser()->getId(), $group->getId()))): ?>
         <?= $membership->getStatus()->badge() ?>
     <?php endif; ?>
 </h1>
@@ -48,15 +48,15 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                         <table>
                             <tr>
                                 <img class="img-thumbnail mb-3"
-                                     src="<?= getImageUrlById($organisation->getLogoId(), 'assets/img/organisation-logo_512x128.webp') ?>"
-                                     alt="Logo <?= $organisation->getName() ?>">
+                                     src="<?= getImageUrlById($group->getLogoId(), 'assets/img/organisation-logo_512x128.webp') ?>"
+                                     alt="Logo <?= $group->getName() ?>">
                             </tr>
                             <tr>
                                 <th>Name:&nbsp;</th>
-                                <td><?= $organisation->getName() ?></td>
+                                <td><?= $group->getName() ?></td>
                             </tr>
 
-                            <?php if ($address = $organisation->getAddress()): ?>
+                            <?php if ($address = $group->getAddress()): ?>
                                 <tr>
                                     <th>Adresse:&nbsp;</th>
                                     <td>
@@ -66,7 +66,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 </tr>
                             <?php endif; ?>
 
-                            <?php if ($url = $organisation->getWebsite()): ?>
+                            <?php if ($url = $group->getWebsite()): ?>
                                 <tr>
                                     <th>Website:&nbsp;</th>
                                     <td>
@@ -76,7 +76,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 </tr>
                             <?php endif; ?>
 
-                            <?php if ($email = $organisation->getEmail()): ?>
+                            <?php if ($email = $group->getEmail()): ?>
                                 <tr>
                                     <th>E-Mail:&nbsp;</th>
                                     <td>
@@ -85,7 +85,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                 </tr>
                             <?php endif; ?>
 
-                            <?php if ($phone = $organisation->getPhone()): ?>
+                            <?php if ($phone = $group->getPhone()): ?>
                                 <tr>
                                     <th>Telefon:&nbsp;</th>
                                     <td>
@@ -97,13 +97,13 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     </div>
                     <div class="col-lg-6">
                         <figure>
-                            <?php $groupImageSrc = getImageUrlById($organisation->getImageId(), 'assets/img/organisation-image_1920x1080.webp'); ?>
+                            <?php $groupImageSrc = getImageUrlById($group->getImageId(), 'assets/img/group-image_1920x1080.webp'); ?>
                             <a href="<?= $groupImageSrc ?>" data-toggle="lightbox">
                                 <img class="img-thumbnail mt-3" src="<?= $groupImageSrc ?>"
-                                     alt="Logo <?= $organisation->getName() ?>">
+                                     alt="Logo <?= $group->getName() ?>">
                             </a>
                             <figcaption>
-                                <small><?= getImageAuthorById($organisation->getImageId()) ?></small>
+                                <small><?= getImageAuthorById($group->getImageId()) ?></small>
                             </figcaption>
                         </figure>
                     </div>
@@ -111,7 +111,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                 <hr>
                 <div class="row">
                     <div class="col-lg-12">
-                        <?= $organisation->getDescription() ?>
+                        <?= $group->getDescription() ?>
                     </div>
                 </div>
             </div>
@@ -121,23 +121,23 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body">
-                <?php if ($membership = getMembership($currentUser->getId(), $organisation->getId())): ?>
+                <?php if ($membership = getMembership($currentUser->getId(), $group->getId())): ?>
                     <a class="btn btn-primary btn-lg btn-block mb-3"
-                       href="https://cloud.waldorfconnect.de/apps/files/files?dir=/<?= $organisation->getFolderMountPoint() ?>">
+                       href="https://cloud.waldorfconnect.de/apps/files/files?dir=/<?= $group->getFolderMountPoint() ?>">
                         <i class="fas fa-cloud"></i> Ordner in Cloud öffnen
                     </a>
 
                     <hr>
-                    <?= form_open("organisation/{$organisation->getId()}/leave", ['onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich verlassen?');"]) ?>
-                    <?= form_hidden('id', $organisation->getId()) ?>
+                    <?= form_open("group/{$group->getId()}/leave", ['onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich verlassen?');"]) ?>
+                    <?= form_hidden('id', $group->getId()) ?>
                     <button type="submit" class="btn btn-danger btn-lg btn-block mb-3">
                         <i class="fas fa-sign-out"></i> Verlassen
                     </button>
                     <?= form_close() ?>
                 <?php else: ?>
-                    <?php if ((!$parent = $organisation->getParent()) || getMembership($currentUser->getId(), $parent->getId())): ?>
-                        <?= form_open("organisation/{$organisation->getId()}/join", ['onsubmit' => "return confirm('Möchtest du der Organisation {$organisation->getName()} wirklich beitreten?');"]) ?>
-                        <?= form_hidden('id', $organisation->getId()) ?>
+                    <?php if ((!$parent = $group->getParent()) || getMembership($currentUser->getId(), $parent->getId())): ?>
+                        <?= form_open("group/{$group->getId()}/join", ['onsubmit' => "return confirm('Möchtest du der Gruppe {$group->getName()} wirklich beitreten?');"]) ?>
+                        <?= form_hidden('id', $group->getId()) ?>
                         <button type="submit" class="btn btn-success btn-lg btn-block mb-3">
                             <i class="fas fa-sign-in"></i> Beitrittsanfrage senden
                         </button>
@@ -146,29 +146,29 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                 <?php endif; ?>
 
                 <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
-                    <a href="<?= $organisation->getId() ?>/edit"
+                    <a href="<?= $group->getId() ?>/edit"
                        class="btn btn-primary btn-lg btn-block">
                         <i class="fas fa-pen"></i> Bearbeiten
                     </a>
                 <?php endif; ?>
             </div>
         </div>
-        <?php if (!$organisation->getParentId()): ?>
+        <?php if (!$group->getParentId()): ?>
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    Arbeitsgruppen
+                    Untergruppen
                     <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
                         <div class="justify-content-between align-items-center">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#workgroupModal">
-                                <i class="fas fa-add"></i> Arbeitsgruppe hinzufügen
+                                <i class="fas fa-add"></i> Untergruppe hinzufügen
                             </button>
                         </div>
                     <?php endif; ?>
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                        <?php foreach (getChildOrganisationsByParentId($organisation->getId()) as $child): ?>
+                        <?php foreach (getChildGroupsByParentId($group->getId()) as $child): ?>
                             <li class="list-group-item">
                                 <div class="flex-container">
                                     <div class="flex-main">
@@ -219,13 +219,13 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                     <tr>
                         <th data-field="name" data-sortable="true" scope="col">Vor- und Nachname</th>
                         <th data-field="groupRole" data-sortable="true" scope="col">Gruppenrolle</th>
-                        <?php if ($organisation->isManageableBy($currentUser)): ?>
+                        <?php if ($group->isManageableBy($currentUser)): ?>
                             <th data-field="actions" data-sortable="true" scope="col">Aktionen</th>
                         <?php endif; ?>
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach (getMembershipsByOrganisationId($organisation->getId()) as $membership): ?>
+                    <?php foreach (getMembershipsByGroupId($group->getId()) as $membership): ?>
                         <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
                             <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
 
@@ -235,14 +235,14 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                     data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
                                 <td>
-                                    <?= form_open("organisation/{$organisation->getId()}/accept") ?>
+                                    <?= form_open("group/{$group->getId()}/accept") ?>
                                     <?= form_hidden('userId', $user->getId()) ?>
                                     <button type="submit" class="btn btn-success btn-sm">
                                         <i class="fas fa-check-circle"></i> Akzeptieren
                                     </button>
                                     <?= form_close() ?>
 
-                                    <?= form_open("organisation/{$organisation->getId()}/deny") ?>
+                                    <?= form_open("group/{$group->getId()}/deny") ?>
                                     <?= form_hidden('userId', $user->getId()) ?>
                                     <button type="submit" class="btn btn-danger btn-sm mt-1">
                                         <i class="fas fa-x"></i> Ablehnen
@@ -256,10 +256,10 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                     class="td-class-<?= $user->getId() ?>"
                                     data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
-                                <?php if ($organisation->isManageableBy($currentUser)): ?>
+                                <?php if ($group->isManageableBy($currentUser)): ?>
                                     <td>
                                         <?php if ($membership->getStatus() == MembershipStatus::ADMIN): ?>
-                                            <?= form_open("organisation/{$organisation->getId()}/membership_status", ['class' => 'btn-group']) ?>
+                                            <?= form_open("group/{$group->getId()}/membership_status", ['class' => 'btn-group']) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::USER->value) ?>
                                             <button type="submit" class="btn btn-primary btn-sm mt-1">
@@ -267,7 +267,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                             </button>
                                             <?= form_close() ?>
                                         <?php else: ?>
-                                            <?= form_open("organisation/{$organisation->getId()}/membership_status", ['class' => 'btn-group inline']) ?>
+                                            <?= form_open("group/{$group->getId()}/membership_status", ['class' => 'btn-group inline']) ?>
                                             <?= form_hidden('userId', $user->getId()) ?>
                                             <?= form_hidden('status', MembershipStatus::ADMIN->value) ?>
                                             <button type="submit" class="btn btn-primary btn-sm mt-1">
@@ -276,7 +276,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
                                             <?= form_close() ?>
                                         <?php endif; ?>
 
-                                        <?= form_open("organisation/{$organisation->getId()}/kick_user", ['class' => 'btn-group inline']) ?>
+                                        <?= form_open("group/{$group->getId()}/kick_user", ['class' => 'btn-group inline']) ?>
                                         <?= form_hidden('userId', $user->getId()) ?>
                                         <button type="submit" class="btn btn-danger btn-sm mt-1">
                                             <i class="fas fa-trash"></i> Entfernen
@@ -294,16 +294,16 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
     </div>
 </div>
 
-<div class="modal fade" id="workgroupModal" tabindex="-1" aria-labelledby="workgroupModalLabel" aria-hidden="true">
+<div class="modal fade" id="subgroupModal" tabindex="-1" aria-labelledby="subgroupModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <?= form_open("organisation/{$organisation->getId()}/add_workgroup") ?>
+            <?= form_open("group/{$group->getId()}/add_subgroup") ?>
             <div class="modal-header">
-                <h5 class="modal-title" id="workgroupModalLabel">Arbeitsgruppe hinzufügen</h5>
+                <h5 class="modal-title" id="subgroupModalLabel">Untergruppe hinzufügen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
             </div>
             <div class="modal-body">
-                <p>Bitte gib den Namen der neuen Arbeitsgruppe an.</p>
+                <p>Bitte gib den Namen der neuen Untergruppe an.</p>
                 <div class="form-group">
                     <label for="inputName" class="sr-only">Name</label>
                     <input class="form-control" id="inputName" name="name" autocomplete="name" placeholder="Name">
@@ -320,19 +320,19 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
 <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <?= form_open("organisation/{$organisation->getId()}/add_member") ?>
+            <?= form_open("organisation/{$group->getId()}/add_member") ?>
             <div class="modal-header">
                 <h5 class="modal-title" id="memberModalLabel">Mitglieder hinzufügen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
             </div>
             <div class="modal-body">
-                <p>Bitte wähle ein oder mehrere Mitglieder, die der Organisation hinzugefügt werden sollen.<br>
+                <p>Bitte wähle ein oder mehrere Mitglieder, die der Gruppe hinzugefügt werden sollen.<br>
                     <small>(Zur Mehrfachauswahl die STRG-Taste gedrückt halten.)</small>
                 </p>
                 <div class="form-group">
                     <label for="inputMember" class="sr-only">Mitglied wählen</label>
                     <select class="form-select" id="inputMember" name="member[]" size="20" multiple>
-                        <?php if ($parent = $organisation->getParent()): ?>
+                        <?php if ($parent = $group->getParent()): ?>
                             <?php foreach (getUsers() as $user): ?>
                                 <option value="<?= $user->getId() ?>">
                                     <?= $user->getName() ?>

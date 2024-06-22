@@ -5,7 +5,7 @@ namespace App\Helpers;
 use App\Entities\LDAPOrganisation;
 use App\Entities\Membership;
 use App\Entities\MembershipStatus;
-use App\Entities\Organisation;
+use App\Entities\Group;
 use App\Entities\User;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Database\Exceptions\DatabaseException;
@@ -74,7 +74,7 @@ function syncLDAPUsers(): void
 
 function syncLDAPOrganisations(): void
 {
-    $organisations = getOrganisations();
+    $organisations = getGroups();
 
     foreach (getLDAPOrganisations() as $ldapOrganisation) {
         $wantedOrganisation = null;
@@ -129,7 +129,7 @@ function syncLDAPOrganisations(): void
 function syncOrganisationFolders(): void
 {
     $client = createAPIClient();
-    $organisations = getOrganisations();
+    $organisations = getGroups();
 
     foreach (getOrganisationFolders($client) as $folder) {
         // Skip folders starting with underscore
@@ -168,7 +168,7 @@ function syncOrganisationFolders(): void
         if ($id != -1) {
             try {
                 $organisation->setFolderId($id);
-                saveOrganisation($organisation);
+                saveGroup($organisation);
 
                 log_message('info', 'NC: Created folder ' . $organisation->getFolderMountPoint());
             } catch (DatabaseException|ReflectionException $e) {
@@ -181,7 +181,7 @@ function syncOrganisationFolders(): void
 function syncOrganisationChats(): void
 {
     $client = createAPIClient();
-    $organisations = getOrganisations();
+    $organisations = getGroups();
 
     foreach ($organisations as $organisation) {
         $members = $organisation->getMemberships();
@@ -197,7 +197,7 @@ function syncOrganisationChats(): void
             if ($chatId) {
                 try {
                     $organisation->setChatId($chatId);
-                    saveOrganisation($organisation);
+                    saveGroup($organisation);
 
                     log_message('info', 'NC: Created chat ' . $organisation->getDisplayName());
                 } catch (DatabaseException|ReflectionException $e) {
@@ -293,11 +293,11 @@ function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user):
 /**
  * Creates a new LDAP entry for a given organisation
  *
- * @param Organisation $organisation
+ * @param Group $organisation
  * @return void
  * @throws LdapRecordException
  */
-function createLDAPOrganisation(Organisation $organisation): void
+function createLDAPOrganisation(Group $organisation): void
 {
     $ldapOrganisation = new LDAPOrganisation([
         'uid' => $organisation->getId(),
@@ -314,7 +314,7 @@ function createLDAPOrganisation(Organisation $organisation): void
  *
  * @throws GuzzleException
  */
-function createOrganisationFolder(Client $client, Organisation $organisation): int
+function createOrganisationFolder(Client $client, Group $organisation): int
 {
     $response = $client->post(FOLDERS_API . '/folders', [
         'json' => [
@@ -338,11 +338,11 @@ function createOrganisationFolder(Client $client, Organisation $organisation): i
  * Updates the LDAP entry for a given organisation
  *
  * @param LDAPOrganisation $ldapOrganisation LDAP entry to be changed
- * @param Organisation $organisation updated organisation
+ * @param Group $organisation updated organisation
  * @return void
  * @throws LdapRecordException
  */
-function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Organisation $organisation): void
+function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Group $organisation): void
 {
     $ldapOrganisation->cn = $organisation->getDisplayName();
 
@@ -389,7 +389,7 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Organisation
  *
  * @throws GuzzleException
  */
-function updateOrganisationFolder(Client $client, Organisation $organisation, object $folder): void
+function updateOrganisationFolder(Client $client, Group $organisation, object $folder): void
 {
     $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/mountpoint', [
         'json' => [

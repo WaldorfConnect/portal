@@ -12,7 +12,7 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getOrganisations;
+use function App\Helpers\getGroups;
 use function App\Helpers\getUsers;
 
 $user = getCurrentUser() ?>
@@ -22,7 +22,7 @@ $user = getCurrentUser() ?>
         <div class="card mb-3">
             <div class="card-header text-center">Organisationen</div>
             <div class="card-body text-center">
-                <span class="card-title display-2"><?= count(getOrganisations()) ?></span>
+                <span class="card-title display-2"><?= count(getGroups()) ?></span>
             </div>
         </div>
     </div>

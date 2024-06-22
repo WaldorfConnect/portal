@@ -1,7 +1,7 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getOrganisations;
+use function App\Helpers\getGroups;
 
 ?>
 <div class="row">
@@ -45,7 +45,7 @@ use function App\Helpers\getOrganisations;
         </thead>
         <tbody>
         <?php $currentUser = getCurrentUser() ?>
-        <?php foreach (getOrganisations() as $organisation): ?>
+        <?php foreach (getGroups() as $organisation): ?>
             <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
 
             <tr>

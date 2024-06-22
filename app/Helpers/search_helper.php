@@ -13,7 +13,7 @@ function getSearchEntries(string $query): array
 {
     $entries = [];
 
-    $organisations = getOrganisationsByName($query);
+    $organisations = getGroupsByName($query);
     foreach ($organisations as $organisation) {
         $entries[] = new SearchEntry(
             $organisation->getName(),

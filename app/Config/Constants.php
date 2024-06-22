@@ -97,7 +97,7 @@ const UPLOADED_IMAGE_URL = 'upload/image/';
 const UPLOADED_IMAGES_DIR = ROOTPATH . 'public/' . UPLOADED_IMAGE_URL;
 
 const PREFIX = "portal_";
-const ORGANISATIONS = PREFIX . "organisations";
+const GROUPS = PREFIX . "groups";
 const MEMBERSHIPS = PREFIX . "memberships";
 const REGIONS = PREFIX . "regions";
 const USERS = PREFIX . "users";

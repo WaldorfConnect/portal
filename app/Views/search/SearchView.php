@@ -12,7 +12,7 @@
 <?php
 
 use function App\Helpers\getCurrentUser;
-use function App\Helpers\getOrganisations;
+use function App\Helpers\getGroups;
 use function App\Helpers\getSearchEntries;
 use function App\Helpers\getUsers;
 

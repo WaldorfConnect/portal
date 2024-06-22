@@ -32,19 +32,19 @@ $routes->post('/user/security/totp', 'User\UserSecurityController::handleTOTPEna
 $routes->get('/user/security/reset_password', 'User\UserSecurityController::resetPassword', ['filter' => LoggedOutFilter::class]);
 $routes->post('/user/security/reset_password', 'User\UserSecurityController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
 
-$routes->get('/organisations', 'OrganisationController::list', ['filter' => LoggedInFilter::class]);
-$routes->get('/organisation/(:num)', 'OrganisationController::organisation/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/join', 'OrganisationController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/leave', 'OrganisationController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/add_member', 'OrganisationController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/add_workgroup', 'OrganisationController::handleAddWorkgroup/$1', ['filter' => LoggedInFilter::class]);
-$routes->get('/organisation/(:num)/edit', 'OrganisationController::edit/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/edit', 'OrganisationController::handleEdit/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/accept', 'OrganisationController::handleAcceptJoin/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/deny', 'OrganisationController::handleDenyJoin/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/delete', 'OrganisationController::handleDelete/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/membership_status', 'OrganisationController::handleChangeMembershipStatus/$1', ['filter' => LoggedInFilter::class]);
-$routes->post('/organisation/(:num)/kick_user', 'OrganisationController::handleKickUser/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
+$routes->get('/group/(:num)', 'GroupController::organisation/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/join', 'GroupController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/leave', 'GroupController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/add_member', 'GroupController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/add_subgroup', 'GroupController::handleAddSubgroup/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/group/(:num)/edit', 'GroupController::edit/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/edit', 'GroupController::handleEdit/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/accept', 'GroupController::handleAcceptJoin/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/deny', 'GroupController::handleDenyJoin/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/delete', 'GroupController::handleDelete/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/membership_status', 'GroupController::handleChangeMembershipStatus/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/group/(:num)/kick_user', 'GroupController::handleKickUser/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/admin', 'Admin\AdminController::index', ['filter' => AdminFilter::class]);
 

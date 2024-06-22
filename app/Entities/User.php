@@ -436,7 +436,7 @@ class User extends Entity
         }
 
         foreach ($target->getMemberships() as $membership) {
-            $ownMembership = getMembership($this->getId(), $membership->getOrganisationId());
+            $ownMembership = getMembership($this->getId(), $membership->getGroupId());
             if ($ownMembership && $ownMembership->getStatus() == MembershipStatus::ADMIN) {
                 return true;
             }

@@ -3,7 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
-use function App\Helpers\getOrganisationById;
+use function App\Helpers\getGroupById;
 use function App\Helpers\getUserById;
 
 class Membership extends Entity
@@ -11,14 +11,14 @@ class Membership extends Entity
     protected $attributes = [
         'id' => null,
         'user_id' => null,
-        'organisation_id' => null,
+        'group_id' => null,
         'status' => null
     ];
 
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'organisation_id' => 'integer',
+        'group_id' => 'integer',
         'status' => 'string'
     ];
 
@@ -51,19 +51,19 @@ class Membership extends Entity
     /**
      * @return ?int
      */
-    public function getOrganisationId(): ?int
+    public function getGroupId(): ?int
     {
-        return $this->attributes['organisation_id'];
+        return $this->attributes['group_id'];
     }
 
-    public function setOrganisationId(string $organisationId): void
+    public function setGroupId(string $organisationId): void
     {
-        $this->attributes['organisation_id'] = $organisationId;
+        $this->attributes['group_id'] = $organisationId;
     }
 
-    public function getOrganisation(): Organisation
+    public function getGroup(): Group
     {
-        return getOrganisationById($this->getOrganisationId());
+        return getGroupById($this->getGroupId());
     }
 
     /**

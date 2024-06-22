@@ -3,27 +3,27 @@
 use App\Entities\MembershipStatus;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getImageAuthorById;
-use function App\Helpers\getMembershipsByOrganisationId;
+use function App\Helpers\getMembershipsByGroupId;
 use function App\Helpers\getMembership;
 use function App\Helpers\getRegions;
 
 $currentUser = getCurrentUser();
-$ownMembership = getMembership($currentUser->getId(), $organisation->getId());
+$ownMembership = getMembership($currentUser->getId(), $group->getId());
 ?>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-        <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Organisationen</a></li>
-        <?php if ($parent = $organisation->getParent()): ?>
+        <li class="breadcrumb-item"><a href="<?= base_url('/groups') ?>">Gruppen</a></li>
+        <?php if ($parent = $group->getParent()): ?>
             <li class="breadcrumb-item" aria-current="page">
-                <a href="<?= base_url('/organisation/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
+                <a href="<?= base_url('/group/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
             </li>
             <li class="breadcrumb-item" aria-current="page">
-                <a href="<?= base_url('/organisation/' . $organisation->getId()) ?>"><?= $organisation->getName() ?></a>
+                <a href="<?= base_url('/group/' . $group->getId()) ?>"><?= $group->getName() ?></a>
             </li>
         <?php else: ?>
             <li class="breadcrumb-item" aria-current="page">
-                <a href="<?= base_url('/organisation/' . $organisation->getId()) ?>"><?= $organisation->getName() ?></a>
+                <a href="<?= base_url('/group/' . $group->getId()) ?>"><?= $group->getName() ?></a>
             </li>
         <?php endif; ?>
         <li class="breadcrumb-item active" aria-current="page">
@@ -33,20 +33,20 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
 </nav>
 
 <h1 class="header">
-    <?= $organisation->getDisplayName() ?>
-    <?php if (($membership = getMembership(getCurrentUser()->getId(), $organisation->getId()))): ?>
+    <?= $group->getDisplayName() ?>
+    <?php if (($membership = getMembership(getCurrentUser()->getId(), $group->getId()))): ?>
         <?= $membership->getStatus()->badge() ?>
     <?php endif; ?>
 </h1>
 
 <div class="row">
-    <?= form_open_multipart("organisation/{$organisation->getId()}/edit") ?>
+    <?= form_open_multipart("organisation/{$group->getId()}/edit") ?>
 
     <div class="form-group row mb-3">
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Name</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputName" name="name" autocomplete="name"
-                   placeholder="Name" value="<?= $organisation->getName() ?>"
+                   placeholder="Name" value="<?= $group->getName() ?>"
                 <?= $currentUser->isAdmin() ? 'required' : 'disabled' ?>>
         </div>
     </div>
@@ -55,9 +55,9 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <label for="inputRegion" class="col-form-label col-md-4 col-lg-3">Region</label>
         <div class="col-md-8 col-lg-9">
             <select class="form-select" id="inputRegion"
-                    name="region" <?= $currentUser->isAdmin() && !$organisation->getParentId() ? 'required' : 'disabled' ?>>
+                    name="region" <?= $currentUser->isAdmin() && !$group->getParentId() ? 'required' : 'disabled' ?>>
                 <?php foreach (getRegions() as $region): ?>
-                    <option value="<?= $region->getId() ?>" <?= $region->getId() == $organisation->getRegionId() ? "selected" : "" ?>>
+                    <option value="<?= $region->getId() ?>" <?= $region->getId() == $group->getRegionId() ? "selected" : "" ?>>
                         <?= $region->getName() ?>
                     </option>
                 <?php endforeach; ?>
@@ -70,7 +70,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputAddress" name="address" type="text"
                    placeholder="Musterstraße 1, 12345 Musterstadt"
-                   value="<?= $organisation->getAddress() ?? '' ?>">
+                   value="<?= $group->getAddress() ?? '' ?>">
         </div>
     </div>
 
@@ -79,7 +79,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputWebsite" name="website" type="url"
                    placeholder="https://example.com"
-                   value="<?= $organisation->getWebsite() ?? '' ?>">
+                   value="<?= $group->getWebsite() ?? '' ?>">
         </div>
     </div>
 
@@ -88,7 +88,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputEmail" name="email" type="email"
                    placeholder="mail@example.com"
-                   value="<?= $organisation->getEmail() ?? '' ?>">
+                   value="<?= $group->getEmail() ?? '' ?>">
         </div>
     </div>
 
@@ -97,7 +97,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputPhone" name="phone" type="tel"
                    placeholder="+49 123 456789"
-                   value="<?= $organisation->getPhone() ?? '' ?>">
+                   value="<?= $group->getPhone() ?? '' ?>">
         </div>
     </div>
 
@@ -114,7 +114,7 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <label for="inputLogoAuthor" class="col-form-label col-md-4 col-lg-3">Autor des Logos</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputLogoAuthor" name="logoAuthor" type="text"
-                   value="<?= getImageAuthorById($organisation->getLogoId()) ?>">
+                   value="<?= getImageAuthorById($group->getLogoId()) ?>">
         </div>
     </div>
 
@@ -130,14 +130,14 @@ $ownMembership = getMembership($currentUser->getId(), $organisation->getId());
         <label for="inputImageAuthor" class="col-form-label col-md-4 col-lg-3">Autor des Bildes</label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputImageAuthor" name="imageAuthor" type="text"
-                   value="<?= getImageAuthorById($organisation->getImageId()) ?>">
+                   value="<?= getImageAuthorById($group->getImageId()) ?>">
         </div>
     </div>
 
     <div class="mb-3">
         <label for="description" class="form-label">Beschreibung</label>
         <textarea class="form-control" id="description"
-                  name="description"><?= $organisation->getDescription() ?></textarea>
+                  name="description"><?= $group->getDescription() ?></textarea>
     </div>
 
     <button id="submitButton" class="btn btn-primary btn-block" type="submit">Bearbeiten</button>

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Entities\Organisation;
+use App\Entities\Group;
 use CodeIgniter\Model;
 
-class OrganisationModel extends Model
+class GroupModel extends Model
 {
-    protected $table = ORGANISATIONS;
+    protected $table = GROUPS;
     protected $primaryKey = "id";
-    protected $returnType = Organisation::class;
+    protected $returnType = Group::class;
 
     protected $allowedFields = [
         'parent_id', 'name', 'short_name', 'region_id', 'address', 'description', 'website', 'email', 'phone', 'image_id', 'logo_id', 'folder_id', 'chat_id'
