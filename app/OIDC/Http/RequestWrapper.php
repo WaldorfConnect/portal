@@ -47,7 +47,17 @@ class RequestWrapper implements ServerRequestInterface
 
     public function getHeader(string $name): array
     {
-        return $this->incomingRequest->header($name);
+        $values = [];
+        $result = $this->incomingRequest->header($name);
+        if (is_array($result)) {
+            foreach ($result as $item) {
+                $values[] = $item->getValue();
+            }
+        } else {
+            $values[] = $result->getValue();
+        }
+
+        return $values;
     }
 
     public function getHeaderLine(string $name): string
