@@ -15,7 +15,7 @@ use function App\Helpers\getGroups;
 
     <?php foreach (getGroups() as $group): ?>
     <?php if (!$group->getLatitude() || !$group->getLongitude()): continue; endif; ?>
-    L.marker([<?= $group->getLatitude()?>, <?= $group->getLongitude()?>]).bindPopup('<b><?= $group->getUrl() ?></b><p><?= $group->getAddress() ?></p>').addTo(map);
+    L.marker([<?= $group->getLatitude()?>, <?= $group->getLongitude()?>]).bindPopup('<b><?= addslashes($group->getUrl()) ?></b><p><?= addslashes($group->getAddress()) ?></p>').addTo(map);
     <?php if(isset($targetGroup) && $targetGroup->getId() == $group->getId()): ?>
     map.setView(L.latLng(<?= $group->getLatitude()?>, <?= $group->getLongitude()?>), 18);
     <?php endif; ?>
