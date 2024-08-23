@@ -23,7 +23,7 @@ class AdminUserController extends BaseController
     {
         $user = getUserById($userId);
         if (!$user) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
@@ -36,7 +36,7 @@ class AdminUserController extends BaseController
         $user = getUserById($userId);
 
         if (!$user) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to edit invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
@@ -54,7 +54,7 @@ class AdminUserController extends BaseController
         if (strlen($password) > 0) {
             // Ensure matching
             if ($password != $confirmedPassword) {
-                log_message('warn', getCurrentUser()->getUsername() . ' entered unequal passwords when trying to edit ' . $user->getUsername());
+                log_message('warning', getCurrentUser()->getUsername() . ' entered unequal passwords when trying to edit ' . $user->getUsername());
                 return redirect()->to('admin/user/edit/' . $userId)->with('error', 'Passwörter stimmen nicht überein.');
             }
 
@@ -76,7 +76,7 @@ class AdminUserController extends BaseController
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
         if (!$user) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to delete invalid user ' . $userId);
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to delete invalid user ' . $userId);
             return redirect('admin/users')->with('error', 'Unbekannter Benutzer.');
         }
 
@@ -96,7 +96,7 @@ class AdminUserController extends BaseController
         $user = getUserById($userId);
 
         if ($user->isAccepted()) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to accept already accepted user ' . $user->getUsername());
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to accept already accepted user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer wurde bereits akzeptiert.');
         }
 
@@ -120,7 +120,7 @@ class AdminUserController extends BaseController
         $user = getUserById($userId);
 
         if ($user->isActive()) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to activate already active user ' . $user->getUsername());
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to activate already active user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits aktiv.');
         }
 
@@ -141,7 +141,7 @@ class AdminUserController extends BaseController
         $userId = $this->request->getPost('id');
         $user = getUserById($userId);
         if (!$user->isActive()) {
-            log_message('warn', getCurrentUser()->getUsername() . ' tried to deactivate already inactive user ' . $user->getUsername());
+            log_message('warning', getCurrentUser()->getUsername() . ' tried to deactivate already inactive user ' . $user->getUsername());
             return redirect('admin/users')->with('error', 'Dieser Nutzer ist bereits deaktiviert.');
         }
 

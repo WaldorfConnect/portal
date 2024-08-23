@@ -4,13 +4,13 @@ namespace App\Entities\Search;
 
 enum SearchEntryType: string
 {
-    case ORGANISATION = "ORGANISATION";
+    case GROUP = "GROUP";
     case USER = "USER";
 
     public function badge(): ?string
     {
         return match ($this) {
-            self::ORGANISATION => '<span class="badge bg-success">Organisation</span>',
+            self::GROUP => '<span class="badge bg-success">Gruppe</span>',
             self::USER => '<span class="badge bg-success">Benutzer</span>'
         };
     }

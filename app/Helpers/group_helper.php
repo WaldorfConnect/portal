@@ -257,7 +257,7 @@ function createGroupNotification(int $groupId, string $subject, string $body, Me
     $body = sprintf($body, $group->getUrl());
 
     foreach ($group->getMemberships() as $membership) {
-        // If user isn't an accepted member of the organisation
+        // If user isn't an accepted member of the group
         if ($membership->getStatus() == MembershipStatus::PENDING) {
             continue;
         }

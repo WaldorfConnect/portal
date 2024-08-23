@@ -33,7 +33,7 @@ $routes->get('/user/security/reset_password', 'User\UserSecurityController::rese
 $routes->post('/user/security/reset_password', 'User\UserSecurityController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
-$routes->get('/group/(:num)', 'GroupController::organisation/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/group/(:num)/join', 'GroupController::handleJoin/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/group/(:num)/leave', 'GroupController::handleLeave/$1', ['filter' => LoggedInFilter::class]);
 $routes->post('/group/(:num)/add_member', 'GroupController::handleAddMember/$1', ['filter' => LoggedInFilter::class]);
@@ -56,10 +56,10 @@ $routes->post('/admin/user/delete', 'Admin\AdminUserController::handleDeleteUser
 $routes->get('/admin/user/edit/(:num)', 'Admin\AdminUserController::editUser/$1', ['filter' => AdminFilter::class]);
 $routes->post('/admin/user/edit', 'Admin\AdminUserController::handleEditUser', ['filter' => AdminFilter::class]);
 
-$routes->get('/admin/organisations', 'Admin\AdminOrganisationController::organisations', ['filter' => AdminFilter::class]);
-$routes->get('/admin/organisation/create', 'Admin\AdminOrganisationController::createOrganisation', ['filter' => AdminFilter::class]);
-$routes->post('/admin/organisation/create', 'Admin\AdminOrganisationController::handleCreateOrganisation', ['filter' => AdminFilter::class]);
-$routes->post('/admin/organisation/delete', 'Admin\AdminOrganisationController::handleDeleteOrganisation', ['filter' => AdminFilter::class]);
+$routes->get('/admin/groups', 'Admin\AdminGroupController::groups', ['filter' => AdminFilter::class]);
+$routes->get('/admin/group/create', 'Admin\AdminGroupController::createGroup', ['filter' => AdminFilter::class]);
+$routes->post('/admin/group/create', 'Admin\AdminGroupController::handleCreateGroup', ['filter' => AdminFilter::class]);
+$routes->post('/admin/group/delete', 'Admin\AdminGroupController::handleDeleteGroup', ['filter' => AdminFilter::class]);
 
 $routes->get('/admin/regions', 'Admin\AdminRegionController::regions', ['filter' => AdminFilter::class]);
 $routes->get('/admin/region/create', 'Admin\AdminRegionController::createRegion', ['filter' => AdminFilter::class]);
@@ -73,6 +73,8 @@ $routes->post('/oidc/access_token', 'OIDCController::accessToken');
 $routes->get('/oidc/logout', 'OIDCController::logout');
 
 $routes->get('/search', 'SearchController::index', ['filter' => LoggedInFilter::class]);
+
+$routes->get('/map', 'MapController::index', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/notifications', 'NotificationController::index', ['filter' => LoggedInFilter::class]);
 $routes->post('/notification/(:num)/delete', 'NotificationController::handleDelete/$1', ['filter' => LoggedInFilter::class]);

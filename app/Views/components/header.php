@@ -25,6 +25,7 @@ use function App\Helpers\getCurrentUser;
     <link href="<?= base_url('/') ?>assets/css/fontawesome.min.css" rel="stylesheet">
     <link href="<?= base_url('/') ?>assets/css/bootstrap-table.min.css" rel="stylesheet">
     <link href="<?= base_url('/') ?>assets/css/summernote-bs5.min.css" rel="stylesheet">
+    <link href="<?= base_url('/') ?>assets/css/leaflet.css" rel="stylesheet"/>
 
     <script src="<?= base_url('/') ?>assets/js/jquery.min.js"></script>
     <script src="<?= base_url('/') ?>assets/js/popper.min.js"></script>
@@ -33,6 +34,7 @@ use function App\Helpers\getCurrentUser;
     <script src="<?= base_url('/') ?>assets/js/bootstrap-table-cookies.min.js" type="application/javascript"></script>
     <script src="<?= base_url('/') ?>assets/js/bootstrap-table-locale-all.min.js"></script>
     <script src="<?= base_url('/') ?>assets/js/summernote-bs5.min.js"></script>
+    <script src="<?= base_url('/') ?>assets/js/leaflet.js"></script>
 
     <!-- Matomo -->
     <script>

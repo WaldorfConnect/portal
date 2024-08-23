@@ -56,9 +56,9 @@ class Membership extends Entity
         return $this->attributes['group_id'];
     }
 
-    public function setGroupId(string $organisationId): void
+    public function setGroupId(string $groupId): void
     {
-        $this->attributes['group_id'] = $organisationId;
+        $this->attributes['group_id'] = $groupId;
     }
 
     public function getGroup(): Group

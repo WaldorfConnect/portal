@@ -54,7 +54,7 @@ class AuthenticationController extends BaseController
 
         // Check if password is correct
         if (!$user || !checkSSHA($password, $user->getPassword())) {
-            log_message('warn', 'Failed login for user ' . $username);
+            log_message('warning', 'Failed login for user ' . $username);
             return $redirect->with('error', 'Zugangsdaten ungültig!');
         }
 
@@ -102,7 +102,7 @@ class AuthenticationController extends BaseController
         $email = trim($this->request->getPost('email'));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
-        $organisationIds = $this->request->getPost('organisations');
+        $groupIds = $this->request->getPost('groups');
 
         try {
             $username = generateUsername($firstName, $lastName);
@@ -137,8 +137,8 @@ class AuthenticationController extends BaseController
 
         try {
             $user = createAndInsertUser($username, $firstName, $lastName, $email, $hashedPassword);
-            foreach ($organisationIds as $organisationId) {
-                createMembershipRequest($user->getId(), $organisationId);
+            foreach ($groupIds as $groupId) {
+                createMembershipRequest($user->getId(), $groupId);
             }
             queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
         } catch (Throwable $e) {

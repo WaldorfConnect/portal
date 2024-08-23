@@ -12,21 +12,18 @@ use function App\Helpers\getGroups;
             <li class="breadcrumb-item"><a href="/">Startseite</a></li>
             <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-                Organisationsadministration
+                Gruppenadministration
             </li>
         </ol>
     </nav>
-    <h1 class="header">Organisationsadministration</h1>
-    <p>
-        Hier werden alle Organisationen angezeigt, die sich in deinem administrativen Zuständigkeitsbereich befinden.
-    </p>
+    <h1 class="header">Gruppenadministration</h1>
 </div>
 
 <div class="row">
     <div class="col-md-5 w-auto ms-auto">
         <a class="btn btn-primary"
-           href="<?= base_url('admin/organisation/create') ?>">
-            <i class="fas fa-plus-square"></i> Organisation erstellen
+           href="<?= base_url('admin/group/create') ?>">
+            <i class="fas fa-plus-square"></i> Gruppe erstellen
         </a>
     </div>
 </div>
@@ -45,27 +42,27 @@ use function App\Helpers\getGroups;
         </thead>
         <tbody>
         <?php $currentUser = getCurrentUser() ?>
-        <?php foreach (getGroups() as $organisation): ?>
-            <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
+        <?php foreach (getGroups() as $group): ?>
+            <?php if (!$group->isManageableBy($currentUser)): continue; endif; ?>
 
             <tr>
-                <td id="td-id-<?= $organisation->getId() ?>" class="td-class-<?= $organisation->getId() ?>"
-                    data-title="<?= $organisation->getDisplayName() ?>"><?= $organisation->getDisplayName() ?></td>
-                <td><?= $organisation->getRegion()->getName() ?></td>
+                <td id="td-id-<?= $group->getId() ?>" class="td-class-<?= $group->getId() ?>"
+                    data-title="<?= $group->getDisplayName() ?>"><?= $group->getDisplayName() ?></td>
+                <td><?= $group->getRegion()->getName() ?></td>
                 <td>
                     <div class="btn-group">
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url('organisation') . '/' . $organisation->getId() ?>">
+                           href="<?= base_url('group') . '/' . $group->getId() ?>">
                             <i class="fas fa-info-circle"></i>
                         </a>
                         <a class="btn btn-primary btn-sm"
-                           href="<?= base_url("organisation/{$organisation->getId()}/edit") ?>">
+                           href="<?= base_url("group/{$group->getId()}/edit") ?>">
                             <i class="fas fa-pen"></i>
                         </a>
                     </div>
 
-                    <?= form_open('admin/organisation/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Organisation {$organisation->getName()} wirklich löschen?');"]) ?>
-                    <?= form_hidden('id', $organisation->getId()) ?>
+                    <?= form_open('admin/group/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich löschen?');"]) ?>
+                    <?= form_hidden('id', $group->getId()) ?>
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
                     </button>

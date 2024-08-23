@@ -31,8 +31,8 @@ use function App\Helpers\getCurrentUser;
                             <a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
                                 Benutzer
                             </a>
-                            <a class="dropdown-item" href="<?= base_url('/admin/organisations') ?>">
-                                Organisationen
+                            <a class="dropdown-item" href="<?= base_url('/admin/groups') ?>">
+                                Gruppen
                             </a>
                             <a class="dropdown-item" href="<?= base_url('/admin/regions') ?>">
                                 Regionen

@@ -125,4 +125,4 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
-/public/assets/img/organisation/
+/public/assets/img/group/

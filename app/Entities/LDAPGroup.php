@@ -6,7 +6,7 @@ use LdapRecord\Models\Model;
 use LdapRecord\Models\OpenLDAP\User;
 use LdapRecord\Models\Relations\HasManyIn;
 
-class LDAPOrganisation extends Model
+class LDAPGroup extends Model
 {
     /**
      * The object classes of the LDAP model.

@@ -3,14 +3,12 @@
 namespace App\Controllers;
 
 use CodeIgniter\CLI\CLI;
-use Exception;
 use Throwable;
 use function App\Helpers\openLDAPConnection;
 use function App\Helpers\queueNotificationMails;
-use function App\Helpers\syncLDAPOrganisations;
+use function App\Helpers\syncLDAPGroups;
 use function App\Helpers\syncLDAPUsers;
-use function App\Helpers\syncOrganisationChats;
-use function App\Helpers\syncOrganisationFolders;
+use function App\Helpers\syncGroupFolders;
 use function App\Helpers\workMailQueue;
 
 class CronController extends BaseController
@@ -77,8 +75,8 @@ class CronController extends BaseController
             CLI::write('Synchronizing LDAP users ...');
             syncLDAPUsers();
 
-            CLI::write('Synchronizing LDAP organisations ...');
-            syncLDAPOrganisations();
+            CLI::write('Synchronizing LDAP groups ...');
+            syncLDAPGroups();
         } catch (Throwable $e) {
             CLI::error("Error synchronizing with LDAP: {$e}");
         } finally {
@@ -107,7 +105,7 @@ class CronController extends BaseController
             }
 
             CLI::write('Synchronizing Nextcloud folders and chats ...');
-            syncOrganisationFolders();
+            syncGroupFolders();
             // syncOrganisationChats();
         } catch (Throwable $e) {
             CLI::error("Error synchronizing folders: {$e}");

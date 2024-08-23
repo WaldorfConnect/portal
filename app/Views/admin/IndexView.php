@@ -20,7 +20,7 @@ $user = getCurrentUser() ?>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2">
     <div class="col-md-4">
         <div class="card mb-3">
-            <div class="card-header text-center">Organisationen</div>
+            <div class="card-header text-center">Gruppen</div>
             <div class="card-body text-center">
                 <span class="card-title display-2"><?= count(getGroups()) ?></span>
             </div>
@@ -45,9 +45,9 @@ $user = getCurrentUser() ?>
             Benutzer
         </a>
         <?php if ($user->isAdmin()): ?>
-            <a href="<?= base_url('admin/organisations') ?>" class="btn btn-primary btn-lg">
+            <a href="<?= base_url('admin/groups') ?>" class="btn btn-primary btn-lg">
                 <i class="fas fa-people-group fa-2x mb-2"></i><br>
-                Organisationen
+                Gruppen
             </a>
         <?php endif; ?>
         <?php if ($user->isAdmin()): ?>

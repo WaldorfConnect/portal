@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Entities\LDAPOrganisation;
+use App\Entities\LDAPGroup;
 use App\Entities\Membership;
 use App\Entities\MembershipStatus;
 use App\Entities\Group;
@@ -72,146 +72,146 @@ function syncLDAPUsers(): void
     }
 }
 
-function syncLDAPOrganisations(): void
+function syncLDAPGroups(): void
 {
-    $organisations = getGroups();
+    $groups = getGroups();
 
-    foreach (getLDAPOrganisations() as $ldapOrganisation) {
-        $wantedOrganisation = null;
-        $wantedOrganisationIndex = 0;
+    foreach (getLDAPGroups() as $ldapGroup) {
+        $wantedGroup = null;
+        $wantedGroupIndex = 0;
 
-        // Find database organisation, and it's array index by id of organisation on LDAP server
-        foreach ($organisations as $index => $organisation) {
-            if ($organisation->getId() == $ldapOrganisation->uid[0]) {
-                $wantedOrganisationIndex = $index;
-                $wantedOrganisation = $organisation;
+        // Find database group, and it's array index by id of group on LDAP server
+        foreach ($groups as $index => $group) {
+            if ($group->getId() == $ldapGroup->uid[0]) {
+                $wantedGroupIndex = $index;
+                $wantedGroup = $group;
                 break;
             }
         }
 
-        if ($wantedOrganisation) {
+        if ($wantedGroup) {
             // Remove from list if found
-            unset($organisations[$wantedOrganisationIndex]);
+            unset($groups[$wantedGroupIndex]);
 
             // Update properties on LDAP server
             try {
-                updateLDAPOrganisation($ldapOrganisation, $wantedOrganisation);
+                updateLDAPGroup($ldapGroup, $wantedGroup);
 
-                log_message('info', 'LDAP: Updated organisation ' . $wantedOrganisation->getName());
+                log_message('info', 'LDAP: Updated group ' . $wantedGroup->getName());
             } catch (LdapRecordException $e) {
-                log_message('error', 'LDAP: Unable to update organisation ' . $wantedOrganisation->getName() . ': {exception}', ['exception' => $e]);
+                log_message('error', 'LDAP: Unable to update group ' . $wantedGroup->getName() . ': {exception}', ['exception' => $e]);
             }
         } else {
-            $displayName = $ldapOrganisation->cn[0];
+            $displayName = $ldapGroup->cn[0];
 
-            // Delete organisation on LDAP server
+            // Delete group on LDAP server
             try {
-                $ldapOrganisation->delete();
+                $ldapGroup->delete();
 
-                log_message('info', 'LDAP: Deleted organisation ' . $displayName);
+                log_message('info', 'LDAP: Deleted group ' . $displayName);
             } catch (LdapRecordException $e) {
-                log_message('error', 'LDAP: Unable to delete organisation ' . $displayName . ': {exception}', ['exception' => $e]);
+                log_message('error', 'LDAP: Unable to delete group ' . $displayName . ': {exception}', ['exception' => $e]);
             }
         }
     }
 
-    // Create organisations missing on LDAP server
-    foreach ($organisations as $organisation) {
+    // Create groups missing on LDAP server
+    foreach ($groups as $group) {
         try {
-            createLDAPOrganisation($organisation);
-            log_message('info', 'LDAP: Created organisation ' . $organisation->getDisplayName());
+            createLDAPGroup($group);
+            log_message('info', 'LDAP: Created group ' . $group->getDisplayName());
         } catch (LdapRecordException $e) {
-            log_message('error', 'LDAP: Unable to create organisation ' . $organisation->getDisplayName() . ': {exception}', ['exception' => $e]);
+            log_message('error', 'LDAP: Unable to create group ' . $group->getDisplayName() . ': {exception}', ['exception' => $e]);
         }
     }
 }
 
-function syncOrganisationFolders(): void
+function syncGroupFolders(): void
 {
     $client = createAPIClient();
-    $organisations = getGroups();
+    $groups = getGroups();
 
-    foreach (getOrganisationFolders($client) as $folder) {
+    foreach (getGroupFolders($client) as $folder) {
         // Skip folders starting with underscore
         if (str_starts_with($folder->mount_point, "_"))
             continue;
 
-        $wantedOrganisation = null;
-        $wantedOrganisationIndex = 0;
+        $wantedGroup = null;
+        $wantedGroupIndex = 0;
 
-        // Find database organisation, and it's array index by id of organisation on LDAP server
-        foreach ($organisations as $index => $organisation) {
-            if (!is_null($organisation->getFolderId()) && $organisation->getFolderId() == $folder->id) {
-                $wantedOrganisationIndex = $index;
-                $wantedOrganisation = $organisation;
+        // Find database group, and it's array index by id of group on LDAP server
+        foreach ($groups as $index => $group) {
+            if (!is_null($group->getFolderId()) && $group->getFolderId() == $folder->id) {
+                $wantedGroupIndex = $index;
+                $wantedGroup = $group;
                 break;
             }
         }
 
-        if ($wantedOrganisation) {
-            unset($organisations[$wantedOrganisationIndex]);
+        if ($wantedGroup) {
+            unset($groups[$wantedGroupIndex]);
 
             // Update folder on Nextcloud
-            updateOrganisationFolder($client, $wantedOrganisation, $folder);
-            log_message('info', 'NC: Updated folder ' . $wantedOrganisation->getFolderMountPoint());
+            updateGroupFolder($client, $wantedGroup, $folder);
+            log_message('info', 'NC: Updated folder ' . $wantedGroup->getFolderMountPoint());
         } else {
             // Delete folder on Nextcloud
-            deleteOrganisationFolder($client, $folder->id);
+            deleteGroupFolder($client, $folder->id);
             log_message('info', 'NC: Deleted folder ' . $folder->mount_point);
         }
     }
 
-    foreach ($organisations as $organisation) {
+    foreach ($groups as $group) {
         // Create new folder on Nextcloud
-        $id = createOrganisationFolder($client, $organisation);
+        $id = createGroupFolder($client, $group);
 
         if ($id != -1) {
             try {
-                $organisation->setFolderId($id);
-                saveGroup($organisation);
+                $group->setFolderId($id);
+                saveGroup($group);
 
-                log_message('info', 'NC: Created folder ' . $organisation->getFolderMountPoint());
+                log_message('info', 'NC: Created folder ' . $group->getFolderMountPoint());
             } catch (DatabaseException|ReflectionException $e) {
-                log_message('error', 'NC: Unable to create folder ' . $organisation->getFolderMountPoint() . ': {exception}', ['exception' => $e]);
+                log_message('error', 'NC: Unable to create folder ' . $group->getFolderMountPoint() . ': {exception}', ['exception' => $e]);
             }
         }
     }
 }
 
-function syncOrganisationChats(): void
+function syncGroupChats(): void
 {
     $client = createAPIClient();
-    $organisations = getGroups();
+    $groups = getGroups();
 
-    foreach ($organisations as $organisation) {
-        $members = $organisation->getMemberships();
+    foreach ($groups as $group) {
+        $members = $group->getMemberships();
         if (empty($members)) {
-            log_message('info', 'NC: Skipping chat creation for empty organisation ' . $organisation->getDisplayName());
+            log_message('info', 'NC: Skipping chat creation for empty group ' . $group->getDisplayName());
             continue;
         }
 
-        $chatId = $organisation->getChatId();
+        $chatId = $group->getChatId();
         if (!$chatId) {
-            $chatId = createOrganisationChat($client, $organisation->getDisplayName());
+            $chatId = createGroupChat($client, $group->getDisplayName());
 
             if ($chatId) {
                 try {
-                    $organisation->setChatId($chatId);
-                    saveGroup($organisation);
+                    $group->setChatId($chatId);
+                    saveGroup($group);
 
-                    log_message('info', 'NC: Created chat ' . $organisation->getDisplayName());
+                    log_message('info', 'NC: Created chat ' . $group->getDisplayName());
                 } catch (DatabaseException|ReflectionException $e) {
-                    log_message('error', 'NC: Unable to create chat ' . $organisation->getDisplayName() . ': {exception}', ['exception' => $e]);
+                    log_message('error', 'NC: Unable to create chat ' . $group->getDisplayName() . ': {exception}', ['exception' => $e]);
                 }
             }
         }
 
         if (!$chatId) {
-            log_message('debug', 'NC: No chat id after creation for ' . $organisation->getDisplayName());
+            log_message('debug', 'NC: No chat id after creation for ' . $group->getDisplayName());
             continue;
         }
 
-        $participants = getOrganisationChatParticipants($client, $chatId);
+        $participants = getGroupChatParticipants($client, $chatId);
         foreach ($participants as $participant) {
             if ($participant->actorType != 'users') {
                 continue;
@@ -291,34 +291,34 @@ function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user):
 }
 
 /**
- * Creates a new LDAP entry for a given organisation
+ * Creates a new LDAP entry for a given group
  *
- * @param Group $organisation
+ * @param Group $group
  * @return void
  * @throws LdapRecordException
  */
-function createLDAPOrganisation(Group $organisation): void
+function createLDAPGroup(Group $group): void
 {
-    $ldapOrganisation = new LDAPOrganisation([
-        'uid' => $organisation->getId(),
-        'cn' => $organisation->getDisplayName(),
+    $ldapGroup = new LDAPGroup([
+        'uid' => $group->getId(),
+        'cn' => $group->getDisplayName(),
         'uniquemember' => getPortalUserDistinguishedName()
     ]);
-    $ldapOrganisation->inside(getOrganisationsDistinguishedName());
-    $ldapOrganisation->setDn('uid=' . $organisation->getId() . ',' . getOrganisationsDistinguishedName());
-    $ldapOrganisation->save();
+    $ldapGroup->inside(getGroupsDistinguishedName());
+    $ldapGroup->setDn('uid=' . $group->getId() . ',' . getGroupsDistinguishedName());
+    $ldapGroup->save();
 }
 
 /**
- * Creates a group folder on the NC server for the given organisation
+ * Creates a group folder on the NC server for the given group
  *
  * @throws GuzzleException
  */
-function createOrganisationFolder(Client $client, Group $organisation): int
+function createGroupFolder(Client $client, Group $group): int
 {
     $response = $client->post(FOLDERS_API . '/folders', [
         'json' => [
-            'mountpoint' => $organisation->getFolderMountPoint()
+            'mountpoint' => $group->getFolderMountPoint()
         ]
     ]);
 
@@ -327,7 +327,7 @@ function createOrganisationFolder(Client $client, Group $organisation): int
 
     $client->post(FOLDERS_API . '/folders/' . $data->id . '/groups', [
         'json' => [
-            'group' => $organisation->getDisplayName()
+            'group' => $group->getDisplayName()
         ]
     ]);
 
@@ -335,26 +335,26 @@ function createOrganisationFolder(Client $client, Group $organisation): int
 }
 
 /**
- * Updates the LDAP entry for a given organisation
+ * Updates the LDAP entry for a given group
  *
- * @param LDAPOrganisation $ldapOrganisation LDAP entry to be changed
- * @param Group $organisation updated organisation
+ * @param LDAPGroup $ldapGroup LDAP entry to be changed
+ * @param Group $group updated group
  * @return void
  * @throws LdapRecordException
  */
-function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Group $organisation): void
+function updateLDAPGroup(LDAPGroup $ldapGroup, Group $group): void
 {
-    $ldapOrganisation->cn = $organisation->getDisplayName();
+    $ldapGroup->cn = $group->getDisplayName();
 
-    $memberships = $organisation->getMemberships();
+    $memberships = $group->getMemberships();
 
-    foreach ($ldapOrganisation->members()->get() as $ldapMember) {
+    foreach ($ldapGroup->members()->get() as $ldapMember) {
         if ($ldapMember->getDN() == getPortalUserDistinguishedName()) continue;
 
         $wantedMember = null;
         $wantedMemberIndex = 0;
 
-        // Find database organisation, and it's array index by id of organisation on LDAP server
+        // Find database group, and it's array index by id of group on LDAP server
         foreach ($memberships as $index => $membership) {
             if ($membership->getUser()->getUsername() == $ldapMember->uid[0]) {
                 $wantedMemberIndex = $index;
@@ -368,8 +368,8 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Group $organ
             unset($memberships[$wantedMemberIndex]);
         } else {
             // Remove member from LDAP server
-            $ldapOrganisation->members()->detach($ldapMember);
-            log_message('info', 'LDAP: Removed ' . $ldapMember->uid[0] . ' from ' . $organisation->getDisplayName());
+            $ldapGroup->members()->detach($ldapMember);
+            log_message('info', 'LDAP: Removed ' . $ldapMember->uid[0] . ' from ' . $group->getDisplayName());
         }
     }
 
@@ -377,43 +377,43 @@ function updateLDAPOrganisation(LDAPOrganisation $ldapOrganisation, Group $organ
         $ldapUser = getLDAPUserByUsername($membership->getUser()->getUsername());
 
         // Add member to ldap server
-        $ldapOrganisation->members()->attach($ldapUser);
-        log_message('info', 'LDAP: Added ' . $ldapUser->uid[0] . ' to ' . $organisation->getDisplayName());
+        $ldapGroup->members()->attach($ldapUser);
+        log_message('info', 'LDAP: Added ' . $ldapUser->uid[0] . ' to ' . $group->getDisplayName());
     }
 
-    $ldapOrganisation->save();
+    $ldapGroup->save();
 }
 
 /**
- * Updates a given organisations' NC group folder
+ * Updates a given groups' NC group folder
  *
  * @throws GuzzleException
  */
-function updateOrganisationFolder(Client $client, Group $organisation, object $folder): void
+function updateGroupFolder(Client $client, Group $group, object $folder): void
 {
-    $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/mountpoint', [
+    $client->post(FOLDERS_API . '/folders/' . $group->getFolderId() . '/mountpoint', [
         'json' => [
-            'mountpoint' => $organisation->getFolderMountPoint()
+            'mountpoint' => $group->getFolderMountPoint()
         ]
     ]);
 
     // Add group as member of folder
     $groups = $folder->groups;
-    if (empty($groups) || !array_key_exists($organisation->getDisplayName(), get_object_vars($groups))) {
-        $client->post(FOLDERS_API . '/folders/' . $organisation->getFolderId() . '/groups', [
+    if (empty($groups) || !array_key_exists($group->getDisplayName(), get_object_vars($groups))) {
+        $client->post(FOLDERS_API . '/folders/' . $group->getFolderId() . '/groups', [
             'json' => [
-                'group' => $organisation->getDisplayName()
+                'group' => $group->getDisplayName()
             ]
         ]);
     }
 }
 
 /**
- * Deletes a given organisations' NC group folder
+ * Deletes a given groups' NC group folder
  *
  * @throws GuzzleException
  */
-function deleteOrganisationFolder(Client $client, int $id): void
+function deleteGroupFolder(Client $client, int $id): void
 {
     $client->delete(FOLDERS_API . '/folders/' . $id);
 }
@@ -421,7 +421,7 @@ function deleteOrganisationFolder(Client $client, int $id): void
 /**
  * @throws GuzzleException
  */
-function createOrganisationChat(Client $client, string $groupName): ?string
+function createGroupChat(Client $client, string $groupName): ?string
 {
     $response = $client->post(TALK_API . '/room', [
         'json' => [
@@ -438,7 +438,7 @@ function createOrganisationChat(Client $client, string $groupName): ?string
 /**
  * @throws GuzzleException
  */
-function getOrganisationChatParticipants(Client $client, string $chatId): array
+function getGroupChatParticipants(Client $client, string $chatId): array
 {
     $response = $client->get(TALK_API . '/room/' . $chatId . '/participants');
     $decodedResponse = json_decode($response->getBody()->getContents());
@@ -510,9 +510,9 @@ function getLDAPUserByUsername(string $username): ?object
 /**
  * @return array|Collection
  */
-function getLDAPOrganisations(): array|Collection
+function getLDAPGroups(): array|Collection
 {
-    return LDAPOrganisation::query()->in(getOrganisationsDistinguishedName())->paginate();
+    return LDAPGroup::query()->in(getGroupsDistinguishedName())->paginate();
 }
 
 function getUserDistinguishedName(): string
@@ -520,9 +520,9 @@ function getUserDistinguishedName(): string
     return getenv('ldap.usersDN');
 }
 
-function getOrganisationsDistinguishedName(): string
+function getGroupsDistinguishedName(): string
 {
-    return getenv('ldap.organisationsDN');
+    return getenv('ldap.groupsDN');
 }
 
 function getPortalUserDistinguishedName(): string
@@ -533,7 +533,7 @@ function getPortalUserDistinguishedName(): string
 /**
  * @throws GuzzleException
  */
-function getOrganisationFolders(Client $client): array
+function getGroupFolders(Client $client): array
 {
     $response = $client->get(FOLDERS_API . '/folders');
     $decodedResponse = json_decode($response->getBody()->getContents());

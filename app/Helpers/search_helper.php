@@ -13,13 +13,13 @@ function getSearchEntries(string $query): array
 {
     $entries = [];
 
-    $organisations = getGroupsByName($query);
-    foreach ($organisations as $organisation) {
+    $groups = getGroupsByName($query);
+    foreach ($groups as $group) {
         $entries[] = new SearchEntry(
-            $organisation->getName(),
-            'Organisation',
+            $group->getName(),
+            'Gruppe',
             [
-                '<i class="fas fa-arrow-up-right-from-square"></i> Öffnen' => base_url("organisation/{$organisation->getId()}"),
+                '<i class="fas fa-arrow-up-right-from-square"></i> Öffnen' => base_url("group/{$group->getId()}"),
             ]
         );
     }

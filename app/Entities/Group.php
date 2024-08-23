@@ -21,6 +21,8 @@ class Group extends Entity
         'website' => null,
         'email' => null,
         'phone' => null,
+        'latitude' => null,
+        'longitude' => null,
         'image_id' => null,
         'logo_id' => null,
         'folder_id' => null,
@@ -38,6 +40,8 @@ class Group extends Entity
         'website' => 'string',
         'email' => 'string',
         'phone' => 'string',
+        'latitude' => 'float',
+        'longitude' => 'float',
         'image_id' => 'string',
         'logo_id' => 'string',
         'folder_id' => 'integer',
@@ -60,9 +64,9 @@ class Group extends Entity
         return $this->attributes['parent_id'];
     }
 
-    public function setParentId(?int $parentOrganisationId): void
+    public function setParentId(?int $parentGroupId): void
     {
-        $this->attributes['parent_id'] = $parentOrganisationId;
+        $this->attributes['parent_id'] = $parentGroupId;
     }
 
     /**
@@ -135,7 +139,7 @@ class Group extends Entity
         return $this->attributes['address'];
     }
 
-    public function setAddress(string $address): void
+    public function setAddress(?string $address): void
     {
         $this->attributes['address'] = $address;
     }
@@ -148,7 +152,7 @@ class Group extends Entity
         return $this->attributes['description'];
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(?string $description): void
     {
         $this->attributes['description'] = $description;
     }
@@ -161,7 +165,7 @@ class Group extends Entity
         return $this->attributes['website'];
     }
 
-    public function setWebsite(string $websiteUrl): void
+    public function setWebsite(?string $websiteUrl): void
     {
         $this->attributes['website'] = $websiteUrl;
     }
@@ -174,7 +178,7 @@ class Group extends Entity
         return $this->attributes['email'];
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(?string $email): void
     {
         $this->attributes['email'] = $email;
     }
@@ -187,9 +191,29 @@ class Group extends Entity
         return $this->attributes['phone'];
     }
 
-    public function setPhone(string $phone): void
+    public function setPhone(?string $phone): void
     {
         $this->attributes['phone'] = $phone;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->attributes['latitude'];
+    }
+
+    public function setLatitude(?float $latitude): void
+    {
+        $this->attributes['latitude'] = $latitude;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->attributes['longitude'];
+    }
+
+    public function setLongitude(?float $longitude): void
+    {
+        $this->attributes['longitude'] = $longitude;
     }
 
     /**
@@ -257,7 +281,7 @@ class Group extends Entity
 
     public function getUrl(): string
     {
-        return "<a href=\"organisation/{$this->getId()}\">{$this->getDisplayName()}</a>";
+        return "<a href=\"group/{$this->getId()}\">{$this->getDisplayName()}</a>";
     }
 
     public function isManageableBy(User $user): bool

@@ -20,7 +20,7 @@ use function App\Helpers\getCurrentUser;
     <div class="col-lg-5 col-sm-12">
         <?= form_open('search', 'method="get"') ?>
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="Organisationen, Benutzer, ... suchen"
+            <input type="text" class="form-control" placeholder="Gruppen, Benutzer, ... suchen"
                    aria-label="Suchbegriff" aria-describedby="search" name="query" required>
             <button class="btn btn-outline-secondary" type="submit" id="search"><i class="fas fa-magnifying-glass"></i>
                 Suchen
@@ -60,13 +60,13 @@ use function App\Helpers\getCurrentUser;
                         <li class="list-group-item">
                             <div class="flex-container">
                                 <div class="flex-main">
-                                    <?php $organisation = $membership->getGroup(); ?>
-                                    <?php if ($organisation->getParentId()): ?>
-                                        <?= $organisation->getParent()->getName() ?>
+                                    <?php $group = $membership->getGroup(); ?>
+                                    <?php if ($group->getParentId()): ?>
+                                        <?= $group->getParent()->getName() ?>
                                         <br>
-                                        <small><?= $organisation->getName() ?></small>
+                                        <small><?= $group->getName() ?></small>
                                     <?php else: ?>
-                                        <?= $organisation->getName() ?>
+                                        <?= $group->getName() ?>
                                     <?php endif; ?>
                                 </div>
                                 <div class="flex-actions">
@@ -74,7 +74,7 @@ use function App\Helpers\getCurrentUser;
                                         <?= $membership->getStatus()->badge() ?>
                                     </div>
                                     <a class="btn btn-sm btn-outline-primary"
-                                       href="<?= base_url('organisation') ?>/<?= $organisation->getId() ?>">
+                                       href="<?= base_url('group') ?>/<?= $group->getId() ?>">
                                         Öffnen
                                     </a>
                                 </div>
@@ -85,8 +85,8 @@ use function App\Helpers\getCurrentUser;
             </div>
             <div class="card-footer footer-plain">
                 <div class="text-center">
-                    <a class="btn btn-block btn-outline-primary" href="/organisations">
-                        <i class="fas fa-people-group"></i> Alle Organisationen anzeigen
+                    <a class="btn btn-block btn-outline-primary" href="/groups">
+                        <i class="fas fa-people-group"></i> Alle Gruppen anzeigen
                     </a>
                 </div>
             </div>
@@ -115,12 +115,10 @@ use function App\Helpers\getCurrentUser;
     <div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                Organisationskarte
+                Karte
             </div>
             <div class="card-body">
-                <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
-                <link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
-                <div id="osm-map"></div>
+                <?= view('map/MapComponent', ['height' => 300]) ?>
             </div>
             <div class="card-footer footer-plain">
                 <div class="text-center">
@@ -131,7 +129,7 @@ use function App\Helpers\getCurrentUser;
             </div>
         </div>
     </div>
-    <div class="col mb-4">
+    <!--<div class="col mb-4">
         <div class="card shadow-sm">
             <div class="card-header text-center">
                 Deine Favoriten
@@ -155,31 +153,5 @@ use function App\Helpers\getCurrentUser;
             <div class="card-body">
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
-
-
-<script>
-    // Where you want to render the map.
-    var element = document.getElementById('osm-map');
-
-    // Height has to be set. You can do this in CSS too.
-    element.style = 'height:300px;';
-
-    // Create Leaflet map on map element.
-    var map = L.map(element);
-
-    // Add OSM tile layer to the Leaflet map.
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Target's GPS coordinates.
-    var target = L.latLng('48.39533', '10.90671');
-
-    // Set map's center to target with zoom 14.
-    map.setView(target, 18);
-
-    // Place a marker on the same location.
-    L.marker(target).addTo(map);
-</script>

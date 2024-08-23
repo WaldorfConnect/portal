@@ -37,148 +37,148 @@ class GroupController extends BaseController
             return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        return $this->render('group/GroupView', ['groups' => $group]);
+        return $this->render('group/GroupView', ['group' => $group]);
     }
 
-    public function handleJoin(int $organisationId): RedirectResponse
+    public function handleJoin(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        $membership = getMembership($currentUser->getId(), $organisationId);
+        $membership = getMembership($currentUser->getId(), $groupId);
         if ($membership) {
-            return redirect('organisations')->with('error', 'Du bist bereits Mitglied dieser Organisation.');
+            return redirect('groups')->with('error', 'Du bist bereits Mitglied dieser Gruppe.');
         }
 
         try {
-            createMembershipRequest($currentUser->getId(), $organisationId);
+            createMembershipRequest($currentUser->getId(), $groupId);
 
-            createGroupNotification($organisationId,
+            createGroupNotification($groupId,
                 'Beitrittsanfrage',
                 "{$currentUser->getName()} möchte %s beitreten.</a>",
                 MembershipStatus::ADMIN);
         } catch (Throwable $e) {
-            return redirect('organisations')->with('error', $e);
+            return redirect('groups')->with('error', $e);
         }
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleLeave(int $organisationId): RedirectResponse
+    public function handleLeave(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        $membership = getMembership($currentUser->getId(), $organisationId);
+        $membership = getMembership($currentUser->getId(), $groupId);
         if (!$membership) {
-            return redirect('organisations')->with('error', 'Du bist kein Mitglied dieser Organisation.');
+            return redirect('groups')->with('error', 'Du bist kein Mitglied dieser Gruppe.');
         }
 
-        deleteMembership($currentUser->getId(), $organisationId);
-        createGroupNotification($organisationId,
-            'Organisation verlassen',
+        deleteMembership($currentUser->getId(), $groupId);
+        createGroupNotification($groupId,
+            'Gruppe verlassen',
             "{$currentUser->getName()} hat %s verlassen.</a>");
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleAddMember(int $organisationId): RedirectResponse|string
+    public function handleAddMember(int $groupId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($self)) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($self)) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         $members = $this->request->getPost('member');
         foreach ($members as $member) {
             try {
-                createMembership($member, $organisationId);
+                createMembership($member, $groupId);
             } catch (Throwable $e) {
-                return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
+                return redirect()->to(base_url('group/' . $groupId))->with('error', $e);
             }
 
             $memberUser = getUserById($member);
-            createGroupNotification($organisationId,
-                'Organisation beigetreten',
+            createGroupNotification($groupId,
+                'Gruppe beigetreten',
                 "{$memberUser->getName()} ist %s beigetreten.</a>",
                 null,
                 [$member]);
 
-            createNotification($member, 'Zur Organisation hinzugefügt', "Du wurdest zu {$organisation->getUrl()} hinzugefügt.");
+            createNotification($member, 'Zur Gruppe hinzugefügt', "Du wurdest zu {$group->getUrl()} hinzugefügt.");
         }
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleAddSubgroup(int $organisationId): RedirectResponse|string
+    public function handleAddSubgroup(int $groupId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
         $name = trim($this->request->getPost('name'));
 
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($self)) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($self)) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         try {
-            $workgroup = createGroup($name, $name, $organisation->getRegionId(), $organisation->getId());
+            $workgroup = createGroup($name, $name, $group->getRegionId(), $group->getId());
             $id = insertGroup($workgroup);
 
             createMembership($self->getId(), $id, MembershipStatus::ADMIN);
-            createGroupNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
+            createGroupNotification($groupId, 'Untergruppe erstellt', "Arbeitsgruppe {$workgroup->getName()} in %s erstellt.");
 
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Arbeitsgruppe erstellt.');
+            return redirect()->to(base_url('group/' . $groupId))->with('success', 'Untergruppe erstellt.');
         } catch (Throwable $e) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
+            return redirect()->to(base_url('group/' . $groupId))->with('error', $e);
         }
     }
 
-    public function edit(int $organisationId): RedirectResponse|string
+    public function edit(int $groupId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
+        if (!$group) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Unbekannte Gruppe.');
         }
 
-        if (!$organisation->isManageableBy($self)) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
+        if (!$group->isManageableBy($self)) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
         }
 
-        return $this->render('organisation/OrganisationEditView', ['organisation' => $organisation]);
+        return $this->render('group/GroupEditView', ['group' => $group]);
     }
 
-    public function handleEdit(int $organisationId): RedirectResponse|string
+    public function handleEdit(int $groupId): RedirectResponse|string
     {
         $self = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Unbekannte Organisation.');
+        if (!$group) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Unbekannte Gruppe.');
         }
 
-        if (!$organisation->isManageableBy($self)) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Du darfst diese Organisation nicht bearbeiten.');
+        if (!$group->isManageableBy($self)) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht bearbeiten.');
         }
 
         $name = trim($this->request->getPost('name'));
@@ -186,43 +186,82 @@ class GroupController extends BaseController
         $website = trim($this->request->getPost('website'));
         $email = trim($this->request->getPost('email'));
         $phone = trim($this->request->getPost('phone'));
+        $latitude = trim($this->request->getPost('latitude'));
+        $longitude = trim($this->request->getPost('longitude'));
+
         $regionId = $this->request->getPost('region');
         $description = $this->request->getPost('description');
 
         if ($self->isAdmin()) {
-            $organisation->setName($name);
+            if ($name && strlen($name) > 0) {
+                $group->setName($name);
+            }
 
             if ($regionId) {
-                $organisation->setRegionId($regionId);
+                $group->setRegionId($regionId);
             }
         }
 
-        if ($address) {
-            $organisation->setAddress($address);
-        }
+        $group->setAddress($address ?: null);
 
         if ($website) {
-            $organisation->setWebsite($website);
+            if (!filter_var($website, FILTER_VALIDATE_URL)) {
+                return redirect()->back()->with('error', 'Website ist keine gültige URL.');
+            }
+
+            $group->setWebsite($website);
+        } else {
+            $group->setWebsite(null);
         }
 
         if ($email) {
-            $organisation->setEmail($email);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return redirect()->back()->with('error', 'E-Mail< ist keine gültige E-Mail-Adresse.');
+            }
+
+            $group->setEmail($email);
+        } else {
+            $group->setEmail(null);
         }
 
         if ($phone) {
-            $organisation->setPhone($phone);
+            if (!preg_match('^\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\W*\d){0,13}\d$^', $phone)) {
+                return redirect()->back()->with('error', 'Telefon ist keine gültige Telefonnummer im internationalen Format. (z. B. +49...)');
+            }
+
+            $group->setPhone($phone);
+        } else {
+            $group->setPhone(null);
         }
 
-        if ($description) {
-            $organisation->setDescription($description);
+        if ($latitude) {
+            if ($latitude < -90 || $latitude > 90) {
+                return redirect()->back()->with('error', 'Der Breitengrad muss zwischen -90 und 90 liegen.');
+            }
+
+            $group->setLatitude($latitude);
+        } else {
+            $group->setLatitude(null);
         }
+
+        if ($longitude) {
+            if ($longitude < -180 || $longitude > 180) {
+                return redirect()->back()->with('error', 'Der Längengrad muss zwischen -180 und 180 liegen.');
+            }
+
+            $group->setLongitude($longitude);
+        } else {
+            $group->setLongitude(null);
+        }
+
+        $group->setDescription($description ?: null);
 
         // 1. Prevent a logo/image from being uploaded that is not image or bigger than 1/2MB
         if (!$this->validate(createImageValidationRule('logo', 1000, true))) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $this->validator->getErrors());
+            return redirect()->to(base_url('group/' . $groupId))->with('error', $this->validator->getErrors());
         }
         if (!$this->validate(createImageValidationRule('image'))) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $this->validator->getErrors());
+            return redirect()->to(base_url('group/' . $groupId))->with('error', $this->validator->getErrors());
         }
 
         $logoFile = $this->request->getFile('logo');
@@ -234,44 +273,45 @@ class GroupController extends BaseController
         // 2. If a logo/image was uploaded save it | Logos may be SVGs, all other formats are converted to WEBP
         if ($logoFile->isValid()) {
             $logoId = saveImage($logoFile, $logoAuthor);
-            $organisation->setLogoId($logoId);
+            $group->setLogoId($logoId);
         }
+
         if ($imageFile->isValid()) {
             $imageId = saveImage($imageFile, $imageAuthor);
-            $organisation->setImageId($imageId);
+            $group->setImageId($imageId);
         }
 
         try {
-            saveGroup($organisation);
+            saveGroup($group);
 
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('success', 'Organisation bearbeitet.');
+            return redirect()->to(base_url('group/' . $groupId))->with('success', 'Gruppe bearbeitet.');
         } catch (Throwable $e) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', $e);
+            return redirect()->to(base_url('group/' . $groupId))->with('error', $e);
         }
     }
 
-    public function handleAcceptJoin(int $organisationId): RedirectResponse
+    public function handleAcceptJoin(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getGroupById($organisationId);
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($currentUser)) {
-            return redirect('organisations')->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($currentUser)) {
+            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         $user = getUserById($userId);
         if (!$user) {
-            return redirect('organisations')->with('error', 'Dieser Benutzer existiert nicht.');
+            return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getMembership($user->getId(), $organisationId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership || $membership->getStatus() != MembershipStatus::PENDING) {
-            return redirect('organisations')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
+            return redirect('groups')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
         }
 
         $membership->setStatus(MembershipStatus::USER);
@@ -279,179 +319,179 @@ class GroupController extends BaseController
         try {
             saveMembership($membership);
         } catch (Throwable $e) {
-            return redirect('organisations')->with('error', $e);
+            return redirect('groups')->with('error', $e);
         }
 
-        createGroupNotification($organisationId,
-            'Organisation beigetreten',
+        createGroupNotification($groupId,
+            'Gruppe beigetreten',
             "{$membership->getUser()->getName()} ist %s beigetreten.</a>",
             null,
             [$membership->getUserId()]);
 
         createNotification($membership->getUserId(),
             'Beitrittsanfrage akzeptiert',
-            "Deine Anfrage an {$organisation->getUrl()} wurden akzeptiert.");
+            "Deine Anfrage an {$group->getUrl()} wurden akzeptiert.");
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleDenyJoin(int $organisationId): RedirectResponse
+    public function handleDenyJoin(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getGroupById($organisationId);
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($currentUser)) {
-            return redirect('organisations')->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($currentUser)) {
+            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         $user = getUserById($userId);
         if (!$user) {
-            return redirect('organisations')->with('error', 'Dieser Benutzer existiert nicht.');
+            return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getMembership($user->getId(), $organisationId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership || $membership->getStatus() != MembershipStatus::PENDING) {
-            return redirect('organisations')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
+            return redirect('groups')->with('error', 'Keine Beitrittsanfrage für diesen Nutzer gefunden.');
         }
 
         try {
-            deleteMembership($userId, $organisationId);
+            deleteMembership($userId, $groupId);
 
-            createGroupNotification($organisationId,
+            createGroupNotification($groupId,
                 'Beitrittsanfrage abgelehnt',
                 "Anfrage von {$membership->getUser()->getName()} an %s abgelehnt.</a>",
                 MembershipStatus::ADMIN,
                 [$membership->getUserId()]);
 
-            createNotification($membership->getUserId(), 'Beitrittsanfrage abgelehnt', "Deine Anfrage an {$organisation->getUrl()} wurde abgelehnt.");
+            createNotification($membership->getUserId(), 'Beitrittsanfrage abgelehnt', "Deine Anfrage an {$group->getUrl()} wurde abgelehnt.");
         } catch (Throwable $e) {
-            return redirect('organisations')->with('error', $e);
+            return redirect('groups')->with('error', $e);
         }
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleChangeMembershipStatus(int $organisationId): RedirectResponse
+    public function handleChangeMembershipStatus(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
         $status = $this->request->getPost('status');
 
-        $organisation = getGroupById($organisationId);
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($currentUser)) {
-            return redirect('organisations')->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($currentUser)) {
+            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         $user = getUserById($userId);
         if (!$user) {
-            return redirect('organisations')->with('error', 'Dieser Benutzer existiert nicht.');
+            return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getMembership($user->getId(), $organisationId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership) {
-            return redirect('organisations')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Organisation.');
+            return redirect('groups')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Gruppe.');
         }
 
         $statusEnum = MembershipStatus::from($status);
         $membership->setStatus($statusEnum);
 
         try {
-            createGroupNotification($organisationId,
-                'Organisationsrolle geändert',
+            createGroupNotification($groupId,
+                'Rolle geändert',
                 "Rolle von {$membership->getUser()->getName()} in %s zu {$statusEnum->displayName()} geändert.</a>",
                 MembershipStatus::ADMIN,
                 [$membership->getUserId()]);
 
-            createNotification($membership->getUserId(), 'Organisationsrolle geändert', "Deine Rolle in {$organisation->getUrl()} wurde zu {$statusEnum->displayName()} geändert.");
+            createNotification($membership->getUserId(), 'Rolle geändert', "Deine Rolle in {$group->getUrl()} wurde zu {$statusEnum->displayName()} geändert.");
 
             saveMembership($membership);
         } catch (Throwable $e) {
-            return redirect('organisations')->with('error', $e);
+            return redirect('groups')->with('error', $e);
         }
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleKickUser(int $organisationId): RedirectResponse
+    public function handleKickUser(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
         $userId = $this->request->getPost('userId');
 
-        $organisation = getGroupById($organisationId);
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        $group = getGroupById($groupId);
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        if (!$organisation->isManageableBy($currentUser)) {
-            return redirect('organisations')->with('error', 'Du darfst diese Organisation nicht verwalten.');
+        if (!$group->isManageableBy($currentUser)) {
+            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         $user = getUserById($userId);
         if (!$user) {
-            return redirect('organisations')->with('error', 'Dieser Benutzer existiert nicht.');
+            return redirect('groups')->with('error', 'Dieser Benutzer existiert nicht.');
         }
 
-        $membership = getMembership($user->getId(), $organisationId);
+        $membership = getMembership($user->getId(), $groupId);
         if (!$membership) {
-            return redirect('organisations')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Organisation.');
+            return redirect('groups')->with('error', 'Dieser Nutzer ist nicht Mitglied dieser Gruppe.');
         }
 
         try {
-            deleteMembership($userId, $organisationId);
+            deleteMembership($userId, $groupId);
 
-            createGroupNotification($organisationId,
-                'Aus Organisation entfernt',
+            createGroupNotification($groupId,
+                'Aus Gruppe entfernt',
                 "{$membership->getUser()->getName()} von {$currentUser->getName()} aus %s entfernt.</a>",
                 MembershipStatus::ADMIN,
                 [$membership->getUserId()]);
 
-            createGroupNotification($organisationId,
-                'Organisation verlassen',
+            createGroupNotification($groupId,
+                'Gruppe verlassen',
                 "{$currentUser->getName()} hat %s verlassen.</a>",
                 MembershipStatus::USER,
                 [$membership->getUserId()]);
 
-            createNotification($membership->getUserId(), 'Aus Organisation entfernt', "Du wurdest aus {$organisation->getUrl()} entfernt.");
+            createNotification($membership->getUserId(), 'Aus Gruppe entfernt', "Du wurdest aus {$group->getUrl()} entfernt.");
         } catch (Throwable $e) {
-            return redirect('organisations')->with('error', $e);
+            return redirect('groups')->with('error', $e);
         }
 
-        return redirect()->to(base_url('organisation/' . $organisationId));
+        return redirect()->to(base_url('group/' . $groupId));
     }
 
-    public function handleDelete(int $organisationId): RedirectResponse
+    public function handleDelete(int $groupId): RedirectResponse
     {
         $currentUser = getCurrentUser();
-        $organisation = getGroupById($organisationId);
+        $group = getGroupById($groupId);
 
-        if (!$organisation) {
-            return redirect('organisations')->with('error', 'Diese Organisation existiert nicht.');
+        if (!$group) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
         }
 
-        $parent = $organisation->getParent();
+        $parent = $group->getParent();
         if (!$parent) {
-            return redirect()->to(base_url('organisation/' . $organisationId))->with('error', 'Stammgruppen dürfen nur von globalen Administratoren gelöscht werden.');
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Stammgruppen dürfen nur von globalen Administratoren gelöscht werden.');
         }
 
         if (!$parent->isManageableBy($currentUser)) {
-            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', 'Du darfst diese Organisation nicht verwalten.');
+            return redirect()->to(base_url('group/' . $parent->getId()))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
         }
 
         try {
-            createGroupNotification($organisationId, 'Arbeitsgruppe erstellt', "Arbeitsgruppe {$organisation->getName()} in %s gelöscht.");
-            deleteGroup($organisationId);
-            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('success', 'Arbeitsgruppe gelöscht.');
+            createGroupNotification($groupId, 'Untergruppe gelöscht', "Untergruppe {$group->getName()} in %s gelöscht.");
+            deleteGroup($groupId);
+            return redirect()->to(base_url('group/' . $parent->getId()))->with('success', 'Untergruppe gelöscht.');
         } catch (Throwable $e) {
-            return redirect()->to(base_url('organisation/' . $parent->getId()))->with('error', $e);
+            return redirect()->to(base_url('group/' . $parent->getId()))->with('error', $e);
         }
     }
 }

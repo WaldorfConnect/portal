@@ -91,12 +91,15 @@ use function App\Helpers\getRegions;
                                autocomplete="new-password" placeholder="Passwort wiederholen" required>
                     </div>
 
-                    <h3 class="mt-5">Organisationsangaben</h3>
+                    <h3 class="mt-5">Gruppen beitreten</h3>
+
+                    <p>Du kannst hier Gruppen auswählen, denen du mit deiner Registrierung eine Beitrittsanfrage senden
+                        möchtest.</p>
 
                     <div class="mb-3">
-                        <label for="inputOrganisations" class="form-label">Organisationen/Gruppen</label>
-                        <select class="form-select" id="inputOrganisations" name="organisations[]"
-                                aria-describedby="organisationsHelp"
+                        <label for="inputGroups" class="form-label">Gruppen</label>
+                        <select class="form-select" id="inputGroups" name="groups[]"
+                                aria-describedby="groupsHelp"
                                 multiple
                                 required>
                             <?php foreach (getRegions() as $region): ?>
@@ -108,7 +111,7 @@ use function App\Helpers\getRegions;
                                 </optgroup>
                             <?php endforeach; ?>
                         </select>
-                        <small id="organisationsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
+                        <small id="groupsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
                             Desktop-Geräten die STRG-Taste gedrückt halten.</small>
                     </div>
 

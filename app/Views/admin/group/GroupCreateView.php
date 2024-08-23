@@ -11,17 +11,17 @@ $currentUser = getCurrentUser();
             <li class="breadcrumb-item"><a href="/">Startseite</a></li>
             <li class="breadcrumb-item"><a href="<?= base_url('/admin') ?>">Administration</a></li>
             <li class="breadcrumb-item"><a
-                        href="<?= base_url('/admin/organisations') ?>">Organisationsadministration</a></li>
+                        href="<?= base_url('/admin/groups') ?>">Gruppenadministration</a></li>
             <li class="breadcrumb-item active" aria-current="page">
-                Organisation erstellen
+                Gruppe erstellen
             </li>
         </ol>
     </nav>
-    <h1 class="header">Organisation erstellen</h1>
+    <h1 class="header">Gruppe erstellen</h1>
 </div>
 
 <div class="row">
-    <?= form_open_multipart('admin/organisation/create') ?>
+    <?= form_open_multipart('admin/group/create') ?>
 
     <div class="form-group row mb-3">
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Name</label>

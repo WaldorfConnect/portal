@@ -26,7 +26,7 @@ $self = getCurrentUser();
                 <input class="form-check-input" type="checkbox" id="inputNewsletter" name="newsletter"
                     <?= $self->wantsEmailNewsletter() ? 'checked' : '' ?>>
                 <label class="form-check-label" for="inputNewsletter">
-                    Newsletter von Organisationen erhalten
+                    Newsletter von Gruppen erhalten
                 </label>
             </div>
         </div>

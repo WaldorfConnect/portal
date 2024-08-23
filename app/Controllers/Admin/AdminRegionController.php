@@ -43,7 +43,7 @@ class AdminRegionController extends BaseController
 
             return redirect('admin/regions')->with('success', 'Region erstellt.');
         } catch (Throwable $e) {
-            log_message('error', 'Unable to create organisation ' . $name . ': {exception}', ['exception' => $e]);
+            log_message('error', 'Unable to create region ' . $name . ': {exception}', ['exception' => $e]);
             return redirect('admin/regions')->with('error', $e);
         }
     }
@@ -62,7 +62,7 @@ class AdminRegionController extends BaseController
 
             return redirect('admin/regions')->with('success', 'Region gelöscht.');
         } catch (Throwable $e) {
-            log_message('error', 'Unable to delete organisation ' . $region->getName() . ': {exception}', ['exception' => $e]);
+            log_message('error', 'Unable to delete region ' . $region->getName() . ': {exception}', ['exception' => $e]);
             return redirect('admin/regions')->with('error', $e);
         }
     }
@@ -93,7 +93,7 @@ class AdminRegionController extends BaseController
 
             return redirect('admin/regions')->with('success', 'Region bearbeitet.');
         } catch (Throwable $e) {
-            log_message('error', 'Unable to edit organisation ' . $region->getName() . ': {exception}', ['exception' => $e]);
+            log_message('error', 'Unable to edit region ' . $region->getName() . ': {exception}', ['exception' => $e]);
             return redirect('admin/regions')->with('error', $e);
         }
     }

@@ -40,7 +40,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
 </h1>
 
 <div class="row">
-    <?= form_open_multipart("organisation/{$group->getId()}/edit") ?>
+    <?= form_open_multipart("group/{$group->getId()}/edit") ?>
 
     <div class="form-group row mb-3">
         <label for="inputName" class="col-form-label col-md-4 col-lg-3">Name</label>
@@ -102,6 +102,26 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
     </div>
 
     <div class="form-group row mb-3">
+        <label for="inputLatitude" class="col-form-label col-md-4 col-lg-3">Breitengrad</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputLatitude" name="latitude" type="number"
+                   min="-90.0" max="90.0" step="0.00000001" pattern="^\d*\.\d{5,8}$" placeholder="49,8430556"
+                   value="<?= $group->getLatitude() ?? '' ?>">
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="inputLongitude" class="col-form-label col-md-4 col-lg-3">Längengrad</label>
+        <div class="col-md-8 col-lg-9">
+            <input class="form-control" id="inputLongitude" name="longitude" type="number"
+                   min="-180.0" max="180.0" step="0.00000001" pattern="^\d*\.\d{5,8}$" placeholder="9,9019444"
+                   value="<?= $group->getLongitude() ?? '' ?>">
+        </div>
+    </div>
+
+    <hr class="mt-3 mb-3">
+
+    <div class="form-group row mb-3">
         <label for="inputLogo" class="col-form-label col-md-4 col-lg-3">Logo <small>(ca. 512x128 | max.
                 1MB)</small></label>
         <div class="col-md-8 col-lg-9">
@@ -118,7 +138,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
         </div>
     </div>
 
-    <div class=" form-group row mb-3">
+    <div class="form-group row mb-3">
         <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Bild <small>(ca. 1920x1080 | max. 2MB)</small></label>
         <div class="col-md-8 col-lg-9">
             <input class="form-control" id="inputImage" name="image" type="file"
@@ -133,6 +153,8 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                    value="<?= getImageAuthorById($group->getImageId()) ?>">
         </div>
     </div>
+
+    <hr class="mt-3 mb-3">
 
     <div class="mb-3">
         <label for="description" class="form-label">Beschreibung</label>

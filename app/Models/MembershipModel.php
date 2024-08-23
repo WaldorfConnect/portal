@@ -12,7 +12,7 @@ class MembershipModel extends Model
     protected $returnType = Membership::class;
 
     protected $allowedFields = [
-        'user_id', 'organisation_id', 'status'
+        'user_id', 'group_id', 'status'
     ];
 }
 

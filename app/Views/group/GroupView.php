@@ -15,10 +15,10 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Startseite</a></li>
-        <li class="breadcrumb-item"><a href="<?= base_url('/organisations') ?>">Gruppen</a></li>
+        <li class="breadcrumb-item"><a href="<?= base_url('/groups') ?>">Gruppen</a></li>
         <?php if ($parent = $group->getParent()): ?>
             <li class="breadcrumb-item" aria-current="page">
-                <a href="<?= base_url('/organisation/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
+                <a href="<?= base_url('/group/' . $parent->getId()) ?>"><?= $parent->getName() ?></a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
                 <?= $group->getName() ?>
@@ -48,7 +48,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                         <table>
                             <tr>
                                 <img class="img-thumbnail mb-3"
-                                     src="<?= getImageUrlById($group->getLogoId(), 'assets/img/organisation-logo_512x128.webp') ?>"
+                                     src="<?= getImageUrlById($group->getLogoId(), 'assets/img/group-logo_512x128.webp') ?>"
                                      alt="Logo <?= $group->getName() ?>">
                             </tr>
                             <tr>
@@ -121,6 +121,13 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
         <div class="card mb-4">
             <div class="card-header">Aktionen</div>
             <div class="card-body">
+                <?php if ($group->getLatitude() && $group->getLongitude()): ?>
+                    <a class="btn btn-primary btn-lg btn-block mb-3"
+                       href="<?= base_url('map') ?>?group=<?= $group->getId() ?>">
+                        <i class="fas fa-map-marker"></i> Position auf Karte zeigen
+                    </a>
+                <?php endif; ?>
+
                 <?php if ($membership = getMembership($currentUser->getId(), $group->getId())): ?>
                     <a class="btn btn-primary btn-lg btn-block mb-3"
                        href="https://cloud.waldorfconnect.de/apps/files/files?dir=/<?= $group->getFolderMountPoint() ?>">
@@ -160,7 +167,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                     <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
                         <div class="justify-content-between align-items-center">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#workgroupModal">
+                                    data-bs-target="#subgroupModal">
                                 <i class="fas fa-add"></i> Untergruppe hinzufügen
                             </button>
                         </div>
@@ -176,11 +183,11 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                                     </div>
                                     <div class="flex-actions">
                                         <a class="btn btn-sm btn-outline-primary"
-                                           href="<?= base_url('organisation') ?>/<?= $child->getId() ?>">
+                                           href="<?= base_url('group') ?>/<?= $child->getId() ?>">
                                             Öffnen
                                         </a>
                                         <?php if (($membership && $membership->getStatus() == MembershipStatus::ADMIN) || $currentUser->isAdmin()): ?>
-                                            <?= form_open("organisation/{$child->getId()}/delete", ['onsubmit' => "return confirm('Möchtest du die Arbeitsgruppe {$child->getName()} wirklich löschen? Dabei gehen ALLE gespeicherten Informationen inkl. Cloud-Ordner verloren.');"]) ?>
+                                            <?= form_open("group/{$child->getId()}/delete", ['onsubmit' => "return confirm('Möchtest du die Untergruppe {$child->getName()} wirklich löschen? Dabei gehen ALLE gespeicherten Informationen inkl. Cloud-Ordner verloren.');"]) ?>
                                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2">
                                                 Löschen
                                             </button>
@@ -227,7 +234,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                     <tbody>
                     <?php foreach (getMembershipsByGroupId($group->getId()) as $membership): ?>
                         <?php if ($membership->getStatus() == MembershipStatus::PENDING): ?>
-                            <?php if (!$organisation->isManageableBy($currentUser)): continue; endif; ?>
+                            <?php if (!$group->isManageableBy($currentUser)): continue; endif; ?>
 
                             <tr>
                                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
@@ -320,7 +327,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
 <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <?= form_open("organisation/{$group->getId()}/add_member") ?>
+            <?= form_open("group/{$group->getId()}/add_member") ?>
             <div class="modal-header">
                 <h5 class="modal-title" id="memberModalLabel">Mitglieder hinzufügen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
