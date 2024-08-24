@@ -78,6 +78,7 @@ $routes->get('/map', 'MapController::index', ['filter' => LoggedInFilter::class]
 
 $routes->get('/notifications', 'NotificationController::index', ['filter' => LoggedInFilter::class]);
 $routes->post('/notification/(:num)/delete', 'NotificationController::handleDelete/$1', ['filter' => LoggedInFilter::class]);
+$routes->post('/notification/delete_all', 'NotificationController::handleDeleteAll', ['filter' => LoggedInFilter::class]);
 
 $routes->cli('/cron_mail', 'CronController::mail');
 $routes->cli('/cron_notifications', 'CronController::notifications');

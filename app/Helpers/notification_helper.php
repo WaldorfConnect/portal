@@ -120,6 +120,7 @@ function createNotification(int $userId, string $subject, string $body): void
 
     try {
         getNotificationModel()->insert($notification);
+        log_message('info', "Created notification for '{$userId}' with subject '{$subject}'");
     } catch (Throwable $e) {
         log_message('error', 'Error inserting notification: {exception}', ['exception' => $e]);
     }
@@ -146,6 +147,8 @@ function readNotifications(array $notifications): void
         } catch (Throwable $e) {
             log_message('error', 'Error saving notification: {exception}', ['exception' => $e]);
         }
+
+        log_message('info', "Notification '{$notification->getId()}' marked as read");
     }
 }
 
@@ -158,6 +161,19 @@ function readNotifications(array $notifications): void
 function deleteNotification(int $id): void
 {
     getNotificationModel()->delete($id);
+    log_message('info', "Deleted notification '{$id}'");
+}
+
+/**
+ * Delete all notifications of a user.
+ *
+ * @param int $userId
+ * @return void
+ */
+function deleteAllNotifications(int $userId): void
+{
+    getNotificationModel()->where('user_id', $userId)->delete();
+    log_message('info', "Deleted all notifications for user '{$userId}'");
 }
 
 /**

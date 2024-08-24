@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
 use Throwable;
+use function App\Helpers\deleteAllNotifications;
 use function App\Helpers\deleteNotification;
 use function App\Helpers\getCurrentUser;
 use function App\Helpers\getNotificationById;
@@ -16,7 +17,7 @@ class NotificationController extends BaseController
         return $this->render('notification/NotificationsView');
     }
 
-    public function handleDelete(int $id): RedirectResponse|string
+    public function handleDelete(int $id): RedirectResponse
     {
         $notification = getNotificationById($id);
         $self = getCurrentUser();
@@ -28,6 +29,16 @@ class NotificationController extends BaseController
         try {
             deleteNotification($id);
 
+            return redirect()->back();
+        } catch (Throwable $e) {
+            return redirect()->back()->with('error', 'Fehler beim Löschen der Benachrichtigung: ' . $e);
+        }
+    }
+
+    public function handleDeleteAll(): RedirectResponse
+    {
+        try {
+            deleteAllNotifications(getCurrentUser()->getId());
             return redirect()->back();
         } catch (Throwable $e) {
             return redirect()->back()->with('error', 'Fehler beim Löschen der Benachrichtigung: ' . $e);

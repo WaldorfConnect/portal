@@ -7,7 +7,7 @@ $notifications = getNotificationsByUserId(getCurrentUser()->getId(), $limit, nul
 ?>
 <?php if (count($notifications) > 0): ?>
     <div class="row">
-        <?= form_open(base_url("notification/delete_all")) ?>
+        <?= form_open('notification/delete_all', ['onsubmit' => "return confirm('Möchtest du wirklich alle Benachrichtigungen löschen?');"]) ?>
         <div class="float-end mb-3">
             <button type="submit" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-trash"></i> Alle löschen
