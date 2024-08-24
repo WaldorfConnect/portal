@@ -69,6 +69,7 @@ function saveGroup(Group $group): void
     }
 
     getGroupModel()->save($group);
+    log_message('info', "Saving group '{$group->getDisplayName()}'");
 }
 
 /**
@@ -99,6 +100,8 @@ function insertGroup(Group $group): string|int
 {
     $model = getGroupModel();
     $model->insert($group);
+
+    log_message('info', "Inserting group '{$group->getDisplayName()}'");
     return $model->getInsertID();
 }
 
@@ -111,6 +114,7 @@ function insertGroup(Group $group): string|int
 function deleteGroup(int $id): void
 {
     getGroupModel()->delete($id);
+    log_message('info', "Deleted group '{$id}'");
 }
 
 /**
@@ -197,6 +201,8 @@ function createMembershipRequest(int $userId, int $groupId): void
     $membership->setGroupId($groupId);
     $membership->setStatus(MembershipStatus::PENDING);
     saveMembership($membership);
+
+    log_message('info', "Created membership request for '{$userId} and group '{$groupId}'");
 }
 
 /**
@@ -215,6 +221,8 @@ function createMembership(int $userId, int $groupId, MembershipStatus $status = 
     $membership->setGroupId($groupId);
     $membership->setStatus($status);
     saveMembership($membership);
+
+    log_message('info', "Created membership for '{$userId} in group '{$groupId}' with status '{$status->value}'");
 }
 
 /**
@@ -227,6 +235,7 @@ function createMembership(int $userId, int $groupId, MembershipStatus $status = 
 function deleteMembership(int $userId, int $groupId): void
 {
     getMembershipModel()->where('user_id', $userId)->where('group_id', $groupId)->delete();
+    log_message('info', "Deleted membership for '{$userId} in group '{$groupId}'");
 }
 
 /**
@@ -239,6 +248,7 @@ function deleteMembership(int $userId, int $groupId): void
 function saveMembership(Membership $membership): void
 {
     getMembershipModel()->save($membership);
+    log_message('info', "Saved membership for '{$membership->getUserId()} in group '{$membership->getGroupId()}'");
 }
 
 /**
@@ -274,6 +284,8 @@ function createGroupNotification(int $groupId, string $subject, string $body, Me
 
         createNotification($membership->getUserId(), $subject, $body);
     }
+
+    log_message('info', "Created group notification in group '{$groupId}' with subject '{$subject}' and body '{$body}'");
 }
 
 /**

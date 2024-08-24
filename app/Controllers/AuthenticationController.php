@@ -71,7 +71,7 @@ class AuthenticationController extends BaseController
 
         // Check if logging is blocked by current status
         if (!$user->isActive()) {
-            log_message('info', 'Failed login for disabled user ' . $user->getUsername());
+            log_message('warning', 'Failed login for disabled user ' . $user->getUsername());
             return $redirect->with('error', 'Benutzer ist nicht aktiv.');
         }
 
@@ -90,6 +90,8 @@ class AuthenticationController extends BaseController
 
         // Everything worked - welcome!
         session()->set('user_id', $user->getId());
+
+        log_message('info', 'User ' . $user->getUsername() . ' successfully logged in');
 
         // Check if user is returning and redirect
         return redirect()->to($returnUrl ?: '/');
@@ -121,15 +123,18 @@ class AuthenticationController extends BaseController
                 $username = $newUsername;
             }
         } catch (InvalidArgumentException) {
+            log_message('warning', 'Failed registration due to invalid name: ' . $firstName . ' ' . $lastName);
             return redirect('register')->withInput()->with('error', 'Vor- und Nachname ungültig!');
         }
 
         if ($password != $confirmedPassword) {
+            log_message('warning', 'Failed registration for ' . $username . ' due to non-matching passwords');
             return redirect('register')->withInput()->with('error', 'Die Passwörter stimmen nicht überein!');
         }
 
         $user = getUserByEmail($email);
         if ($user) {
+            log_message('warning', 'Failed registration for ' . $username . ' due to duplicate e-mail: ' . $email);
             return redirect('register')->withInput()->with('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
         }
 

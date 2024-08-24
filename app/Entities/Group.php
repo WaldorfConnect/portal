@@ -94,8 +94,9 @@ class Group extends Entity
     public function getDisplayName(): string
     {
         $parent = $this->getParent();
-        return ($parent ? $parent->getName() . ' / ' : '') . $this->getName();
+        return ($parent ? $parent->getName() . ' - ' : '') . $this->getName();
     }
+
 
     /**
      * @return string
@@ -258,7 +259,7 @@ class Group extends Entity
     public function getFolderMountPoint(): string
     {
         $parent = $this->getParent();
-        return ($parent ? $parent->getName() . '/' : '') . $this->getName();
+        return ($parent ? $parent->getName() . ' - ' : '') . $this->getName();
     }
 
     public function getChatId(): ?string

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\CLI\CLI;
 use Throwable;
 use function App\Helpers\openLDAPConnection;
 use function App\Helpers\queueNotificationMails;
@@ -19,13 +18,11 @@ class CronController extends BaseController
             return;
         }
 
-        $this->printTimestamp();
-
         try {
-            CLI::write('Working mail queue ...');
+            log_message('info', 'Working mail queue ...');
             workMailQueue();
         } catch (Throwable $e) {
-            CLI::error("Error working mail queue: {$e}");
+            log_message('error', 'Error working mail queue: {exception}', ['exception' => $e]);
         } finally {
             $this->releaseLock('mail');
         }
@@ -37,13 +34,11 @@ class CronController extends BaseController
             return;
         }
 
-        $this->printTimestamp();
-
         try {
-            CLI::write('Queueing notification mails...');
+            log_message('info', 'Queueing notifications mails ...');
             queueNotificationMails();
         } catch (Throwable $e) {
-            CLI::error("Error queueing notification mails: {$e}");
+            log_message('error', 'Error queueing notifications mails: {exception}', ['exception' => $e]);
         } finally {
             $this->releaseLock('notifications');
         }
@@ -55,30 +50,28 @@ class CronController extends BaseController
             return;
         }
 
-        $this->printTimestamp();
-
         try {
             $count = 0;
             while ($this->isAcquired('nextcloud')) {
                 sleep(1);
-                CLI::write('Waiting for Nextcloud sync to finish ... [' . $count . ']');
+                log_message('info', "Waiting for Nextcloud sync to finish ... [$count]");
 
                 if ($count++ == 30) {
-                    CLI::error('Timed out waiting for Nextcloud. Quitting...');
+                    log_message('error', 'Timed out waiting for Nextcloud. Aborting!');
                     return;
                 }
             }
 
-            CLI::write('Opening LDAP connection ...');
+            log_message('info', 'Opening LDAP connection ...');
             openLDAPConnection();
 
-            CLI::write('Synchronizing LDAP users ...');
+            log_message('info', 'Synchronizing LDAP users ...');
             syncLDAPUsers();
 
-            CLI::write('Synchronizing LDAP groups ...');
+            log_message('info', 'Synchronizing LDAP groups ...');
             syncLDAPGroups();
         } catch (Throwable $e) {
-            CLI::error("Error synchronizing with LDAP: {$e}");
+            log_message('error', 'Error synchronizing with LDAP: {exception}', ['exception' => $e]);
         } finally {
             $this->releaseLock('ldap');
         }
@@ -90,25 +83,23 @@ class CronController extends BaseController
             return;
         }
 
-        $this->printTimestamp();
-
         try {
             $count = 0;
             while ($this->isAcquired('ldap')) {
                 sleep(1);
-                CLI::write('Waiting for LDAP sync to finish ... [' . $count . ']');
+                log_message('info', "Waiting for LDAP sync to finish ... [$count]");
 
                 if ($count++ == 10) {
-                    CLI::error('Timed out waiting for LDAP. Quitting...');
+                    log_message('error', 'Timed out waiting for LDAP. Aborting!');
                     return;
                 }
             }
 
-            CLI::write('Synchronizing Nextcloud folders and chats ...');
+            log_message('info', 'Synchronizing Nextcloud folders and chats ...');
             syncGroupFolders();
             // syncOrganisationChats();
         } catch (Throwable $e) {
-            CLI::error("Error synchronizing folders: {$e}");
+            log_message('error', 'Error synchronizing cloud folders: {exception}', ['exception' => $e]);
         } finally {
             $this->releaseLock('nextcloud');
         }
@@ -124,6 +115,7 @@ class CronController extends BaseController
         $file = fopen($path, 'w');
         fclose($file);
 
+        log_message('info', "Lock '{$name}' acquired");
         return true;
     }
 
@@ -135,11 +127,7 @@ class CronController extends BaseController
 
     function releaseLock(string $name): void
     {
+        log_message('info', "Lock '{$name}' released");
         unlink(WRITEPATH . '.lock_' . $name);
-    }
-
-    function printTimestamp(): void
-    {
-        CLI::write(date("d.m.Y H:i:s"));
     }
 }

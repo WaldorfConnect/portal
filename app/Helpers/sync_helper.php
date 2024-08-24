@@ -288,6 +288,7 @@ function updateLDAPUser(\LdapRecord\Models\OpenLDAP\User $ldapUser, User $user):
     }
 
     $ldapUser->save();
+    log_message('info', "Updated LDAP user '{$user->getUsername()}'");
 }
 
 /**
@@ -307,6 +308,8 @@ function createLDAPGroup(Group $group): void
     $ldapGroup->inside(getGroupsDistinguishedName());
     $ldapGroup->setDn('uid=' . $group->getId() . ',' . getGroupsDistinguishedName());
     $ldapGroup->save();
+
+    log_message('info', "Created LDAP group '{$group->getDisplayName()}'");
 }
 
 /**
@@ -330,6 +333,8 @@ function createGroupFolder(Client $client, Group $group): int
             'group' => $group->getDisplayName()
         ]
     ]);
+
+    log_message('info', "Created group folder '{$group->getDisplayName()}'");
 
     return $data->id;
 }
@@ -406,6 +411,8 @@ function updateGroupFolder(Client $client, Group $group, object $folder): void
             ]
         ]);
     }
+
+    log_message('info', "Updated group folder for '{$group->getDisplayName()}'");
 }
 
 /**
@@ -416,6 +423,7 @@ function updateGroupFolder(Client $client, Group $group, object $folder): void
 function deleteGroupFolder(Client $client, int $id): void
 {
     $client->delete(FOLDERS_API . '/folders/' . $id);
+    log_message('info', "Deleted group folder '{$id}'");
 }
 
 /**
@@ -430,6 +438,8 @@ function createGroupChat(Client $client, string $groupName): ?string
             'source' => 'portal'
         ]
     ]);
+
+    log_message('info', "Created group chat '{$groupName}'");
 
     $decodedResponse = json_decode($response->getBody()->getContents());
     return $decodedResponse->ocs->data->token;
@@ -456,6 +466,8 @@ function promoteChatUser(Client $client, string $chatId, int $attendeeId): void
             'attendeeId' => $attendeeId
         ]
     ]);
+
+    log_message('info', "Promoting chat user '{$attendeeId}' in '{$chatId}'");
 }
 
 /**
@@ -468,6 +480,8 @@ function demoteChatUser(Client $client, string $chatId, int $attendeeId): void
             'attendeeId' => $attendeeId
         ]
     ]);
+
+    log_message('info', "Demoting chat user '{$attendeeId}' in '{$chatId}'");
 }
 
 /**

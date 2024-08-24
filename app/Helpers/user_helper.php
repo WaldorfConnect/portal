@@ -116,6 +116,8 @@ function saveUser(User $user): void
 
     $model = getUserModel();
     $model->save($user);
+
+    log_message('info', "Saved user '{$user->getUsername()}'");
 }
 
 /**
@@ -143,6 +145,7 @@ function createAndInsertUser(string $username, string $firstName, string $lastNa
     $model->insert($user);
     $user->setId($model->getInsertID());
 
+    log_message('info', "Created user '{$user->getUsername()}'");
     return $user;
 }
 
@@ -155,6 +158,7 @@ function createAndInsertUser(string $username, string $firstName, string $lastNa
 function deleteUser(int $id): void
 {
     getUserModel()->delete($id);
+    log_message('info', "Deleted user '{$id}'");
 }
 
 /**

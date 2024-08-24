@@ -39,9 +39,10 @@ function queueNotificationMails(): void
                     $notification->setMailDate($now);
                     getNotificationModel()->save($notification);
 
+                    log_message('info', "Set notification mail reoccurrence for {$user->getUsername()} to {$now->format('d.m.Y H:i:s')} ...");
                     $mail = true;
                 } catch (Throwable $e) {
-                    // TODO handle exception
+                    log_message('error', 'Error updating notification mail date: {exception}', ['exception' => $e]);
                 }
             }
         }
@@ -57,9 +58,9 @@ function queueNotificationMails(): void
                 queueMail($user->getId(), $subject,
                     view('mail/UnreadNotifications', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
 
-                CLI::write("Queueing notification mail for {$user->getUsername()} ...");
+                log_message('info', "Queueing notification mail for {$user->getUsername()} ...");
             } catch (Throwable $e) {
-                // TODO handle exception
+                log_message('error', 'Error queue notification mail: {exception}', ['exception' => $e]);
             }
         }
     }
@@ -120,7 +121,7 @@ function createNotification(int $userId, string $subject, string $body): void
     try {
         getNotificationModel()->insert($notification);
     } catch (Throwable $e) {
-        // TODO handle exception
+        log_message('error', 'Error inserting notification: {exception}', ['exception' => $e]);
     }
 }
 
@@ -143,7 +144,7 @@ function readNotifications(array $notifications): void
         try {
             getNotificationModel()->save($clonedNotification);
         } catch (Throwable $e) {
-            // TODO handle exception
+            log_message('error', 'Error saving notification: {exception}', ['exception' => $e]);
         }
     }
 }

@@ -4,7 +4,6 @@ namespace App\Helpers;
 
 use App\Entities\Mail;
 use App\Models\MailModel;
-use CodeIgniter\CLI\CLI;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use ReflectionException;
@@ -22,7 +21,7 @@ function workMailQueue(): void
     foreach (getMails() as $mail) {
         $recipient = getUserById($mail->getRecipientId());
         if (!$recipient) {
-            CLI::error("Invalid user id {$mail->getRecipientId()}");
+            log_message('error', "Invalid mail recipient id {$mail->getRecipientId()}");
         }
 
         $mailer->clearAddresses();
@@ -32,9 +31,9 @@ function workMailQueue(): void
 
         if ($mailer->send()) {
             deleteMail($mail->getId());
-            CLI::write("Successfully sent mail {$mail->getId()} to {$recipient->getEmail()}");
+            log_message('info', "Successfully sent mail {$mail->getId()} to {$recipient->getEmail()}");
         } else {
-            CLI::error("Error sending mail {$mail->getId()} to {$recipient->getEmail()}: {$mailer->ErrorInfo}");
+            log_message('error', "Error sending mail {$mail->getId()} to {$recipient->getEmail()}: {$mailer->ErrorInfo}");
         }
 
         usleep(100_000); // sleep for 100ms
@@ -48,6 +47,8 @@ function workMailQueue(): void
  */
 function queueMail(int $recipientId, string $subject, string $body): string|int
 {
+    log_message('info', "Queuing mail to '{$recipientId}' with subject '{$subject}'");
+
     $mail = createMail($recipientId, $subject, $body);
     $model = getMailModel();
     $model->save($mail);
@@ -62,6 +63,8 @@ function queueMail(int $recipientId, string $subject, string $body): string|int
  */
 function deleteMail(int $id): void
 {
+    log_message('info', "Deleted mail '{$id}'");
+
     getMailModel()->delete($id);
 }
 

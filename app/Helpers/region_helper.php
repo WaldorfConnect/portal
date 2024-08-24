@@ -43,6 +43,7 @@ function saveRegion(Region $region): void
     }
 
     getRegionModel()->save($region);
+    log_message('info', "Saved region '{$region->getName()}'");
 }
 
 /**
@@ -60,6 +61,7 @@ function createAndInsertRegion(string $name): Region
     $model->insert($region);
     $region->setId($model->getInsertID());
 
+    log_message('info', "Created region '{$region->getName()}'");
     return $region;
 }
 
@@ -71,6 +73,7 @@ function createAndInsertRegion(string $name): Region
 function deleteRegion(int $id): void
 {
     getRegionModel()->delete($id);
+    log_message('info', "Deleted region '{$id}'");
 }
 
 /**
