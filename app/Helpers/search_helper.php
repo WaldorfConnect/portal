@@ -30,6 +30,7 @@ function getSearchEntries(string $query): array
             $user->getName(),
             'Benutzer',
             [
+                '<i class="fas fa-arrow-up-right-from-square"></i> Profil anzeigen' => base_url("user/{$user->getUsername()}"),
                 '<i class="fas fa-message"></i> Chat starten' => "https://cloud.waldorfconnect.de/apps/spreed/?callUser={$user->getUsername()}"
             ]
         );

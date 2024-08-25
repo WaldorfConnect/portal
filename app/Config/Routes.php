@@ -18,10 +18,13 @@ $routes->get('/register', 'AuthenticationController::register', ['filter' => Log
 $routes->post('/register', 'AuthenticationController::handleRegister', ['filter' => LoggedOutFilter::class]);
 $routes->post('/register/resend', 'AuthenticationController::handleRegisterResendConfirmationEmail', ['filter' => LoggedOutFilter::class]);
 
-$routes->get('/user/profile', 'User\UserProfileController::profile', ['filter' => LoggedInFilter::class]);
-$routes->post('/user/profile', 'User\UserProfileController::handleProfile', ['filter' => LoggedInFilter::class]);
+$routes->get('/user/profile', 'User\UserProfileController::editProfile', ['filter' => LoggedInFilter::class]);
+$routes->post('/user/profile', 'User\UserProfileController::handleEditProfile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile/resend', 'User\UserProfileController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
 $routes->get('/user/confirm', 'User\UserController::handleConfirm');
+
+$routes->get('/user/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/u/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/user/settings', 'User\UserSettingsController::settings', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/settings', 'User\UserSettingsController::handleSettings', ['filter' => LoggedInFilter::class]);

@@ -444,4 +444,9 @@ class User extends Entity
 
         return false;
     }
+
+    public function getUrl(): string
+    {
+        return "<a href=\"" . base_url("user/{$this->getUsername()}") . "\">{$this->getName()}</a>";
+    }
 }

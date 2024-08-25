@@ -282,7 +282,7 @@ class Group extends Entity
 
     public function getUrl(): string
     {
-        return "<a href=\"group/{$this->getId()}\">{$this->getDisplayName()}</a>";
+        return "<a href=\"" . base_url("group/{$this->getId()}") . "\">{$this->getDisplayName()}</a>";
     }
 
     public function isManageableBy(User $user): bool

@@ -38,12 +38,14 @@ $entries = getSearchEntries($query);
                                 <?= $entry->getBadge() ?> <?= $entry->getName() ?>
                             </div>
                             <div class="flex-actions">
-                                <?php foreach ($entry->getUrls() as $key => $value): ?>
-                                    <a class="btn btn-sm btn-outline-primary"
-                                       href="<?= $value ?>" target="_blank">
-                                        <?= $key ?>
-                                    </a>
-                                <?php endforeach; ?>
+                                <div class="btn btn-group-sm">
+                                    <?php foreach ($entry->getUrls() as $key => $value): ?>
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           href="<?= $value ?>" target="_blank">
+                                            <?= $key ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                         </div>
                     </li>

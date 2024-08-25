@@ -12,6 +12,7 @@ use function App\Helpers\getCurrentUser;
 use function App\Helpers\getUserByEmail;
 use function App\Helpers\getUserById;
 use function App\Helpers\getUserByToken;
+use function App\Helpers\getUserByUsername;
 use function App\Helpers\getUsers;
 use function App\Helpers\queueMail;
 use function App\Helpers\saveImage;
@@ -19,12 +20,26 @@ use function App\Helpers\saveUser;
 
 class UserProfileController extends BaseController
 {
-    public function profile(): string
+    public function profile(string $username): RedirectResponse|string
+    {
+        $user = getUserByUsername($username);
+        if (!$user) {
+            return redirect()->back()->with('error', 'Ungültiger Benutzer.');
+        }
+
+        if (!$user->isActive()) {
+            return redirect()->back()->with('error', 'Benutzer ist noch verifiziert oder wurde gesperrt.');
+        }
+
+        return $this->render('user/ViewProfileView', ['user' => $user]);
+    }
+
+    public function editProfile(): string
     {
         return $this->render('user/EditProfileView', ['user' => getCurrentUser()]);
     }
 
-    public function handleProfile(): RedirectResponse
+    public function handleEditProfile(): RedirectResponse
     {
         $user = getCurrentUser();
         $firstName = trim($this->request->getPost('firstName'));

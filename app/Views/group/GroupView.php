@@ -239,7 +239,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                             <tr>
                                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
                                     class="td-class-<?= $user->getId() ?>"
-                                    data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
+                                    data-title="<?= $user->getName() ?>"><?= $user->getUrl() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
                                 <td>
                                     <?= form_open("group/{$group->getId()}/accept") ?>
@@ -261,7 +261,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                             <tr>
                                 <td id="td-id-<?= ($user = $membership->getUser())->getId() ?>"
                                     class="td-class-<?= $user->getId() ?>"
-                                    data-title="<?= $user->getName() ?>"><?= $user->getName() ?></td>
+                                    data-title="<?= $user->getName() ?>"><?= $user->getUrl() ?></td>
                                 <td><?= $membership->getStatus()->badge() ?></td>
                                 <?php if ($group->isManageableBy($currentUser)): ?>
                                     <td>
