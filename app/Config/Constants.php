@@ -93,6 +93,8 @@ define('EVENT_PRIORITY_NORMAL', 100);
  */
 define('EVENT_PRIORITY_HIGH', 10);
 
+const SESSION_USER_ID = 'user_id';
+
 const UPLOADED_IMAGE_URL = 'upload/image/';
 const UPLOADED_IMAGES_DIR = ROOTPATH . 'public/' . UPLOADED_IMAGE_URL;
 

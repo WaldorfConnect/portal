@@ -27,7 +27,7 @@ use function App\Helpers\getUsers;
 <div class="row">
     <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
            data-toggle="table" data-search="true" data-height="1000" data-pagination="true"
-           data-show-columns="true" data-cookie="true" data-cookie-id-table="user"
+           data-show-columns="true" data-cookie="true" data-cookie-id-table="users"
            data-search-highlight="true" data-show-columns-toggle-all="true">
         <thead>
         <tr>
@@ -60,7 +60,7 @@ use function App\Helpers\getUsers;
                     </div>
 
                     <?= form_open('admin/user/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du den Benutzer {$user->getName()} wirklich löschen?');"]) ?>
-                    <?= form_hidden('id', $user->getId()) ?>
+                    <?= form_hidden('id', strval($user->getId())) ?>
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -69,14 +69,14 @@ use function App\Helpers\getUsers;
                     <?php if ($user->isAccepted()): ?>
                         <?php if ($user->isActive()): ?>
                             <?= form_open('admin/user/deactivate', ['class' => 'btn-group inline']) ?>
-                            <?= form_hidden('id', $user->getId()) ?>
+                            <?= form_hidden('id', strval($user->getId())) ?>
                             <button type="submit" class="btn btn-danger btn-sm">
                                 <i class="fas fa-lock"></i>
                             </button>
                             <?= form_close() ?>
                         <?php else: ?>
                             <?= form_open('admin/user/activate', ['class' => 'btn-group inline']) ?>
-                            <?= form_hidden('id', $user->getId()) ?>
+                            <?= form_hidden('id', strval($user->getId())) ?>
                             <button type="submit" class="btn btn-success btn-sm">
                                 <i class="fas fa-lock-open"></i>
                             </button>
@@ -84,14 +84,14 @@ use function App\Helpers\getUsers;
                         <?php endif; ?>
                     <?php else: ?>
                         <?= form_open('admin/user/accept', ['class' => 'btn-group inline']) ?>
-                        <?= form_hidden('id', $user->getId()) ?>
+                        <?= form_hidden('id', strval($user->getId())) ?>
                         <button type="submit" class="btn btn-success btn-sm">
                             <i class="fas fa-thumbs-up"></i>
                         </button>
                         <?= form_close() ?>
 
                         <?= form_open('admin/user/deny', ['class' => 'btn-group inline']) ?>
-                        <?= form_hidden('id', $user->getId()) ?>
+                        <?= form_hidden('id', strval($user->getId())) ?>
                         <button type="submit" class="btn btn-danger btn-sm">
                             <i class="fas fa-thumbs-down"></i>
                         </button>

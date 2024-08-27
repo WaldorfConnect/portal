@@ -136,7 +136,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
 
                     <hr>
                     <?= form_open("group/{$group->getId()}/leave", ['onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich verlassen?');"]) ?>
-                    <?= form_hidden('id', $group->getId()) ?>
+                    <?= form_hidden('id', strval($group->getId())) ?>
                     <button type="submit" class="btn btn-danger btn-lg btn-block mb-3">
                         <i class="fas fa-sign-out"></i> Verlassen
                     </button>
@@ -144,7 +144,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                 <?php else: ?>
                     <?php if ((!$parent = $group->getParent()) || getMembership($currentUser->getId(), $parent->getId())): ?>
                         <?= form_open("group/{$group->getId()}/join", ['onsubmit' => "return confirm('Möchtest du der Gruppe {$group->getName()} wirklich beitreten?');"]) ?>
-                        <?= form_hidden('id', $group->getId()) ?>
+                        <?= form_hidden('id', strval($group->getId())) ?>
                         <button type="submit" class="btn btn-success btn-lg btn-block mb-3">
                             <i class="fas fa-sign-in"></i> Beitrittsanfrage senden
                         </button>
@@ -243,14 +243,14 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                                 <td><?= $membership->getStatus()->badge() ?></td>
                                 <td>
                                     <?= form_open("group/{$group->getId()}/accept") ?>
-                                    <?= form_hidden('userId', $user->getId()) ?>
+                                    <?= form_hidden('userId', strval($user->getId())) ?>
                                     <button type="submit" class="btn btn-success btn-sm">
                                         <i class="fas fa-check-circle"></i> Akzeptieren
                                     </button>
                                     <?= form_close() ?>
 
                                     <?= form_open("group/{$group->getId()}/deny") ?>
-                                    <?= form_hidden('userId', $user->getId()) ?>
+                                    <?= form_hidden('userId', strval($user->getId())) ?>
                                     <button type="submit" class="btn btn-danger btn-sm mt-1">
                                         <i class="fas fa-x"></i> Ablehnen
                                     </button>
@@ -267,7 +267,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                                     <td>
                                         <?php if ($membership->getStatus() == MembershipStatus::ADMIN): ?>
                                             <?= form_open("group/{$group->getId()}/membership_status", ['class' => 'btn-group']) ?>
-                                            <?= form_hidden('userId', $user->getId()) ?>
+                                            <?= form_hidden('userId', strval($user->getId())) ?>
                                             <?= form_hidden('status', MembershipStatus::USER->value) ?>
                                             <button type="submit" class="btn btn-primary btn-sm mt-1">
                                                 <i class="fas fa-arrow-down"></i> Zurückstufen
@@ -275,7 +275,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                                             <?= form_close() ?>
                                         <?php else: ?>
                                             <?= form_open("group/{$group->getId()}/membership_status", ['class' => 'btn-group inline']) ?>
-                                            <?= form_hidden('userId', $user->getId()) ?>
+                                            <?= form_hidden('userId', strval($user->getId())) ?>
                                             <?= form_hidden('status', MembershipStatus::ADMIN->value) ?>
                                             <button type="submit" class="btn btn-primary btn-sm mt-1">
                                                 <i class="fas fa-arrow-up"></i> Zum Admin ernennen
@@ -284,7 +284,7 @@ $ownMembership = getMembership($currentUser->getId(), $group->getId());
                                         <?php endif; ?>
 
                                         <?= form_open("group/{$group->getId()}/kick_user", ['class' => 'btn-group inline']) ?>
-                                        <?= form_hidden('userId', $user->getId()) ?>
+                                        <?= form_hidden('userId', strval($user->getId())) ?>
                                         <button type="submit" class="btn btn-danger btn-sm mt-1">
                                             <i class="fas fa-trash"></i> Entfernen
                                         </button>

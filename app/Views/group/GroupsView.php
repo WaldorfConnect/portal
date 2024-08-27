@@ -10,11 +10,11 @@
 <h1 class="header">Alle Gruppen</h1>
 
 <?php use function App\Helpers\countMembers;
-use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getParentGroupsByRegionId;
 use function App\Helpers\getRegions;
 
 foreach (getRegions() as $region): ?>
-    <?php $groups = getGroupsByRegionId($region->getId()) ?>
+    <?php $groups = getParentGroupsByRegionId($region->getId()) ?>
     <?php if (empty($groups)): continue; endif; ?>
 
 <div class="accordion accordion-flush" id="region<?= $region->getId() ?>">

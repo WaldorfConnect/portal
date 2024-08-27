@@ -3,18 +3,26 @@
 namespace App\Controllers;
 
 use App\Entities\MembershipStatus;
+use App\Exceptions\Group\GroupAlreadyMemberException;
+use App\Exceptions\Group\GroupNotAdminException;
+use App\Exceptions\Group\GroupNotFoundException;
+use App\Exceptions\Group\GroupNotMemberException;
+use App\Exceptions\User\UserNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 use Exception;
+use ReflectionException;
 use Throwable;
 use function App\Helpers\createImageValidationRule;
 use function App\Helpers\createMembership;
 use function App\Helpers\createMembershipRequest;
+use function App\Helpers\createMemberships;
 use function App\Helpers\createNotification;
 use function App\Helpers\createGroup;
 use function App\Helpers\createGroupNotification;
 use function App\Helpers\deleteMembership;
 use function App\Helpers\deleteGroup;
 use function App\Helpers\getCurrentUser;
+use function App\Helpers\getCurrentUserId;
 use function App\Helpers\getGroupById;
 use function App\Helpers\getMembership;
 use function App\Helpers\getUserById;
@@ -42,27 +50,14 @@ class GroupController extends BaseController
 
     public function handleJoin(int $groupId): RedirectResponse
     {
-        $currentUser = getCurrentUser();
-        $group = getGroupById($groupId);
-
-        if (!$group) {
-            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
-        }
-
-        $membership = getMembership($currentUser->getId(), $groupId);
-        if ($membership) {
-            return redirect('groups')->with('error', 'Du bist bereits Mitglied dieser Gruppe.');
-        }
-
         try {
-            createMembershipRequest($currentUser->getId(), $groupId);
-
-            createGroupNotification($groupId,
-                'Beitrittsanfrage',
-                "{$currentUser->getName()} möchte %s beitreten.</a>",
-                MembershipStatus::ADMIN);
+            createMembershipRequest(getCurrentUserId(), $groupId);
+        } catch (GroupNotFoundException) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
+        } catch (GroupAlreadyMemberException) {
+            return redirect(base_url('group/' . $groupId))->with('error', 'Du bist bereits Mitglied dieser Gruppe.');
         } catch (Throwable $e) {
-            return redirect('groups')->with('error', $e);
+            return redirect(base_url('group/' . $groupId))->with('error', $e);
         }
 
         return redirect()->to(base_url('group/' . $groupId));
@@ -70,65 +65,46 @@ class GroupController extends BaseController
 
     public function handleLeave(int $groupId): RedirectResponse
     {
-        $currentUser = getCurrentUser();
-        $group = getGroupById($groupId);
-
-        if (!$group) {
+        try {
+            deleteMembership(getCurrentUserId(), $groupId);
+        } catch (GroupNotFoundException) {
             return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
+        } catch (GroupNotMemberException) {
+            return redirect(base_url('group/' . $groupId))->with('error', 'Du bist kein Mitglied dieser Gruppe.');
+        } catch (Throwable $e) {
+            return redirect(base_url('group/' . $groupId))->with('error', $e);
         }
-
-        $membership = getMembership($currentUser->getId(), $groupId);
-        if (!$membership) {
-            return redirect('groups')->with('error', 'Du bist kein Mitglied dieser Gruppe.');
-        }
-
-        deleteMembership($currentUser->getId(), $groupId);
-        createGroupNotification($groupId,
-            'Gruppe verlassen',
-            "{$currentUser->getName()} hat %s verlassen.</a>");
 
         return redirect()->to(base_url('group/' . $groupId));
     }
 
     public function handleAddMember(int $groupId): RedirectResponse|string
     {
-        $self = getCurrentUser();
-        $group = getGroupById($groupId);
-
-        if (!$group) {
-            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
-        }
-
-        if (!$group->isManageableBy($self)) {
-            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
-        }
-
         $members = $this->request->getPost('member');
-        foreach ($members as $member) {
-            try {
-                createMembership($member, $groupId);
-            } catch (Throwable $e) {
-                return redirect()->to(base_url('group/' . $groupId))->with('error', $e);
-            }
 
-            $memberUser = getUserById($member);
-            createGroupNotification($groupId,
-                'Gruppe beigetreten',
-                "{$memberUser->getName()} ist %s beigetreten.</a>",
-                null,
-                [$member]);
-
-            createNotification($member, 'Zur Gruppe hinzugefügt', "Du wurdest zu {$group->getUrl()} hinzugefügt.");
+        try {
+            createMemberships($members, $groupId, getCurrentUserId());
+            return redirect()->to(base_url('group/' . $groupId));
+        } catch (GroupNotFoundException) {
+            return redirect('groups')->with('error', 'Diese Gruppe existiert nicht.');
+        } catch (GroupAlreadyMemberException $e) {
+            $name = getUserById($e->getUserId())->getName();
+            return redirect()->to(base_url('group/' . $groupId))->with('error', "{$name} ist bereits Mitglied der Gruppe.");
+        } catch (GroupNotAdminException) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du bist kein Gruppenadministrator.');
+        } catch (GroupNotMemberException) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du bist kein Mitglied dieser Gruppe.');
+        } catch (UserNotFoundException) {
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Ungültiger Benutzer ausgewählt.');
+        } catch (Throwable $e) {
+            return redirect(base_url('group/' . $groupId))->with('error', $e);
         }
-
-        return redirect()->to(base_url('group/' . $groupId));
     }
 
     public function handleAddSubgroup(int $groupId): RedirectResponse|string
     {
         $self = getCurrentUser();
         $group = getGroupById($groupId);
-
         $name = trim($this->request->getPost('name'));
 
         if (!$group) {
@@ -136,7 +112,7 @@ class GroupController extends BaseController
         }
 
         if (!$group->isManageableBy($self)) {
-            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect()->to(base_url('group/' . $groupId))->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         try {
@@ -301,7 +277,7 @@ class GroupController extends BaseController
         }
 
         if (!$group->isManageableBy($currentUser)) {
-            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect('groups')->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         $user = getUserById($userId);
@@ -346,7 +322,7 @@ class GroupController extends BaseController
         }
 
         if (!$group->isManageableBy($currentUser)) {
-            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect('groups')->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         $user = getUserById($userId);
@@ -388,7 +364,7 @@ class GroupController extends BaseController
         }
 
         if (!$group->isManageableBy($currentUser)) {
-            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect('groups')->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         $user = getUserById($userId);
@@ -432,7 +408,7 @@ class GroupController extends BaseController
         }
 
         if (!$group->isManageableBy($currentUser)) {
-            return redirect('groups')->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect('groups')->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         $user = getUserById($userId);
@@ -483,7 +459,7 @@ class GroupController extends BaseController
         }
 
         if (!$parent->isManageableBy($currentUser)) {
-            return redirect()->to(base_url('group/' . $parent->getId()))->with('error', 'Du darfst diese Gruppe nicht verwalten.');
+            return redirect()->to(base_url('group/' . $parent->getId()))->with('error', 'Du bist kein Gruppenadministrator.');
         }
 
         try {

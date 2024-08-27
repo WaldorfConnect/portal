@@ -24,7 +24,7 @@ class Security extends BaseConfig
      *
      * Randomize the CSRF Token for added security.
      */
-    public bool $tokenRandomize = true;
+    public bool $tokenRandomize = false;
 
     /**
      * --------------------------------------------------------------------------
@@ -33,7 +33,7 @@ class Security extends BaseConfig
      *
      * Token name for Cross Site Request Forgery protection.
      */
-    public string $tokenName = 'csrf_wcon';
+    public string $tokenName = 'csrf_waco';
 
     /**
      * --------------------------------------------------------------------------
@@ -51,7 +51,7 @@ class Security extends BaseConfig
      *
      * Cookie name for Cross Site Request Forgery protection.
      */
-    public string $cookieName = 'csrf_wcon';
+    public string $cookieName = 'csrf_waco';
 
     /**
      * --------------------------------------------------------------------------
@@ -79,8 +79,10 @@ class Security extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Redirect to previous page with error on failure.
+     *
+     * @see https://codeigniter4.github.io/userguide/libraries/security.html#redirection-on-failure
      */
-    public bool $redirect = false;
+    public bool $redirect = (ENVIRONMENT === 'production');
 
     /**
      * --------------------------------------------------------------------------
