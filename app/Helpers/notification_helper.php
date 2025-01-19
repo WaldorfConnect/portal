@@ -58,9 +58,9 @@ function queueNotificationMails(): void
                 queueMail($user->getId(), $subject,
                     view('mail/UnreadNotifications', ['user' => $user, 'notification' => $firstNotification, 'count' => $unreadNotificationsCount - 1]));
 
-                log_message('info', "Queueing notification mail for {$user->getUsername()} ...");
+                log_message('info', "Notification reminder mail queued: 'username={$user->getUsername()}'");
             } catch (Throwable $e) {
-                log_message('error', 'Error queue notification mail: {exception}', ['exception' => $e]);
+                log_message('error', "Error queueing notification reminder mail: 'username={$user->getUsername()}': {exception}", ['exception' => $e]);
             }
         }
     }
@@ -119,10 +119,10 @@ function createNotification(int $userId, string $subject, string $body): void
     $notification->setBody($body);
 
     try {
-        getNotificationModel()->insert($notification);
-        log_message('info', "Created notification for '{$userId}' with subject '{$subject}'");
+        $id = getNotificationModel()->insert($notification);
+        log_message('info', "Notification created: 'notificationId={$id},userId={$userId},subject={$subject}'");
     } catch (Throwable $e) {
-        log_message('error', 'Error inserting notification: {exception}', ['exception' => $e]);
+        log_message('error', "Error inserting notification: 'userId={$userId},subject={$subject}': {exception}", ['exception' => $e]);
     }
 }
 
@@ -145,10 +145,10 @@ function readNotifications(array $notifications): void
         try {
             getNotificationModel()->save($clonedNotification);
         } catch (Throwable $e) {
-            log_message('error', 'Error saving notification: {exception}', ['exception' => $e]);
+            log_message('error', "Error saving notification: 'notificationId={$clonedNotification->getId()},userId={$clonedNotification->getUserId()}': {exception}", ['exception' => $e]);
         }
 
-        log_message('info', "Notification '{$notification->getId()}' marked as read");
+        log_message('info', "Notification read: 'notificationId={$notification->getId()}'");
     }
 }
 
@@ -161,7 +161,7 @@ function readNotifications(array $notifications): void
 function deleteNotification(int $id): void
 {
     getNotificationModel()->delete($id);
-    log_message('info', "Deleted notification '{$id}'");
+    log_message('info', "Notification deleted: 'notificationId={$id}'");
 }
 
 /**
@@ -173,7 +173,7 @@ function deleteNotification(int $id): void
 function deleteAllNotifications(int $userId): void
 {
     getNotificationModel()->where('user_id', $userId)->delete();
-    log_message('info', "Deleted all notifications for user '{$userId}'");
+    log_message('info', "Notifications deleted: 'userId={$userId}'");
 }
 
 /**

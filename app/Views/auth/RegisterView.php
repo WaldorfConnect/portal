@@ -1,6 +1,6 @@
 <?php
 
-use function App\Helpers\getGroupsByRegionId;
+use function App\Helpers\getParentGroupsByRegionId;
 use function App\Helpers\getRegions;
 
 ?>
@@ -104,7 +104,7 @@ use function App\Helpers\getRegions;
                                 required>
                             <?php foreach (getRegions() as $region): ?>
                                 <optgroup label="<?= $region->getName() ?>">
-                                    <?php foreach (getGroupsByRegionId($region->getId()) as $group): ?>
+                                    <?php foreach (getParentGroupsByRegionId($region->getId()) as $group): ?>
                                         <option <?= !is_null(old('groups')) && in_array($group->getId(), old('groups')) ? 'selected' : '' ?>
                                                 value="<?= $group->getId() ?>"><?= $group->name ?></option>
                                     <?php endforeach; ?>

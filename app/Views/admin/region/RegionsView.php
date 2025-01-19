@@ -33,7 +33,7 @@ $currentUser = getCurrentUser();
 <div class="row">
     <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
            data-toggle="table" data-search="true" data-height="1000" data-pagination="true"
-           data-show-columns="true" data-cookie="true" data-cookie-id-table="user"
+           data-show-columns="true" data-cookie="true" data-cookie-id-table="regions"
            data-search-highlight="true" data-show-columns-toggle-all="true">
         <thead>
         <tr>
@@ -55,7 +55,7 @@ $currentUser = getCurrentUser();
                     </div>
 
                     <?= form_open('admin/region/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Region {$region->getName()} wirklich löschen?');"]) ?>
-                    <?= form_hidden('id', $region->getId()) ?>
+                    <?= form_hidden('id', strval($region->getId())) ?>
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
                     </button>

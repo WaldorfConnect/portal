@@ -20,7 +20,7 @@ $currentUser = getCurrentUser();
 
 <div class="row">
     <?= form_open('admin/user/edit') ?>
-    <?= form_hidden('id', $user->getId()) ?>
+    <?= form_hidden('id', strval($user->getId())) ?>
 
     <div class="form-group row mb-3">
         <label for="inputUsername" class="col-form-label col-md-4 col-lg-3">Benutzername</label>

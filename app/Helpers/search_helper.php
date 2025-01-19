@@ -26,6 +26,9 @@ function getSearchEntries(string $query): array
 
     $users = getUsersByName($query);
     foreach ($users as $user) {
+        if (!$user->isActive())
+            continue;
+
         $entries[] = new SearchEntry(
             $user->getName(),
             'Benutzer',

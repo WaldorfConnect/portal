@@ -31,7 +31,7 @@ use function App\Helpers\getGroups;
 <div class="row">
     <table class="table table-striped table-bordered" data-locale="<?= service('request')->getLocale(); ?>"
            data-toggle="table" data-search="true" data-height="1000" data-pagination="true"
-           data-show-columns="true" data-cookie="true" data-cookie-id-table="user"
+           data-show-columns="true" data-cookie="true" data-cookie-id-table="groups"
            data-search-highlight="true" data-show-columns-toggle-all="true">
         <thead>
         <tr>
@@ -62,7 +62,7 @@ use function App\Helpers\getGroups;
                     </div>
 
                     <?= form_open('admin/group/delete', ['class' => 'btn-group inline', 'onsubmit' => "return confirm('Möchtest du die Gruppe {$group->getName()} wirklich löschen?');"]) ?>
-                    <?= form_hidden('id', $group->getId()) ?>
+                    <?= form_hidden('id', strval($group->getId())) ?>
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
                     </button>

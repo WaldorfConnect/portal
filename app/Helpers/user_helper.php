@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Entities\User;
+use App\Exceptions\User\UserNotFoundException;
 use App\Models\UserModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use InvalidArgumentException;
@@ -28,6 +29,16 @@ function getCurrentUser(): ?User
     }
 
     return getUserById($user_id);
+}
+
+function getCurrentUserId(): ?int
+{
+    $user_id = session('user_id');
+    if (!$user_id) {
+        return null;
+    }
+
+    return intval($user_id);
 }
 
 /**
@@ -117,22 +128,16 @@ function saveUser(User $user): void
     $model = getUserModel();
     $model->save($user);
 
-    log_message('info', "Saved user '{$user->getUsername()}'");
+    log_message('info', "User saved: 'userId={$user->getId()},username={$user->getUsername()}'");
 }
 
 /**
- * Create a new user and insert into the database
- *
- * @param string $username the username
- * @param string $email the user's email
- * @param string $firstName the user's first name
- * @param string $lastName the user's last name
- * @param string $password the password
- * @return User
  * @throws ReflectionException
  */
-function createAndInsertUser(string $username, string $firstName, string $lastName, string $email, string $password): User
+function createUser(string $firstName, string $lastName, string $email, string $password): User
 {
+    $username = generateUsername($firstName, $lastName);
+
     $user = new User();
     $user->setUsername($username);
     $user->setFirstName($firstName);
@@ -145,8 +150,17 @@ function createAndInsertUser(string $username, string $firstName, string $lastNa
     $model->insert($user);
     $user->setId($model->getInsertID());
 
-    log_message('info', "Created user '{$user->getUsername()}'");
+    sendConfirmationMail($user);
+    log_message('info', "User created: 'userId={$user->getId()},username={$user->getUsername()}'");
     return $user;
+}
+
+/**
+ * @throws ReflectionException
+ */
+function sendConfirmationMail(User $user): void
+{
+    queueMail($user->getId(), 'E-Mail bestätigen', view('mail/ConfirmEmail', ['user' => $user]));
 }
 
 /**
@@ -158,19 +172,11 @@ function createAndInsertUser(string $username, string $firstName, string $lastNa
 function deleteUser(int $id): void
 {
     getUserModel()->delete($id);
-    log_message('info', "Deleted user '{$id}'");
+    log_message('info', "User deleted: 'userId={$id}'");
 }
 
 /**
- * @return UserModel
- */
-function getUserModel(): UserModel
-{
-    return new UserModel();
-}
-
-/**
- * Generate a username from a user's first and last name
+ * Generate a username from a user's first and last name and add consecutive number to avoid duplicates
  *
  * @param string $firstName
  * @param string $lastName
@@ -183,7 +189,14 @@ function generateUsername(string $firstName, string $lastName): string
     $firstLetterFirstName = substr($firstName, 0, 1);
     $username = mb_strtolower($firstLetterFirstName . $lastName);
     $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
-    return preg_replace("/[^\p{L}]+/", '', $username);
+    $username = preg_replace("/[^\p{L}]+/", '', $username);
+
+    $id = 2;
+    while (!is_null(getUserByUsername($username))) {
+        $username = $username . $id++;
+    }
+
+    return $username;
 }
 
 /**
@@ -215,4 +228,23 @@ function checkSSHA(string $plainText, string $hash): bool
     $originalHash = substr($originalHash, 0, 20);
     $newHash = pack("H*", sha1($plainText . $salt));
     return $originalHash == $newHash;
+}
+
+/**
+ * @throws UserNotFoundException
+ */
+function validateUser(int $userId): void
+{
+    $user = getUserById($userId);
+    if (!$user) {
+        throw new UserNotFoundException();
+    }
+}
+
+/**
+ * @return UserModel
+ */
+function getUserModel(): UserModel
+{
+    return new UserModel();
 }

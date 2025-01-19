@@ -43,7 +43,7 @@ function syncLDAPUsers(): void
             // Update properties on LDAP server
             try {
                 updateLDAPUser($ldapUser, $wantedUser);
-                log_message('info', 'LDAP: Updated user ' . $wantedUser->getUsername());
+                log_message('info', 'Updated LDAP user ' . $wantedUser->getUsername());
             } catch (LdapRecordException $e) {
                 log_message('error', 'LDAP: Unable to update user ' . $wantedUser->getUsername() . ': {exception}', ['exception' => $e]);
             }
@@ -153,11 +153,11 @@ function syncGroupFolders(): void
 
             // Update folder on Nextcloud
             updateGroupFolder($client, $wantedGroup, $folder);
-            log_message('info', 'NC: Updated folder ' . $wantedGroup->getFolderMountPoint());
+            log_message('info', "Folder updated: 'mountPoint={$wantedGroup->getFolderMountPoint()}'");
         } else {
             // Delete folder on Nextcloud
             deleteGroupFolder($client, $folder->id);
-            log_message('info', 'NC: Deleted folder ' . $folder->mount_point);
+            log_message('info', "Folder deleted: 'mountPoint={$folder->mount_point}'");
         }
     }
 
@@ -170,9 +170,9 @@ function syncGroupFolders(): void
                 $group->setFolderId($id);
                 saveGroup($group);
 
-                log_message('info', 'NC: Created folder ' . $group->getFolderMountPoint());
+                log_message('info', "Folder created: 'mountPoint={$group->getFolderMountPoint()}'");
             } catch (DatabaseException|ReflectionException $e) {
-                log_message('error', 'NC: Unable to create folder ' . $group->getFolderMountPoint() . ': {exception}', ['exception' => $e]);
+                log_message('error', "Error creating folder: 'mountPoint={$group->getFolderMountPoint()}': {exception}", ['exception' => $e]);
             }
         }
     }
@@ -186,7 +186,7 @@ function syncGroupChats(): void
     foreach ($groups as $group) {
         $members = $group->getMemberships();
         if (empty($members)) {
-            log_message('info', 'NC: Skipping chat creation for empty group ' . $group->getDisplayName());
+            log_message('info', "Folder skipped (group empty): 'mountPoint={$group->getFolderMountPoint()}'");
             continue;
         }
 
@@ -199,15 +199,14 @@ function syncGroupChats(): void
                     $group->setChatId($chatId);
                     saveGroup($group);
 
-                    log_message('info', 'NC: Created chat ' . $group->getDisplayName());
+                    log_message('info', "Chat created: 'groupId={$group->getId()},displayName={$group->getDisplayName()}'");
                 } catch (DatabaseException|ReflectionException $e) {
-                    log_message('error', 'NC: Unable to create chat ' . $group->getDisplayName() . ': {exception}', ['exception' => $e]);
+                    log_message('error', "Error creating chat: 'groupId={$group->getId()},displayName={$group->getDisplayName()}': {exception}", ['exception' => $e]);
                 }
             }
         }
 
         if (!$chatId) {
-            log_message('debug', 'NC: No chat id after creation for ' . $group->getDisplayName());
             continue;
         }
 
@@ -221,7 +220,6 @@ function syncGroupChats(): void
             $username = $participant->actorId;
             $user = getUserByUsername($username);
             if (!$user) {
-                log_message('debug', 'NC: Invalid user ' . $username);
                 continue;
             }
 
@@ -234,13 +232,11 @@ function syncGroupChats(): void
                 }
 
                 if ($member->getStatus() == MembershipStatus::ADMIN && !$isModerator) {
-                    log_message('debug', 'NC: Promote ' . $user->getUsername());
-
                     promoteChatUser($client, $chatId, $attendeeId);
+                    log_message('info', "Promoted chat user: 'username={$user->getUsername()}'");
                 } else if ($member->getStatus() == MembershipStatus::USER && $isModerator) {
-                    log_message('debug', 'NC: Demote ' . $user->getUsername());
-
                     demoteChatUser($client, $chatId, $attendeeId);
+                    log_message('debug', "Demoted chat user: 'username={$user->getUsername()}'");
                 }
             }
         }

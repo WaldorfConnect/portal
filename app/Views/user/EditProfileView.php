@@ -12,14 +12,14 @@ $self = getCurrentUser();
 <?= form_open_multipart('user/profile') ?>
     <div class="input-group row align-items-end mb-3">
         <label for="inputImage" class="col-form-label col-md-4 col-lg-3">Profilbild</label>
-        <div class="col-md-2">
-            <img class="img-thumbnail"
+        <div class="col-md-2 text-center">
+            <img class="img-thumbnail mb-3"
                  width="200"
                  height="200"
                  src="<?= getImageUrlById($self->getImageId(), 'assets/img/user_400x400.webp') ?>"
                  alt="Profilbild">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
             <input class="form-control" id="inputImage" name="image"
                    type="file">
         </div>
@@ -34,18 +34,22 @@ $self = getCurrentUser();
     </div>
 
     <div class="input-group row mb-3">
-        <label for="inputFirstName" class="col-form-label col-md-4 col-lg-3">Vorname(n)</label>
+        <label id="inputName" class="col-form-label col-md-4 col-lg-3">Vor- und Nachname</label>
         <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
-                   placeholder="Vorname(n)" value="<?= $self->getFirstName() ?>" required>
-        </div>
-    </div>
-
-    <div class="input-group row mb-3">
-        <label for="lastName" class="col-form-label col-md-4 col-lg-3">Nachname</label>
-        <div class="col-md-8 col-lg-9">
-            <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
-                   placeholder="Nachname" value="<?= $self->getLastName() ?>" required>
+            <div class="row">
+                <div class="col-6">
+                    <input class="form-control" id="inputFirstName" name="firstName" autocomplete="name"
+                           placeholder="Vorname(n)" value="<?= $self->getFirstName() ?>"
+                           aria-labelledby="inputName"
+                           required>
+                </div>
+                <div class="col-6">
+                    <input class="form-control" id="inputLastName" name="lastName" autocomplete="name"
+                           placeholder="Nachname" value="<?= $self->getLastName() ?>"
+                           aria-labelledby="inputName"
+                           required>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -72,6 +76,6 @@ $self = getCurrentUser();
     <button class="btn btn-primary btn-block" type="submit">Speichern</button>
 <?= form_close() ?>
 
-<?= form_open('user/profile/resend', ['class' => 'd-none', 'id' => 'resendEmailForm'], ['userId' => $self->getId()]) ?>
+<?= form_open('user/profile/resend', ['class' => 'd-none', 'id' => 'resendEmailForm'], ['userId' => strval($self->getId())]) ?>
     <button id="resendEmailButton" type="submit">E-Mail erneut versenden</button>
 <?= form_close() ?>

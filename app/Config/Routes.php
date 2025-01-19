@@ -11,20 +11,17 @@ use CodeIgniter\Router\RouteCollection;
 
 $routes->get('/', 'IndexController::index', ['filter' => LoggedInFilter::class]);
 
-$routes->get('/login', 'AuthenticationController::login', ['filter' => LoggedOutFilter::class]);
-$routes->post('/login', 'AuthenticationController::handleLogin', ['filter' => LoggedOutFilter::class]);
-$routes->get('/logout', 'AuthenticationController::logout', ['filter' => LoggedInFilter::class]);
-$routes->get('/register', 'AuthenticationController::register', ['filter' => LoggedOutFilter::class]);
-$routes->post('/register', 'AuthenticationController::handleRegister', ['filter' => LoggedOutFilter::class]);
-$routes->post('/register/resend', 'AuthenticationController::handleRegisterResendConfirmationEmail', ['filter' => LoggedOutFilter::class]);
+$routes->get('/login', 'AuthController::login', ['filter' => LoggedOutFilter::class]);
+$routes->post('/login', 'AuthController::handleLogin', ['filter' => LoggedOutFilter::class]);
+$routes->get('/logout', 'AuthController::logout', ['filter' => LoggedInFilter::class]);
+$routes->get('/register', 'AuthController::register', ['filter' => LoggedOutFilter::class]);
+$routes->post('/register', 'AuthController::handleRegister', ['filter' => LoggedOutFilter::class]);
+$routes->post('/register/resend', 'AuthController::handleRegisterResendConfirmationEmail', ['filter' => LoggedOutFilter::class]);
 
 $routes->get('/user/profile', 'User\UserProfileController::editProfile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile', 'User\UserProfileController::handleEditProfile', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/profile/resend', 'User\UserProfileController::handleProfileResendConfirmationEmail', ['filter' => LoggedInFilter::class]);
-$routes->get('/user/confirm', 'User\UserController::handleConfirm');
-
-$routes->get('/user/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
-$routes->get('/u/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/user/confirm', 'User\UserProfileController::handleConfirm');
 
 $routes->get('/user/settings', 'User\UserSettingsController::settings', ['filter' => LoggedInFilter::class]);
 $routes->post('/user/settings', 'User\UserSettingsController::handleSettings', ['filter' => LoggedInFilter::class]);
@@ -34,6 +31,9 @@ $routes->post('/user/security', 'User\UserSecurityController::handleSecurity', [
 $routes->post('/user/security/totp', 'User\UserSecurityController::handleTOTPEnable', ['filter' => LoggedInFilter::class]);
 $routes->get('/user/security/reset_password', 'User\UserSecurityController::resetPassword', ['filter' => LoggedOutFilter::class]);
 $routes->post('/user/security/reset_password', 'User\UserSecurityController::handleResetPassword', ['filter' => LoggedOutFilter::class]);
+
+$routes->get('/user/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
+$routes->get('/u/(:any)', 'User\UserProfileController::profile/$1', ['filter' => LoggedInFilter::class]);
 
 $routes->get('/groups', 'GroupController::list', ['filter' => LoggedInFilter::class]);
 $routes->get('/group/(:num)', 'GroupController::group/$1', ['filter' => LoggedInFilter::class]);
