@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Entities\User;
 use App\Exceptions\Auth\AuthCredentialsInvalidException;
+use App\Exceptions\Auth\AuthPasswordTemporaryException;
 use App\Exceptions\Auth\AuthTFAInvalidException;
 use App\Exceptions\Auth\AuthTFARequiredException;
 use App\Exceptions\User\UserInactiveException;
@@ -17,10 +18,12 @@ use ReflectionException;
  * @throws AuthCredentialsInvalidException
  * @throws AuthTFARequiredException
  * @throws AuthTFAInvalidException
+ * @throws AuthPasswordTemporaryException
  * @throws UserInactiveException
  * @throws ReflectionException
  */
-function login(string $username, string $password, string $twoFactorCode = null): void
+function login(string $username, string $password, string $twoFactorCode = null,
+               string $newPassword = null, string $newPasswordConfirmation = null): void
 {
     $user = getUserByUsername($username);
 
@@ -61,6 +64,14 @@ function login(string $username, string $password, string $twoFactorCode = null)
         log_message('info', "Revoked pending password reset (successful login): 'username={$username}'");
     }
 
+    // Check if password is temporary and must be changed
+    if ($user->isPasswordTemporary()) {
+        if ($newPassword && $newPasswordConfirmation) {
+
+        }
+        throw new AuthPasswordTemporaryException();
+    }
+
     // Update last login date
     $user->setLastLoginDate(new DateTime());
     saveUser($user);
@@ -83,7 +94,7 @@ function generateCurrentTOTP(User $user): string
 {
     $secret = $user->getTOTPSecret();
     if (!$secret) {
-        throw new InvalidArgumentException('TFA not configured');
+        throw new InvalidArgumentException('User has TFA not configured');
     }
 
     return (new Totp())->GenerateToken(Base32::decode($secret));

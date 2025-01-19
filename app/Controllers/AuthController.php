@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Exceptions\Auth\AuthCredentialsInvalidException;
+use App\Exceptions\Auth\AuthPasswordTemporaryException;
 use App\Exceptions\Auth\AuthTFAInvalidException;
 use App\Exceptions\Auth\AuthTFARequiredException;
 use App\Exceptions\User\UserInactiveException;
@@ -38,8 +39,14 @@ class AuthController extends BaseController
     {
         $username = trim($this->request->getPost('username'));
         $password = trim($this->request->getPost('password'));
-        $totp = trim($this->request->getPost('totp'));
         $returnUrl = trim($this->request->getPost('return'));
+
+        // TFA
+        $totp = trim($this->request->getPost('totp'));
+
+        // Temporary password
+        $newPassword = trim($this->request->getPost('newPassword'));
+        $newPasswordConfirmation = trim($this->request->getPost('newPasswordConfirmation'));
 
         $loginUrl = site_url('login');
         if ($returnUrl) {
@@ -49,7 +56,7 @@ class AuthController extends BaseController
         $redirect = redirect()->to($loginUrl)->withInput()->with('name', $username);
 
         try {
-            login($username, $password, $totp);
+            login($username, $password, $totp, $newPassword, $newPasswordConfirmation);
             return redirect()->to($returnUrl ?: '/');
         } catch (AuthCredentialsInvalidException $e) {
             return $redirect->with('error', 'Zugangsdaten ungültig!');
@@ -57,6 +64,8 @@ class AuthController extends BaseController
             return $this->render('auth/TFAView', ['username' => $username, 'password' => $password, 'return' => $returnUrl, 'error' => 1], false);
         } catch (AuthTFARequiredException $e) {
             return $this->render('auth/TFAView', ['username' => $username, 'password' => $password, 'return' => $returnUrl], false);
+        } catch (AuthPasswordTemporaryException $e) {
+
         } catch (UserInactiveException $e) {
             return $redirect->with('error', 'Benutzer ist deaktiviert.');
         } catch (ReflectionException $e) {
@@ -74,7 +83,7 @@ class AuthController extends BaseController
 
         // Check password match
         if ($password != $confirmedPassword) {
-            log_message('error', "Registration failed(password mismatch): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
+            log_message('error', "Failed registration (password mismatch): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
             return redirect('register')
                 ->withInput()
                 ->with('error', 'Die Passwörter stimmen nicht überein!');
@@ -82,7 +91,7 @@ class AuthController extends BaseController
 
         // Check email validity
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            log_message('error', "Registration failed(invalid email): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
+            log_message('error', "Failed registration (invalid email): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
             return redirect('register')
                 ->withInput()
                 ->with('error', 'E-Mail-Adresse ist ungültig.');
@@ -91,7 +100,7 @@ class AuthController extends BaseController
         // Check email uniqueness
         $user = getUserByEmail($email);
         if ($user) {
-            log_message('error', "Registration failed(duplicate email): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
+            log_message('error', "Failed registration (duplicate email): 'firstName={$firstName}, lastName={$lastName}, email={$email}'");
             return redirect('register')
                 ->withInput()
                 ->with('error', 'Diese E-Mail-Adresse wird bereits verwendet.');
