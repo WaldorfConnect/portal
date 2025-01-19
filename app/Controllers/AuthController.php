@@ -58,7 +58,7 @@ class AuthController extends BaseController
         } catch (AuthTFARequiredException $e) {
             return $this->render('auth/TFAView', ['username' => $username, 'password' => $password, 'return' => $returnUrl], false);
         } catch (UserInactiveException $e) {
-            return $redirect->with('error', 'Benutzer ist nicht aktiv.');
+            return $redirect->with('error', 'Benutzer ist deaktiviert.');
         } catch (ReflectionException $e) {
             return $redirect->with('error', $e);
         }
