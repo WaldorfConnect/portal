@@ -71,7 +71,6 @@ class AuthController extends BaseController
         $email = trim($this->request->getPost('email'));
         $password = trim($this->request->getPost('password'));
         $confirmedPassword = trim($this->request->getPost('confirmedPassword'));
-        $groupIds = $this->request->getPost('groups');
 
         // Check password match
         if ($password != $confirmedPassword) {
@@ -101,11 +100,6 @@ class AuthController extends BaseController
         try {
             // Create user
             $user = createUser($firstName, $lastName, $email, $password);
-
-            // Send membership request to selected groups
-            foreach ($groupIds as $groupId) {
-                createMembershipRequest($user->getId(), $groupId);
-            }
 
             // Inform user of successful registration and sent confirmation email
             return redirect('register')
