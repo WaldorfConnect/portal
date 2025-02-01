@@ -58,8 +58,6 @@ use function App\Helpers\getRegions;
                         </div>
                     <?php endif; ?>
 
-                    <h3>Persönliche Angaben</h3>
-
                     <div class="mb-3">
                         <label for="inputFirstName" class="sr-only">Vorname(n)</label>
                         <input class="form-control" id="inputFirstName" name="firstName" autocomplete="given-name"
@@ -84,35 +82,11 @@ use function App\Helpers\getRegions;
                                autocomplete="new-password" placeholder="Passwort" required>
                     </div>
 
-                    <div class="mb-3">
+                    <div>
                         <label for="inputConfirmedPassword" class="sr-only">Passwort wiederholen</label>
                         <input type="password" class="form-control" id="inputConfirmedPassword"
                                name="confirmedPassword"
                                autocomplete="new-password" placeholder="Passwort wiederholen" required>
-                    </div>
-
-                    <h3 class="mt-5">Gruppen beitreten</h3>
-
-                    <p>Du kannst hier Gruppen auswählen, denen du mit deiner Registrierung eine Beitrittsanfrage senden
-                        möchtest.</p>
-
-                    <div class="mb-3">
-                        <label for="inputGroups" class="form-label">Gruppen</label>
-                        <select class="form-select" id="inputGroups" name="groups[]"
-                                aria-describedby="groupsHelp"
-                                multiple
-                                required>
-                            <?php foreach (getRegions() as $region): ?>
-                                <optgroup label="<?= $region->getName() ?>">
-                                    <?php foreach (getParentGroupsByRegionId($region->getId()) as $group): ?>
-                                        <option <?= !is_null(old('groups')) && in_array($group->getId(), old('groups')) ? 'selected' : '' ?>
-                                                value="<?= $group->getId() ?>"><?= $group->name ?></option>
-                                    <?php endforeach; ?>
-                                </optgroup>
-                            <?php endforeach; ?>
-                        </select>
-                        <small id="groupsHelp" class="form-text text-muted">Zur Auswahl mehrerer Gruppen auf
-                            Desktop-Geräten die STRG-Taste gedrückt halten.</small>
                     </div>
 
                 </div>

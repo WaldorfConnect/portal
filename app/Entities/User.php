@@ -22,6 +22,7 @@ class User extends Entity
         'active' => false,
         'email_confirmed' => false,
         'password_reset' => false,
+        'password_temporary' => false,
         'image_id' => null,
         'email_notification' => true,
         'email_newsletter' => true,
@@ -42,6 +43,7 @@ class User extends Entity
         'active' => 'boolean',
         'email_confirmed' => 'boolean',
         'password_reset' => 'boolean',
+        'password_temporary' => 'boolean',
         'image_id' => 'string',
         'email_notification' => 'boolean',
         'email_newsletter' => 'boolean',
@@ -285,6 +287,26 @@ class User extends Entity
             $this->removeToken();
             return null;
         }
+    }
+
+    /**
+     * Returns whether user's password is temporary and due to be changed on next login.
+     *
+     * @return bool
+     */
+    public function isPasswordTemporary(): bool
+    {
+        return $this->attributes['password_temporary'];
+    }
+
+    /**
+     * Sets password temporary status.
+     *
+     * @param bool $temporary
+     */
+    public function setPasswordTemporary(bool $temporary): void
+    {
+        $this->attributes['password_temporary'] = $temporary;
     }
 
     /**
